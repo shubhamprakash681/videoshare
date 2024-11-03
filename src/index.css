@@ -126,7 +126,7 @@
 
 .page-container {
   min-height: calc(100dvh - var(--navbar-height));
-  height: 2900px;
+  /* height: 2900px; */
 }
 
 .custom-sidebar {

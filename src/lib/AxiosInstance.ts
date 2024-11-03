@@ -2,8 +2,8 @@ import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { envVariables } from "./variables";
 
 const AxiosAPIInstance = axios.create({
-  baseURL: envVariables.API_BASE_URI, // Replace with your API's base URL
-  timeout: 10000, // Request timeout in milliseconds
+  baseURL: envVariables.MODE === "development" ? "" : envVariables.API_BASE_URI,
+  // timeout: 10000, // Request timeout in milliseconds
   withCredentials: true, // Allow cookies to be sent with requests
   headers: {
     "Content-Type": "application/json",

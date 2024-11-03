@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-import Header from "./components/header/Header";
 import { useAppSelector } from "./hooks/useStore";
-import SidebarContainer from "./components/sidebar/SidebarContainer";
-import Footer from "./components/footer/Footer";
+import { Footer, Header, SidebarContainer } from "./components";
 
 const SIDEBAR_WIDTH = "250px";
 

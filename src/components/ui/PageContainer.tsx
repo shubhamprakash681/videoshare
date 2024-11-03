@@ -1,11 +1,21 @@
 import React from "react";
 
-type PageContainerProps = {
+interface PageContainerProps extends React.AllHTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
-};
 
-const PageContainer: React.FC<PageContainerProps> = ({ children }) => {
-  return <div className="page-container">{children}</div>;
+  className?: string;
+}
+
+const PageContainer: React.FC<PageContainerProps> = ({
+  children,
+  className,
+  ...props
+}) => {
+  return (
+    <div {...props} className={`page-container ${className}`}>
+      {children}
+    </div>
+  );
 };
 
 export default PageContainer;
