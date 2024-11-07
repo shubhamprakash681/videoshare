@@ -19,11 +19,14 @@ import { registerUserSchema } from "@/schema";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import FormErrorStrip from "../ui/FormErrorStrip";
-import { login, logout } from "@/features/authSlice";
+import { logout } from "@/features/authSlice";
 import { AxiosError } from "axios";
 import { useToast } from "@/hooks/use-toast";
 
 type SignupFormInputs = z.infer<typeof registerUserSchema>;
+type SignupResponseData = {
+  user: IUser;
+};
 
 const SignUp: React.FC = () => {
   const navigate = useNavigate();
@@ -71,7 +74,7 @@ const SignUp: React.FC = () => {
     };
 
     try {
-      const res = await AxiosAPIInstance.post<APIResponse<IUser>>(
+      const res = await AxiosAPIInstance.post<APIResponse<SignupResponseData>>(
         "/api/v1/user/register",
         payload,
         {
@@ -82,13 +85,15 @@ const SignUp: React.FC = () => {
       );
 
       if (res.data.success) {
-        dispatch(login(res.data.data));
+        toast({
+          title: res.data.message,
+        });
+        navigate("/login");
       }
-      navigate("/");
     } catch (error: any) {
       if (error instanceof AxiosError) {
         toast({
-          title: error.response?.data.message || "Soemthing Went wrong!",
+          title: error.response?.data.message || "Something went wrong!",
           variant: "destructive",
         });
       }

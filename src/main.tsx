@@ -10,7 +10,7 @@ import {
   Route,
   RouterProvider,
 } from "react-router-dom";
-import { HomePage, SignupPage } from "./pages/index.ts";
+import { HomePage, LoginPage, SignupPage } from "./pages/index.ts";
 import { Toaster } from "./components/ui/toaster.tsx";
 import ProtectedAuthLayout from "./components/auth/ProtectedAuthLayout.tsx";
 
@@ -30,6 +30,14 @@ const appRouter = createBrowserRouter(
         element={
           <ProtectedAuthLayout authentication={false}>
             <SignupPage />
+          </ProtectedAuthLayout>
+        }
+      />
+      <Route
+        path="/login"
+        element={
+          <ProtectedAuthLayout authentication={false}>
+            <LoginPage />
           </ProtectedAuthLayout>
         }
       />
