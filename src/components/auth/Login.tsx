@@ -61,6 +61,9 @@ const Login: React.FC = () => {
 
       if (res.data.success) {
         dispatch(login(res.data.data?.user));
+        toast({
+          title: res.data.message,
+        });
         navigate("/");
       }
     } catch (error: any) {

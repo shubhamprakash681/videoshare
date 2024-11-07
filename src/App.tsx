@@ -1,7 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
-import { useAppSelector } from "./hooks/useStore";
+import { Outlet, useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "./hooks/useStore";
 import { Footer, Header, SidebarContainer } from "./components";
+import { IUser } from "./types/collections";
+import AxiosAPIInstance from "./lib/AxiosInstance";
+import { APIResponse } from "./types/APIResponse";
+import { login } from "./features/authSlice";
+import { useToast } from "./hooks/use-toast";
+
+type RefreshSessionResponseData = {
+  accessToken: string;
+  refreshToken: string;
+  user: IUser;
+};
 
 const SIDEBAR_WIDTH = "250px";
 
@@ -9,9 +20,36 @@ const App: React.FC = () => {
   const { theme } = useAppSelector((state) => state.themeReducer);
   const { isSidebarOpen } = useAppSelector((state) => state.uiReducer);
 
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
   const [SIDEBAR_WIDTH_CLOSED, setSIDEBAR_WIDTH_CLOSED] =
     useState<string>("100px");
   const [isSmallerScreen, setIsSmallerScreen] = useState<boolean>(true);
+
+  const resizeHandler = () => {
+    if (window.innerWidth < 640) {
+      setIsSmallerScreen(true);
+      setSIDEBAR_WIDTH_CLOSED("0px");
+    } else {
+      setIsSmallerScreen(false);
+      setSIDEBAR_WIDTH_CLOSED("100px");
+    }
+  };
+  const refreshSessionOnLoad = async () => {
+    const res = await AxiosAPIInstance.post<
+      APIResponse<RefreshSessionResponseData>
+    >("/api/v1/user/refresh-session");
+
+    if (res.data.success) {
+      dispatch(login(res.data.data?.user));
+      toast({
+        title: res.data.message,
+      });
+      navigate("/");
+    }
+  };
 
   useEffect(() => {
     const html = document.querySelector("html");
@@ -21,17 +59,9 @@ const App: React.FC = () => {
   }, [theme]);
 
   useEffect(() => {
-    const resizeHandler = () => {
-      if (window.innerWidth < 640) {
-        setIsSmallerScreen(true);
-        setSIDEBAR_WIDTH_CLOSED("0px");
-      } else {
-        setIsSmallerScreen(false);
-        setSIDEBAR_WIDTH_CLOSED("100px");
-      }
-    };
-
     resizeHandler();
+    refreshSessionOnLoad();
+
     window.addEventListener("resize", resizeHandler);
 
     return () => {
