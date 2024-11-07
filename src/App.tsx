@@ -3,10 +3,10 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "./hooks/useStore";
 import { Footer, Header, SidebarContainer } from "./components";
 import { IUser } from "./types/collections";
-import AxiosAPIInstance from "./lib/AxiosInstance";
 import { APIResponse } from "./types/APIResponse";
 import { login } from "./features/authSlice";
 import { useToast } from "./hooks/use-toast";
+import { AxiosAPIInstance, AxiosInterceptor } from "./lib/AxiosInstance";
 
 type RefreshSessionResponseData = {
   accessToken: string;
@@ -70,41 +70,43 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="app-container bg-background text-foreground">
-      <div className="outer-top shadow-md backdrop-blur supports-[backdrop-filter]:bg-background">
-        <Header />
-      </div>
+    <AxiosInterceptor>
+      <div className="app-container bg-background text-foreground">
+        <div className="outer-top shadow-md backdrop-blur supports-[backdrop-filter]:bg-background">
+          <Header />
+        </div>
 
-      <div className="outer-bottom">
-        <div className="relative flex flex-col items-end">
-          <SidebarContainer
-            isOpen={isSidebarOpen}
-            SIDEBAR_WIDTH={SIDEBAR_WIDTH}
-            SIDEBAR_WIDTH_CLOSED={SIDEBAR_WIDTH_CLOSED}
-          />
+        <div className="outer-bottom">
+          <div className="relative flex flex-col items-end">
+            <SidebarContainer
+              isOpen={isSidebarOpen}
+              SIDEBAR_WIDTH={SIDEBAR_WIDTH}
+              SIDEBAR_WIDTH_CLOSED={SIDEBAR_WIDTH_CLOSED}
+            />
 
-          <div
-            style={{
-              width: isSmallerScreen
-                ? "100%"
-                : isSidebarOpen
-                ? `calc(100% - ${SIDEBAR_WIDTH})`
-                : `calc(100% - ${SIDEBAR_WIDTH_CLOSED})`,
-              border: "1px solid green",
-            }}
-          >
-            <Outlet />
+            <div
+              style={{
+                width: isSmallerScreen
+                  ? "100%"
+                  : isSidebarOpen
+                  ? `calc(100% - ${SIDEBAR_WIDTH})`
+                  : `calc(100% - ${SIDEBAR_WIDTH_CLOSED})`,
+                border: "1px solid green",
+              }}
+            >
+              <Outlet />
+            </div>
+
+            <Footer
+              isSmallerScreen={isSmallerScreen}
+              isSidebarOpen={isSidebarOpen}
+              SIDEBAR_WIDTH={SIDEBAR_WIDTH}
+              SIDEBAR_WIDTH_CLOSED={SIDEBAR_WIDTH_CLOSED}
+            />
           </div>
-
-          <Footer
-            isSmallerScreen={isSmallerScreen}
-            isSidebarOpen={isSidebarOpen}
-            SIDEBAR_WIDTH={SIDEBAR_WIDTH}
-            SIDEBAR_WIDTH_CLOSED={SIDEBAR_WIDTH_CLOSED}
-          />
         </div>
       </div>
-    </div>
+    </AxiosInterceptor>
   );
 };
 

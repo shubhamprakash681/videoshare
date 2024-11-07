@@ -15,13 +15,13 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginUserSchema } from "@/schema";
-import AxiosAPIInstance from "@/lib/AxiosInstance";
 import { APIResponse } from "@/types/APIResponse";
 import { IUser } from "@/types/collections";
 import { useAppDispatch } from "@/hooks/useStore";
 import { login, logout } from "@/features/authSlice";
 import { useToast } from "@/hooks/use-toast";
 import { AxiosError } from "axios";
+import { AxiosAPIInstance } from "@/lib/AxiosInstance";
 
 type LoginFormInputs = z.infer<typeof loginUserSchema>;
 type LoginResponseData = {

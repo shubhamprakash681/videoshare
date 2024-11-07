@@ -2,7 +2,6 @@ import { useAppDispatch } from "@/hooks/useStore";
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { SubmitHandler, useForm } from "react-hook-form";
-import AxiosAPIInstance from "@/lib/AxiosInstance";
 import { APIResponse } from "@/types/APIResponse";
 import { IUser } from "@/types/collections";
 import {
@@ -22,6 +21,7 @@ import FormErrorStrip from "../ui/FormErrorStrip";
 import { logout } from "@/features/authSlice";
 import { AxiosError } from "axios";
 import { useToast } from "@/hooks/use-toast";
+import { AxiosAPIInstance } from "@/lib/AxiosInstance";
 
 type SignupFormInputs = z.infer<typeof registerUserSchema>;
 type SignupResponseData = {
