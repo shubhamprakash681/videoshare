@@ -1,4 +1,5 @@
 export interface IUser {
+  _id: string;
   username: string;
   email: string;
   fullname: string;
@@ -16,6 +17,7 @@ export interface IUser {
 }
 
 export interface IVideo {
+  _id: string;
   videoFile: {
     public_id: string;
     url: string;
