@@ -5,25 +5,40 @@ import { MoonIcon, SunIcon, HamburgerMenuIcon } from "@radix-ui/react-icons";
 import { toggleTheme } from "@/features/themeSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/useStore";
 import { toggleSidebarOpen } from "@/features/uiSlice";
+import SearchBox from "./SearchBox";
 
-type ThemeToggleButtonProps = {
+interface ThemeToggleButtonProps
+  extends React.AllHTMLAttributes<HTMLButtonElement> {
   theme: "light" | "dark";
   dispatch: any;
-};
+
+  className?: string;
+}
 const ThemeToggleButton: React.FC<ThemeToggleButtonProps> = ({
   theme,
   dispatch,
+  className,
 }) => {
   if (theme === "light") {
     return (
-      <Button variant="outline" onClick={() => dispatch(toggleTheme())}>
+      <Button
+        title="Swich to Dark Mode"
+        className={className}
+        variant="outline"
+        onClick={() => dispatch(toggleTheme())}
+      >
         <SunIcon height={"20px"} width={"20px"} />
       </Button>
     );
   }
 
   return (
-    <Button variant="outline" onClick={() => dispatch(toggleTheme())}>
+    <Button
+      title="Swich to Light Mode"
+      className={className}
+      variant="outline"
+      onClick={() => dispatch(toggleTheme())}
+    >
       <MoonIcon height={"20px"} width={"20px"} />
     </Button>
   );
@@ -37,6 +52,7 @@ const SidebarToggleButton: React.FC<SidebarToggleButtonProps> = ({
 }) => {
   return (
     <Button
+      title="Sidebar"
       variant="ghost"
       style={{ borderRadius: "50%", padding: "10px" }}
       onClick={() => dispatch(toggleSidebarOpen())}
@@ -51,30 +67,38 @@ const Header = () => {
   const dispatch = useAppDispatch();
 
   return (
-    <header className="p-3">
-      <div className="flex items-center justify-between">
-        <div className="sm:space-x-2 flex items-center">
-          <SidebarToggleButton dispatch={dispatch} key={"sidebar-toggle-btn"} />
+    <header
+      className="p-3 grid items-center"
+      style={{ gridTemplateColumns: "auto 1fr" }}
+    >
+      <div className="sm:space-x-2 flex items-center">
+        <SidebarToggleButton dispatch={dispatch} key={"sidebar-toggle-btn"} />
+        <Link to={"/"}>
+          <span className="text-xl font-bold" style={{ width: "70px" }}>
+            VideoShare
+          </span>
+        </Link>
+      </div>
 
-          <Link to={"/"}>
-            <span className="text-xl font-bold" style={{ width: "70px" }}>
-              VideoShare
-            </span>
-          </Link>
-        </div>
+      <div
+        className="w-full grid items-center space-x-3"
+        style={{ gridTemplateColumns: "1fr auto" }}
+      >
+        <SearchBox />
 
         <ThemeToggleButton
+          className="justify-self-end"
           key={"theme-toggle-md"}
           theme={theme}
           dispatch={dispatch}
         />
+      </div>
 
-        {/* {isAuthenticated && (
+      {/* {isAuthenticated && (
             <li>
               <LogoutButton />
             </li>
           )} */}
-      </div>
     </header>
   );
 };

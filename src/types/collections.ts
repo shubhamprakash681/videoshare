@@ -14,3 +14,21 @@ export interface IUser {
   password?: string;
   refreshToken?: string;
 }
+
+export interface IVideo {
+  videoFile: {
+    public_id: string;
+    url: string;
+  };
+  thumbnail: {
+    public_id: string;
+    url: string;
+  };
+  title: string;
+  description: string;
+  duration: number;
+  views: number;
+  isPublic: boolean;
+  owner: IUser;
+  createdAt: Date;
+}
