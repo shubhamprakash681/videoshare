@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatVideoDuration } from "@/lib/video";
 import React from "react";
 
 type VideoCardProps = {
@@ -30,7 +31,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
           className="w-full h-48 object-cover"
         />
         <div className="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">
-          {duration}
+          {formatVideoDuration(duration)}
         </div>
       </div>
       <div className="p-4">
