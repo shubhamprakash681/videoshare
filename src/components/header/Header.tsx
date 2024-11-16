@@ -1,11 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
-import { MoonIcon, SunIcon, HamburgerMenuIcon } from "@radix-ui/react-icons";
 import { toggleTheme } from "@/features/themeSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/useStore";
 import { toggleSidebarOpen } from "@/features/uiSlice";
 import SearchBox from "./SearchBox";
+import { MenuIcon, MoonIcon, SunIcon } from "lucide-react";
 
 interface ThemeToggleButtonProps
   extends React.AllHTMLAttributes<HTMLButtonElement> {
@@ -57,7 +57,7 @@ const SidebarToggleButton: React.FC<SidebarToggleButtonProps> = ({
       style={{ borderRadius: "50%", padding: "10px" }}
       onClick={() => dispatch(toggleSidebarOpen())}
     >
-      <HamburgerMenuIcon height={"20px"} width={"20px"} />
+      <MenuIcon height={"20px"} width={"20px"} />
     </Button>
   );
 };

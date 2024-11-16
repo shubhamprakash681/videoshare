@@ -7,18 +7,18 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import { Button } from "../ui/button";
-import {
-  EnterFullScreenIcon,
-  ExitFullScreenIcon,
-  PauseIcon,
-  PlayIcon,
-  SpeakerLoudIcon,
-  SpeakerOffIcon,
-  TrackNextIcon,
-  TrackPreviousIcon,
-} from "@radix-ui/react-icons";
 import { formatVideoDuration } from "@/lib/video";
 import { IVideo } from "@/types/collections";
+import {
+  Maximize,
+  Minimize,
+  Pause,
+  Play,
+  SkipBack,
+  SkipForward,
+  Volume2Icon,
+  VolumeXIcon,
+} from "lucide-react";
 
 interface VideoPlayerProps {
   videoData: IVideo;
@@ -144,9 +144,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoData }) => {
                     className="text-white hover:text-white hover:bg-white/20"
                   >
                     {isPlaying ? (
-                      <PauseIcon className="h-6 w-6" />
+                      <Pause className="h-6 w-6" />
                     ) : (
-                      <PlayIcon className="h-6 w-6" />
+                      <Play className="h-6 w-6" />
                     )}
                   </Button>
                 </TooltipTrigger>
@@ -163,7 +163,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoData }) => {
                     size="icon"
                     className="text-white hover:text-white hover:bg-white/20"
                   >
-                    <TrackPreviousIcon className="h-6 w-6" />
+                    <SkipBack className="h-6 w-6" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -179,7 +179,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoData }) => {
                     size="icon"
                     className="text-white hover:text-white hover:bg-white/20"
                   >
-                    <TrackNextIcon className="h-6 w-6" />
+                    <SkipForward className="h-6 w-6" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -198,9 +198,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoData }) => {
                       className="text-white hover:text-white hover:bg-white/20"
                     >
                       {isMuted ? (
-                        <SpeakerOffIcon className="h-6 w-6" />
+                        <VolumeXIcon className="h-6 w-6" />
                       ) : (
-                        <SpeakerLoudIcon className="h-6 w-6" />
+                        <Volume2Icon className="h-6 w-6" />
                       )}
                     </Button>
                   </TooltipTrigger>
@@ -233,9 +233,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoData }) => {
                     onClick={toggleFullscreen}
                   >
                     {isFullscreen ? (
-                      <ExitFullScreenIcon className="h-6 w-6" />
+                      <Minimize className="h-6 w-6" />
                     ) : (
-                      <EnterFullScreenIcon className="h-6 w-6" />
+                      <Maximize className="h-6 w-6" />
                     )}
                   </Button>
                 </TooltipTrigger>

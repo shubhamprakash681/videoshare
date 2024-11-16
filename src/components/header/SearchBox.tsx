@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { useAppDispatch, useAppSelector } from "@/hooks/useStore";
 import { setSearchboxOpen } from "@/features/uiSlice";
 import { setVideoStates } from "@/features/videoSlice";
+import { SearchIcon } from "lucide-react";
 
 const SearchBox = () => {
   const dispatch = useAppDispatch();
@@ -49,7 +49,7 @@ const SearchBox = () => {
       >
         {isSearchboxOpen && (
           <div className="flex items-center absolute left-2 h-full">
-            <MagnifyingGlassIcon height={18} width={18} />
+            <SearchIcon height={18} width={18} />
           </div>
         )}
         <Input
@@ -69,7 +69,7 @@ const SearchBox = () => {
           type="submit"
           className="rounded-l-none rounded-r-full"
         >
-          <MagnifyingGlassIcon height={20} width={20} />
+          <SearchIcon height={20} width={20} />
         </Button>
       </form>
 
@@ -78,7 +78,7 @@ const SearchBox = () => {
           <form onSubmit={videoSearchHandler} className="flex w-full relative">
             {isSearchboxOpen && (
               <div className="flex items-center absolute left-2 h-full">
-                <MagnifyingGlassIcon height={18} width={18} />
+                <SearchIcon height={18} width={18} />
               </div>
             )}
             <Input
@@ -98,7 +98,7 @@ const SearchBox = () => {
               type="submit"
               className="rounded-l-none rounded-r-full"
             >
-              <MagnifyingGlassIcon height={20} width={20} />
+              <SearchIcon height={20} width={20} />
             </Button>
           </form>
         ) : (
@@ -108,7 +108,7 @@ const SearchBox = () => {
             className="rounded-full p-[9px] flex items-center justify-center"
             onClick={() => !isSearchboxOpen && dispatch(setSearchboxOpen(true))}
           >
-            <MagnifyingGlassIcon height={20} width={20} />
+            <SearchIcon height={20} width={20} />
           </Button>
         )}
       </div>
