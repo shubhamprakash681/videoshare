@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/useStore";
 import { toggleSidebarOpen } from "@/features/uiSlice";
 import SearchBox from "./SearchBox";
 import { MenuIcon, MoonIcon, SunIcon } from "lucide-react";
+import ProfileDropdown from "./ProfileDropdown";
 
 interface ThemeToggleButtonProps
   extends React.AllHTMLAttributes<HTMLButtonElement> {
@@ -64,7 +65,10 @@ const SidebarToggleButton: React.FC<SidebarToggleButtonProps> = ({
 
 const Header = () => {
   const { theme } = useAppSelector((state) => state.themeReducer);
-  const { isAuthenticated } = useAppSelector((state) => state.authReducer);
+  const { isAuthenticated, userData } = useAppSelector(
+    (state) => state.authReducer
+  );
+
   const dispatch = useAppDispatch();
 
   return (
@@ -96,19 +100,15 @@ const Header = () => {
             theme={theme}
             dispatch={dispatch}
           />
-          {!isAuthenticated && (
+          {isAuthenticated ? (
+            <ProfileDropdown avatarUrl={userData?.avatar.url || ""} />
+          ) : (
             <Link to="/login">
               <Button>Login</Button>
             </Link>
           )}
         </div>
       </div>
-
-      {/* {isAuthenticated && (
-            <li>
-              <LogoutButton />
-            </li>
-          )} */}
     </header>
   );
 };
