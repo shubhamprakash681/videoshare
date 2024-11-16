@@ -10,7 +10,12 @@ import {
   Route,
   RouterProvider,
 } from "react-router-dom";
-import { HomePage, LoginPage, SignupPage } from "./pages/index.ts";
+import {
+  HomePage,
+  LoginPage,
+  SignupPage,
+  VideoPlaybackPage,
+} from "./pages/index.ts";
 import { Toaster } from "./components/ui/toaster.tsx";
 import ProtectedAuthLayout from "./components/auth/ProtectedAuthLayout.tsx";
 
@@ -25,6 +30,7 @@ const appRouter = createBrowserRouter(
           </ProtectedAuthLayout>
         }
       />
+      <Route path="/video/:id" element={<VideoPlaybackPage />} />
       <Route
         path="/signup"
         element={

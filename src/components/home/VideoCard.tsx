@@ -12,6 +12,8 @@ type VideoCardProps = {
     channelName: string;
     channelAvatar: string;
   };
+
+  onClick?: React.MouseEventHandler<HTMLDivElement> | undefined;
 };
 
 const VideoCard: React.FC<VideoCardProps> = ({
@@ -21,9 +23,13 @@ const VideoCard: React.FC<VideoCardProps> = ({
   thumbnail,
   views,
   channelDetails,
+  onClick,
 }) => {
   return (
-    <div className="w-full bg-card rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 dark:shadow-gray-700/30">
+    <div
+      onClick={onClick}
+      className="w-full bg-card rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 dark:shadow-gray-700/30 cursor-pointer"
+    >
       <div className="relative">
         <img
           src={thumbnail}

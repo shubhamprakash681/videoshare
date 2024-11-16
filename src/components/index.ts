@@ -4,6 +4,7 @@ import Footer from "./footer/Footer";
 import Header from "./header/Header";
 import SidebarContainer from "./sidebar/SidebarContainer";
 import VideoCard from "./home/VideoCard";
+import VideoPlayer from "./videoplayer/VideoPlayer";
 
 export {
   Login as LoginCard,
@@ -12,4 +13,5 @@ export {
   Header,
   SidebarContainer,
   VideoCard,
+  VideoPlayer,
 };
