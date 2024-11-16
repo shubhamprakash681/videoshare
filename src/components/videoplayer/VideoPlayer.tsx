@@ -1,4 +1,3 @@
-import { IVideo } from "@/types/collections";
 import React, { useEffect, useRef, useState } from "react";
 import { Slider } from "../ui/slider";
 import {
@@ -19,10 +18,12 @@ import {
   TrackPreviousIcon,
 } from "@radix-ui/react-icons";
 import { formatVideoDuration } from "@/lib/video";
+import { IVideo } from "@/types/collections";
 
 interface VideoPlayerProps {
   videoData: IVideo;
 }
+
 const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoData }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -38,16 +39,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoData }) => {
       setCurrentTime(videoRef.current.currentTime);
     }
   };
-  const handleSeek = (newValue: number[]) => {
-    console.log("newValue: ", newValue);
 
+  const handleSeek = (newValue: number[]) => {
     if (videoRef.current) {
-      if (!isNaN(newValue[0])) {
-        videoRef.current.currentTime = newValue[0];
-        setCurrentTime(newValue[0]);
-      }
+      const seekTime = newValue[0];
+      videoRef.current.currentTime = seekTime;
+      setCurrentTime(seekTime);
     }
   };
+
   const togglePlay = () => {
     if (videoRef.current) {
       if (isPlaying || !videoRef.current.paused) {
@@ -59,17 +59,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoData }) => {
       }
     }
   };
+
   const toggleMute = () => {
     if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
-      if (isMuted) {
-        setVolume(videoRef.current.volume);
-      } else {
-        setVolume(0);
-      }
+      const newMutedState = !isMuted;
+      videoRef.current.muted = newMutedState;
+      setIsMuted(newMutedState);
     }
   };
+
   const handleVolumeChange = (newValue: number[]) => {
     if (videoRef.current) {
       const newVolume = newValue[0];
@@ -78,10 +76,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoData }) => {
       setIsMuted(newVolume === 0);
     }
   };
+
   const toggleFullscreen = () => {
     if (videoRef.current) {
       if (!document.fullscreenElement) {
-        videoRef.current?.requestFullscreen?.();
+        videoRef.current.requestFullscreen?.();
         setIsFullscreen(true);
       } else {
         document.exitFullscreen?.();
@@ -90,27 +89,25 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoData }) => {
     }
   };
 
+  const handleLoadedMetadata = () => {
+    if (videoRef.current) {
+      setDuration(videoRef.current.duration);
+      if (isPlaying) {
+        videoRef.current.play();
+      }
+    }
+  };
+
   const handleKeyPress = (event: KeyboardEvent) => {
-    console.log("event: ", event);
-
     if (event.key.toLowerCase() === "f") toggleFullscreen();
-
     if (event.code === "Space") {
-      // Prevent page scrolling when pressing space
       event.preventDefault();
       togglePlay();
     }
   };
 
   useEffect(() => {
-    if (videoRef.current) {
-      setDuration(videoRef.current.duration);
-    }
-  }, [videoRef]);
-
-  useEffect(() => {
     document.addEventListener("keydown", handleKeyPress);
-
     return () => document.removeEventListener("keydown", handleKeyPress);
   }, []);
 
@@ -122,6 +119,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoData }) => {
         src={videoData.videoFile.url}
         poster={videoData.thumbnail.url}
         onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={handleLoadedMetadata}
       />
       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent">
         <div className="flex items-center justify-between">
