@@ -43,7 +43,7 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ avatarUrl }) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" className="rounded-full p-0 h-10 w-10">
+        <Button variant="ghost" className="rounded-full p-0 h-9 w-9">
           <Avatar>
             <AvatarImage src={avatarUrl} alt="AC" />
             <AvatarFallback>AC</AvatarFallback>

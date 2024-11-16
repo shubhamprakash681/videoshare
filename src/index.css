@@ -16,7 +16,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --navbar-height: 64px;
+  --navbar-height: 60px;
 }
 
 @layer base {
