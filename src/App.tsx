@@ -19,6 +19,7 @@ const SIDEBAR_WIDTH = "250px";
 const App: React.FC = () => {
   const { theme } = useAppSelector((state) => state.themeReducer);
   const { isSidebarOpen } = useAppSelector((state) => state.uiReducer);
+  const { isAuthenticated } = useAppSelector((state) => state.authReducer);
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -68,6 +69,29 @@ const App: React.FC = () => {
       window.removeEventListener("resize", resizeHandler);
     };
   }, []);
+
+  if (!isAuthenticated) {
+    return (
+      <AxiosInterceptor>
+        <div className="app-container bg-background text-foreground">
+          <div className="outer-top shadow-md backdrop-blur supports-[backdrop-filter]:bg-background">
+            <Header />
+          </div>
+
+          <div className="outer-bottom">
+            <Outlet />
+
+            <Footer
+              isSmallerScreen={isSmallerScreen}
+              isSidebarOpen={isSidebarOpen}
+              SIDEBAR_WIDTH={SIDEBAR_WIDTH}
+              SIDEBAR_WIDTH_CLOSED={SIDEBAR_WIDTH_CLOSED}
+            />
+          </div>
+        </div>
+      </AxiosInterceptor>
+    );
+  }
 
   return (
     <AxiosInterceptor>

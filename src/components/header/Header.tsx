@@ -64,6 +64,7 @@ const SidebarToggleButton: React.FC<SidebarToggleButtonProps> = ({
 
 const Header = () => {
   const { theme } = useAppSelector((state) => state.themeReducer);
+  const { isAuthenticated } = useAppSelector((state) => state.authReducer);
   const dispatch = useAppDispatch();
 
   return (
@@ -72,7 +73,10 @@ const Header = () => {
       style={{ gridTemplateColumns: "auto 1fr" }}
     >
       <div className="sm:space-x-2 flex items-center">
-        <SidebarToggleButton dispatch={dispatch} key={"sidebar-toggle-btn"} />
+        {isAuthenticated && (
+          <SidebarToggleButton dispatch={dispatch} key={"sidebar-toggle-btn"} />
+        )}
+
         <Link to={"/"}>
           <span className="text-xl font-bold" style={{ width: "70px" }}>
             VideoShare
@@ -86,12 +90,18 @@ const Header = () => {
       >
         <SearchBox />
 
-        <ThemeToggleButton
-          className="justify-self-end"
-          key={"theme-toggle-md"}
-          theme={theme}
-          dispatch={dispatch}
-        />
+        <div className="justify-self-end flex items-center space-x-1">
+          <ThemeToggleButton
+            key={"theme-toggle-md"}
+            theme={theme}
+            dispatch={dispatch}
+          />
+          {!isAuthenticated && (
+            <Link to="/login">
+              <Button>Login</Button>
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* {isAuthenticated && (
