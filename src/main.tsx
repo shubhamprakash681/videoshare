@@ -11,6 +11,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import {
+  DashboardPage,
   HomePage,
   LoginPage,
   SignupPage,
@@ -31,6 +32,14 @@ const appRouter = createBrowserRouter(
         }
       />
       <Route path="/video/:id" element={<VideoPlaybackPage />} />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedAuthLayout authentication>
+            <DashboardPage />
+          </ProtectedAuthLayout>
+        }
+      />
       <Route
         path="/signup"
         element={

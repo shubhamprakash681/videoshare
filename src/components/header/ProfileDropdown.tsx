@@ -4,11 +4,12 @@ import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AxiosAPIInstance } from "@/lib/AxiosInstance";
 import { APIResponse } from "@/types/APIResponse";
 import { logout } from "@/features/authSlice";
 import { useAppDispatch } from "@/hooks/useStore";
+import { Separator } from "../ui/separator";
 
 type ProfileDropdownProps = { avatarUrl: string };
 
@@ -51,7 +52,18 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ avatarUrl }) => {
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-40 flex flex-col">
+      <PopoverContent className="w-44 flex flex-col space-y-2">
+        <Button variant="ghost">Profile</Button>
+        <Button variant="ghost">Update Password</Button>
+
+        <Separator className="my-2" />
+        <Link to="/dashboard">
+          <Button className="w-full" variant="secondary">
+            Dashboard
+          </Button>
+        </Link>
+        <Separator className="my-2" />
+
         <Button disabled={isLogoutInProgress} onClick={logoutHandler}>
           <LogOut />
           {isLogoutInProgress ? "Logging out.." : "Logout"}
