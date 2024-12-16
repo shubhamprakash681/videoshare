@@ -8,6 +8,8 @@ import VideoPlayer from "./videoplayer/VideoPlayer";
 
 import StatCard from "./dashboard/StatCard";
 import VideoUploadDialog from "./dashboard/VideoUploadDialog";
+import VideoUpdateDialog from "./dashboard/VideoUpdateDialog";
+import VideoTable from "./dashboard/VideoTable";
 
 export {
   Login as LoginCard,
@@ -19,4 +21,6 @@ export {
   VideoPlayer,
   StatCard,
   VideoUploadDialog,
+  VideoUpdateDialog,
+  VideoTable,
 };

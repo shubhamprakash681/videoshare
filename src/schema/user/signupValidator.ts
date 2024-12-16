@@ -35,8 +35,8 @@ const fullnameValidation = z
 
 const avatarValidations = z
   .instanceof(FileList)
-  .refine((files) => files.length > 0, { message: "Avatar is required" })
-  .refine((files) => files.length < 2, {
+  .refine((files) => files?.length > 0, { message: "Avatar is required" })
+  .refine((files) => files?.length < 2, {
     message: "Choose a single image only",
   })
   .refine((files) => files[0]?.size < 5 * 1024 * 1024, {

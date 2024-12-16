@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const uploadVideoSchema = z.object({
+export const updateVideoSchema = z.object({
   title: z
     .string()
     .trim()
@@ -33,27 +33,6 @@ export const uploadVideoSchema = z.object({
         ["image/jpeg", "image/png"].includes(files[0].type),
       {
         message: "Only JPEG or PNG images are allowed",
-      }
-    ),
-
-  videoFile: z
-    .custom<FileList | undefined>()
-    .refine((files) => files !== undefined && files?.length > 0, {
-      message: "Video is required",
-    })
-    .refine((files) => files && files?.length < 2, {
-      message: "Choose a single file only",
-    })
-    .refine(
-      (files) => files && files.length && files[0].size <= 50 * 1024 * 1024,
-      {
-        message: "Video file size should be less than 50MB",
-      }
-    )
-    .refine(
-      (files) => files && files.length && files[0].type.startsWith("video/"),
-      {
-        message: "File must be a video",
       }
     ),
 });

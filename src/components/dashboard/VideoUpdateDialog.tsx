@@ -1,3 +1,7 @@
+import { useToast } from "@/hooks/use-toast";
+import { updateVideoSchema } from "@/schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useEffect } from "react";
 import { SubmitHandler, useForm, UseFormRegister } from "react-hook-form";
 import { z } from "zod";
 import {
@@ -7,30 +11,33 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
-import { uploadVideoSchema } from "@/schema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import FormErrorStrip from "../ui/FormErrorStrip";
 import RTE from "./RTE";
-import { ImageIcon, VideoIcon } from "lucide-react";
+import { Button } from "../ui/button";
+import { ImageIcon } from "lucide-react";
+import { AxiosError } from "axios";
 import { AxiosAPIInstance } from "@/lib/AxiosInstance";
 import { APIResponse } from "@/types/APIResponse";
 import { IVideo } from "@/types/collections";
-import { useToast } from "@/hooks/use-toast";
-import { AxiosError } from "axios";
 
-type VideoUploadDialogProps = {
-  isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+type VideoUpdateInputs = z.infer<typeof updateVideoSchema>;
+interface UpdateVideoModalData {
+  videoId: string | null;
+  initialValues: VideoUpdateInputs | null;
+}
+
+type VideoUpdateDialogProps = {
+  updateVideoModalData: UpdateVideoModalData;
+  setUpdateVideoModalData: React.Dispatch<
+    React.SetStateAction<UpdateVideoModalData>
+  >;
   setVideoUploadModalDirty: React.Dispatch<React.SetStateAction<boolean>>;
 };
-
-type VideoUploadInputs = z.infer<typeof uploadVideoSchema>;
-const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
-  isOpen,
-  setIsOpen,
+const VideoUpdateDialog: React.FC<VideoUpdateDialogProps> = ({
+  updateVideoModalData,
+  setUpdateVideoModalData,
   setVideoUploadModalDirty,
 }) => {
   const { toast } = useToast();
@@ -43,28 +50,29 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
     getValues,
     setValue,
     control,
-  } = useForm<VideoUploadInputs>({
-    defaultValues: {
-      title: "",
-      description: "",
-      thumbnail: undefined,
-      videoFile: undefined,
-    },
-    resolver: zodResolver(uploadVideoSchema),
+  } = useForm<VideoUpdateInputs>({
+    resolver: zodResolver(updateVideoSchema),
   });
 
-  const videoUploadHandler: SubmitHandler<VideoUploadInputs> = async (
-    data: VideoUploadInputs
+  const onOpenChange = () => {
+    if (updateVideoModalData.videoId) {
+      setUpdateVideoModalData({ videoId: null, initialValues: null });
+    }
+  };
+
+  const thumbnailPreview = watch("thumbnail");
+
+  const videoUpdateHandler: SubmitHandler<VideoUpdateInputs> = async (
+    data: VideoUpdateInputs
   ) => {
     try {
-      const { data: videoUploadResponse } = await AxiosAPIInstance.post<
+      const { data: videoUpdateResponse } = await AxiosAPIInstance.patch<
         APIResponse<{ video: IVideo }>
       >(
-        "/api/v1/video/upload",
+        `/api/v1/video/update/${updateVideoModalData.videoId}`,
         {
           title: data.title,
           description: data.description,
-          video: data.videoFile![0],
           thumbnail: data.thumbnail![0],
         },
         {
@@ -74,15 +82,16 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
         }
       );
 
-      if (videoUploadResponse.success) {
+      if (videoUpdateResponse.success) {
         setVideoUploadModalDirty(true);
         setValue("title", "");
         setValue("description", "");
         setValue("thumbnail", undefined);
-        setValue("videoFile", undefined);
+
+        setUpdateVideoModalData({ initialValues: null, videoId: null });
 
         toast({
-          title: videoUploadResponse.message,
+          title: videoUpdateResponse.message,
         });
       }
     } catch (error) {
@@ -97,21 +106,31 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
     }
   };
 
-  const thumbnailPreview = watch("thumbnail");
-  const videoPreview = watch("videoFile");
+  useEffect(() => {
+    if (updateVideoModalData.initialValues)
+      setValue("title", updateVideoModalData.initialValues?.title);
+    setValue(
+      "description",
+      updateVideoModalData.initialValues?.description || ""
+    );
+    setValue("thumbnail", updateVideoModalData.initialValues?.thumbnail);
+  }, [updateVideoModalData.initialValues]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog
+      open={updateVideoModalData.videoId !== null}
+      onOpenChange={onOpenChange}
+    >
       <DialogContent className="md:max-w-screen-sm lg:max-w-screen-md xl:max-w-screen-lg 2xl:max-w-screen-xl max-h-dvh overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Upload Video</DialogTitle>
+          <DialogTitle>Update Video</DialogTitle>
           <DialogDescription>
-            Upload your video file, add a thumbnail, title, and description.
+            Update title, description and upload new thumbnail file
           </DialogDescription>
         </DialogHeader>
 
         <form
-          onSubmit={handleSubmit(videoUploadHandler)}
+          onSubmit={handleSubmit(videoUpdateHandler)}
           className="space-y-4 flex flex-col"
         >
           <div className="flex flex-col md:flex-row space-y-3 md:space-y-0">
@@ -149,45 +168,6 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
 
             <div className="w-full md:pl-2 space-y-3">
               <div className="grid w-full items-center gap-1">
-                <Label htmlFor="videoFile">Video File:</Label>
-                <div className="relative">
-                  <input
-                    {...register("videoFile")}
-                    id="videoFile"
-                    type="file"
-                    accept="video/*"
-                    className="hidden"
-                    multiple={false}
-                  />
-                  <Label
-                    htmlFor="videoFile"
-                    className="flex items-center justify-center w-full px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    <VideoIcon className="w-5 h-5 mr-2 text-gray-400" />
-                    {videoPreview && videoPreview.length
-                      ? videoPreview[0].name
-                      : "Choose video file"}
-                  </Label>
-                </div>
-                {errors.videoFile && (
-                  <FormErrorStrip
-                    errorMessage={errors.videoFile.message as string}
-                  />
-                )}
-                {videoPreview && videoPreview.length > 0 && (
-                  <div className="mt-2">
-                    <video
-                      src={URL.createObjectURL(videoPreview[0])}
-                      controls
-                      className="w-full rounded-lg"
-                    >
-                      Your browser does not support the video tag.
-                    </video>
-                  </div>
-                )}
-              </div>
-
-              <div className="grid w-full items-center gap-1">
                 <Label htmlFor="thumbnail">Thumbnail:</Label>
 
                 {thumbnailPreview && thumbnailPreview.length > 0 ? (
@@ -221,7 +201,7 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
           </div>
 
           <Button disabled={isSubmitting} type="submit" className="w-full">
-            {isSubmitting ? "Uploading..." : "Upload"}
+            {isSubmitting ? "Updating..." : "Update"}
           </Button>
         </form>
       </DialogContent>
@@ -229,11 +209,11 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
   );
 };
 
-export default VideoUploadDialog;
+export default VideoUpdateDialog;
 
 type ThumbnailInputProps = {
   buttonText: string;
-  register: UseFormRegister<VideoUploadInputs>;
+  register: UseFormRegister<VideoUpdateInputs>;
 };
 const ThumbnailInput: React.FC<ThumbnailInputProps> = ({
   buttonText,

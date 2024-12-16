@@ -2,7 +2,7 @@ import { VideoCard } from "@/components";
 import PageContainer from "@/components/ui/PageContainer";
 import { useAppSelector } from "@/hooks/useStore";
 import { AxiosAPIInstance } from "@/lib/AxiosInstance";
-import { APIResponse } from "@/types/APIResponse";
+import { APIResponse, GetVideosResponse } from "@/types/APIResponse";
 import { IVideo } from "@/types/collections";
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
@@ -11,19 +11,6 @@ import { useNavigate } from "react-router-dom";
 
 // Extend Day.js with the relativeTime plugin
 dayjs.extend(relativeTime);
-
-interface GetVideosResponse {
-  docs: IVideo[];
-  hasNextPage: boolean;
-  hasPrevPage: boolean;
-  limit: number;
-  nextPage: number | null;
-  page: number;
-  pagingCounter: number;
-  prevPage: number | null;
-  totalDocs: number;
-  totalPages: number;
-}
 
 const Home: React.FC = () => {
   const navigate = useNavigate();

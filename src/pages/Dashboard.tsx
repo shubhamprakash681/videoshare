@@ -1,25 +1,47 @@
-import { StatCard, VideoUploadDialog } from "@/components";
+import {
+  StatCard,
+  VideoTable,
+  VideoUpdateDialog,
+  VideoUploadDialog,
+} from "@/components";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PageContainer from "@/components/ui/PageContainer";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { AxiosAPIInstance } from "@/lib/AxiosInstance";
-import { APIResponse } from "@/types/APIResponse";
+import { updateVideoSchema } from "@/schema";
+import {
+  APIResponse,
+  ChannelStatsResponse,
+  ChannelVideosResponse,
+} from "@/types/APIResponse";
+import { z } from "zod";
 import { AxiosError } from "axios";
 import { Eye, ThumbsUp, Upload, Users, Video } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
-interface ChannelStatsResponse {
-  totalLikes: number;
-  totalViews: number;
-  totalVideos: number;
-  totalSubscribers: number;
+interface UpdateVideoModalData {
+  videoId: string | null;
+  initialValues: z.infer<typeof updateVideoSchema> | null;
 }
+
 const Dashboard: React.FC = () => {
   const [openVideoUploadModal, setOpenVideoUploadModal] =
     useState<boolean>(false);
   const [videoUploadModalDirty, setVideoUploadModalDirty] =
     useState<boolean>(false);
+
+  const { toast } = useToast();
 
   const [channelStats, setChannelStats] = useState<ChannelStatsResponse>({
     totalLikes: 0,
@@ -28,7 +50,56 @@ const Dashboard: React.FC = () => {
     totalViews: 0,
   });
 
-  const { toast } = useToast();
+  const [channelVideosState, setChannelVideosState] =
+    useState<ChannelVideosResponse>({
+      docs: [],
+      hasNextPage: false,
+      hasPrevPage: false,
+      limit: 10,
+      nextPage: null,
+      page: 1,
+      pagingCounter: 0,
+      prevPage: null,
+      totalDocs: 0,
+      totalPages: 0,
+    });
+
+  const [deleteVideoId, setDeleteVideoId] = useState<string | null>(null);
+  const [updateVideoModalData, setUpdateVideoModalData] =
+    useState<UpdateVideoModalData>({ initialValues: null, videoId: null });
+
+  const [isDeleteInProgress, setIsDeleteInProgress] = useState<boolean>(false);
+
+  const handleDelete = async () => {
+    try {
+      setIsDeleteInProgress(true);
+      if (deleteVideoId) {
+        const { data } = await AxiosAPIInstance.delete<APIResponse<null>>(
+          `/api/v1/dashboard/video/${deleteVideoId}`
+        );
+
+        if (data.success) {
+          toast({ title: data.message });
+
+          await fetchChannelStats();
+          await fetchChannelVideos();
+
+          setDeleteVideoId(null);
+        }
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        toast({
+          title: error.response?.data.message || "Failed to delete video",
+          variant: "destructive",
+        });
+
+        console.error(error);
+      }
+    } finally {
+      setIsDeleteInProgress(false);
+    }
+  };
 
   const fetchChannelStats = async () => {
     try {
@@ -52,15 +123,59 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const fetchChannelVideos = async () => {
+    try {
+      const { data } = await AxiosAPIInstance.get<
+        APIResponse<ChannelVideosResponse>
+      >(
+        `/api/v1/dashboard/videos?page=${channelVideosState.page}&limit=${channelVideosState.limit}`
+      );
+
+      if (data.success && data.data) {
+        setChannelVideosState(data.data);
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        toast({
+          title:
+            error.response?.data.message || "Failed to fetch Chennel Videos",
+          variant: "destructive",
+        });
+
+        setChannelVideosState({
+          docs: [],
+          hasNextPage: false,
+          hasPrevPage: false,
+          limit: 10,
+          nextPage: null,
+          page: 1,
+          pagingCounter: 0,
+          prevPage: null,
+          totalDocs: 0,
+          totalPages: 0,
+        });
+        console.error(error);
+      }
+    }
+  };
+
   useEffect(() => {
     fetchChannelStats();
   }, []);
   useEffect(() => {
-    if (!openVideoUploadModal && videoUploadModalDirty) {
+    if (
+      (!openVideoUploadModal || updateVideoModalData.videoId === null) &&
+      videoUploadModalDirty
+    ) {
       fetchChannelStats();
+      fetchChannelVideos();
       setVideoUploadModalDirty(false);
     }
-  }, [openVideoUploadModal]);
+  }, [openVideoUploadModal, updateVideoModalData.videoId]);
+
+  useEffect(() => {
+    fetchChannelVideos();
+  }, [channelVideosState.limit, channelVideosState.page]);
 
   return (
     <PageContainer className="py-4 sm:py-8 lg:py-16 px-2 md:px-4 lg:px-6">
@@ -99,41 +214,63 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      <div className="mx-auto mt-8 flex items-center justify-evenly w-full max-w-7xl">
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle>Your Videos</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {/* <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Views</TableHead>
-                  <TableHead>Likes</TableHead>
-                  <TableHead>Comments</TableHead>
-                  <TableHead>Published</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {videos.map((video) => (
-                  <TableRow key={video.id}>
-                    <TableCell className="font-medium">{video.title}</TableCell>
-                    <TableCell>{video.views.toLocaleString()}</TableCell>
-                    <TableCell>{video.likes.toLocaleString()}</TableCell>
-                    <TableCell>{video.comments.toLocaleString()}</TableCell>
-                    <TableCell>{video.published}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table> */}
-          </CardContent>
-        </Card>
-      </div>
+      <Tabs defaultValue="videos" className="mx-auto mt-8 w-full max-w-7xl">
+        <TabsList>
+          <TabsTrigger className="font-semibold" value="videos">
+            Videos
+          </TabsTrigger>
+          <TabsTrigger className="font-semibold" value="tweets">
+            Tweets
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="videos">
+          <VideoTable
+            channelVideosState={channelVideosState}
+            setChannelVideosState={setChannelVideosState}
+            setDeleteVideoId={setDeleteVideoId}
+            setUpdateVideoModalData={setUpdateVideoModalData}
+          />
+        </TabsContent>
+        <TabsContent value="tweets">Change your password here.</TabsContent>
+      </Tabs>
+
+      <AlertDialog open={deleteVideoId !== null}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Are you sure you want to delete this video?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your
+              video from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              disabled={isDeleteInProgress}
+              onClick={() => setDeleteVideoId(null)}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              disabled={isDeleteInProgress}
+              onClick={handleDelete}
+            >
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <VideoUploadDialog
         isOpen={openVideoUploadModal}
         setIsOpen={setOpenVideoUploadModal}
+        setVideoUploadModalDirty={setVideoUploadModalDirty}
+      />
+
+      <VideoUpdateDialog
+        updateVideoModalData={updateVideoModalData}
+        setUpdateVideoModalData={setUpdateVideoModalData}
         setVideoUploadModalDirty={setVideoUploadModalDirty}
       />
     </PageContainer>
