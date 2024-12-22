@@ -100,7 +100,11 @@ const Login: React.FC = () => {
       </CardHeader>
 
       <CardContent>
-        <form onSubmit={handleSubmit(loginSubmitHandler)} className="space-y-4">
+        <form
+          id="login-form"
+          onSubmit={handleSubmit(loginSubmitHandler)}
+          className="space-y-4"
+        >
           <div className="grid w-full max-w-sm items-center gap-1">
             <Label htmlFor="identifier">Identifier:</Label>
             <Input

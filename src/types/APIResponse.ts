@@ -41,3 +41,26 @@ export interface ChannelVideosResponse {
   totalDocs: number;
   totalPages: number;
 }
+export interface ChannelProfile {
+  _id: string;
+  username: string;
+  email: string;
+  fullname: string;
+  avatar: {
+    public_id: string;
+    url: string;
+  };
+  coverImage?: {
+    public_id: string;
+    url: string;
+  };
+
+  subscriberCount: number;
+  subscribedToCount: number;
+  isSubscribed: boolean;
+}
+export interface VideoLikeData {
+  isLiked: boolean;
+  isDisliked: boolean;
+  likeCount: number;
+}

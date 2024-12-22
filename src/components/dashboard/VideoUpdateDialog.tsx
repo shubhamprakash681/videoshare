@@ -130,6 +130,7 @@ const VideoUpdateDialog: React.FC<VideoUpdateDialogProps> = ({
         </DialogHeader>
 
         <form
+          id="video-update-form"
           onSubmit={handleSubmit(videoUpdateHandler)}
           className="space-y-4 flex flex-col"
         >

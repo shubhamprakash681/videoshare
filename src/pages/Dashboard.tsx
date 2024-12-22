@@ -253,6 +253,7 @@ const Dashboard: React.FC = () => {
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
+              className="bg-red-500 hover:bg-red-600"
               disabled={isDeleteInProgress}
               onClick={handleDelete}
             >

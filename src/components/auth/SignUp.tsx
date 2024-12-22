@@ -37,7 +37,7 @@ const SignUp: React.FC = () => {
     handleSubmit,
     register,
     setError,
-    watch,
+    // watch,
     formState: { errors, isSubmitting },
   } = useForm<SignupFormInputs>({
     defaultValues: {
@@ -104,8 +104,8 @@ const SignUp: React.FC = () => {
   };
 
   // TODO: add image preview
-  const avatarPreview = watch("avatar");
-  const coverImagePreview = watch("coverImage");
+  // const avatarPreview = watch("avatar");
+  // const coverImagePreview = watch("coverImage");
 
   return (
     <Card className="w-[400px] mx-auto">
@@ -129,6 +129,7 @@ const SignUp: React.FC = () => {
 
       <CardContent>
         <form
+          id="signup-form"
           onSubmit={handleSubmit(signupSubmitHandler)}
           className="space-y-4"
         >

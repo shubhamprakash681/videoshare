@@ -111,6 +111,7 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
         </DialogHeader>
 
         <form
+          id="video-upload-dialog-form"
           onSubmit={handleSubmit(videoUploadHandler)}
           className="space-y-4 flex flex-col"
         >

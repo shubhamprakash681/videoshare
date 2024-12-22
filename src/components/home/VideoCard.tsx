@@ -28,6 +28,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
   return (
     <div
       onClick={onClick}
+      style={{ maxWidth: "420px" }}
       className="w-full bg-card rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 dark:shadow-gray-700/30 cursor-pointer"
     >
       <div className="relative">

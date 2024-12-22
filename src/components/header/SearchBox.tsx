@@ -44,6 +44,7 @@ const SearchBox = () => {
   return (
     <div className="flex items-center justify-self-end sm:w-3/5 sm:justify-self-center">
       <form
+        id="search-box-form"
         onSubmit={videoSearchHandler}
         className="hidden sm:flex w-full relative"
       >
@@ -75,7 +76,11 @@ const SearchBox = () => {
 
       <div className="sm:hidden">
         {isSearchboxOpen ? (
-          <form onSubmit={videoSearchHandler} className="flex w-full relative">
+          <form
+            id="search-box-form-sm"
+            onSubmit={videoSearchHandler}
+            className="flex w-full relative"
+          >
             {isSearchboxOpen && (
               <div className="flex items-center absolute left-2 h-full">
                 <SearchIcon height={18} width={18} />
