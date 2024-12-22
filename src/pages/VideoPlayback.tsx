@@ -61,17 +61,17 @@ type isLoadingStates = {
   toggleLike: boolean;
 };
 
-const formatLikeCount = (likeCount: number): string => {
-  if (likeCount < 1000) {
-    return likeCount.toString();
-  } else if (likeCount >= 1000 && likeCount < 1000000) {
-    return (likeCount / 1000).toFixed(1) + "K";
-  } else if (likeCount >= 1000000 && likeCount < 1000000000) {
-    return (likeCount / 1000000).toFixed(1) + "M";
-  } else if (likeCount >= 1000000000) {
-    return (likeCount / 1000000000).toFixed(1) + "B";
+const formatCount = (count: number): string => {
+  if (count < 1000) {
+    return count.toString();
+  } else if (count >= 1000 && count < 1000000) {
+    return (count / 1000).toFixed(1) + "K";
+  } else if (count >= 1000000 && count < 1000000000) {
+    return (count / 1000000).toFixed(1) + "M";
+  } else if (count >= 1000000000) {
+    return (count / 1000000000).toFixed(1) + "B";
   }
-  return likeCount.toString();
+  return count.toString();
 };
 
 const VideoPlayback: React.FC = () => {
@@ -331,7 +331,7 @@ const VideoPlayback: React.FC = () => {
                         videoLikeData?.isLiked && "fill-current"
                       }`}
                     />
-                    {formatLikeCount(videoLikeData?.likeCount ?? 0)}
+                    {formatCount(videoLikeData?.likeCount ?? 0)}
                     {videoLikeData?.likeCount === 1 ||
                     videoLikeData?.likeCount === 0
                       ? " Like"
@@ -363,7 +363,10 @@ const VideoPlayback: React.FC = () => {
                 </div>
                 <div className="bg-secondary rounded-lg p-4">
                   <p className="text-sm mb-2 space-x-1">
-                    <span>{videoData.video.views} views</span>
+                    <span>
+                      {formatCount(videoData.video.views)}
+                      {videoData.video.views > 1 ? " views" : " view"}
+                    </span>
                     <span>•</span>
                     <span>
                       {dayjs(new Date(videoData.video.createdAt)).from(now)}

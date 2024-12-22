@@ -19,6 +19,7 @@ import {
   Volume2Icon,
   VolumeXIcon,
 } from "lucide-react";
+import { AxiosAPIInstance } from "@/lib/AxiosInstance";
 
 interface VideoPlayerProps {
   videoData: IVideo;
@@ -34,8 +35,27 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoData }) => {
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
+  const [isViewCountIncremented, setIsViewCountIncremented] =
+    useState<boolean>(false);
+
+  const incrementVideoViewCount = async () => {
+    try {
+      await AxiosAPIInstance.patch(`/api/v1/video/view/${videoData._id}`);
+    } catch (error) {
+      console.error("Failed to increment video view count: ", error);
+    }
+  };
+
   const handleTimeUpdate = () => {
     if (videoRef.current) {
+      if (
+        videoRef.current.currentTime >= duration - 1 &&
+        !isViewCountIncremented
+      ) {
+        setIsViewCountIncremented(true);
+        incrementVideoViewCount();
+      }
+
       setCurrentTime(videoRef.current.currentTime);
     }
   };
@@ -110,6 +130,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoData }) => {
     document.addEventListener("keydown", handleKeyPress);
     return () => document.removeEventListener("keydown", handleKeyPress);
   }, []);
+
+  useEffect(() => {
+    videoData._id && setIsViewCountIncremented(false);
+  }, [videoData._id]);
 
   return (
     <div className="relative aspect-video bg-black">
