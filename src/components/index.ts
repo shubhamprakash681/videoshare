@@ -11,6 +11,9 @@ import VideoUploadDialog from "./dashboard/VideoUploadDialog";
 import VideoUpdateDialog from "./dashboard/VideoUpdateDialog";
 import VideoTable from "./dashboard/VideoTable";
 
+import CommentCard from "./comments/CommentCard";
+import CommentInput from "./comments/CommentInput";
+
 export {
   Login as LoginCard,
   SignUp as SignupCard,
@@ -23,4 +26,6 @@ export {
   VideoUploadDialog,
   VideoUpdateDialog,
   VideoTable,
+  CommentCard,
+  CommentInput,
 };

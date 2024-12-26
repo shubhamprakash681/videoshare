@@ -93,9 +93,9 @@ const Dashboard: React.FC = () => {
           title: error.response?.data.message || "Failed to delete video",
           variant: "destructive",
         });
-
-        console.error(error);
       }
+
+      console.error(error);
     } finally {
       setIsDeleteInProgress(false);
     }
@@ -117,9 +117,9 @@ const Dashboard: React.FC = () => {
             error.response?.data.message || "Failed to fetch Chennel Stats",
           variant: "destructive",
         });
-
-        console.error(error);
       }
+
+      console.error(error);
     }
   };
 

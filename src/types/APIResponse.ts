@@ -64,3 +64,32 @@ export interface VideoLikeData {
   isDisliked: boolean;
   likeCount: number;
 }
+
+export interface VideoCommentData {
+  _id: string;
+  content: string;
+  owner: {
+    username: string;
+    fullname: string;
+    avatar: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  totalLikesCount: number;
+  isLiked: boolean;
+  isDisliked: boolean;
+
+  replies?: VideoCommentData[];
+}
+export interface GetVideoCommentsResponse {
+  docs: VideoCommentData[];
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+  limit: number;
+  nextPage: number | null;
+  page: number;
+  pagingCounter: number;
+  prevPage: number | null;
+  totalDocs: number;
+  totalPages: number;
+}

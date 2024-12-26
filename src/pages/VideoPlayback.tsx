@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { IVideo } from "@/types/collections";
 import PageContainer from "@/components/ui/PageContainer";
-import { VideoPlayer } from "@/components";
+import { CommentCard, CommentInput, VideoPlayer } from "@/components";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import parse from "html-react-parser";
@@ -12,11 +12,15 @@ import { ThumbsUp, ThumbsDown, Share2, MoreVertical } from "lucide-react";
 import {
   APIResponse,
   ChannelProfile,
+  GetVideoCommentsResponse,
+  VideoCommentData,
   VideoLikeData,
 } from "@/types/APIResponse";
 import { AxiosError } from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { AxiosAPIInstance } from "@/lib/AxiosInstance";
+import { useAppSelector } from "@/hooks/useStore";
+import { formatCount } from "@/lib/video";
 
 // Extend Day.js with the relativeTime plugin
 dayjs.extend(relativeTime);
@@ -59,23 +63,12 @@ const ErrorStateComp: React.FC<ErrorStateCompProps> = ({ handleRefresh }) => {
 type isLoadingStates = {
   toggleSubscribe: boolean;
   toggleLike: boolean;
-};
-
-const formatCount = (count: number): string => {
-  if (count < 1000) {
-    return count.toString();
-  } else if (count >= 1000 && count < 1000000) {
-    return (count / 1000).toFixed(1) + "K";
-  } else if (count >= 1000000 && count < 1000000000) {
-    return (count / 1000000).toFixed(1) + "M";
-  } else if (count >= 1000000000) {
-    return (count / 1000000000).toFixed(1) + "B";
-  }
-  return count.toString();
+  videoCommentsLoading: boolean;
 };
 
 const VideoPlayback: React.FC = () => {
   const location = useLocation();
+  const { userData } = useAppSelector((state) => state.authReducer);
   const { toast } = useToast();
 
   const now = dayjs();
@@ -87,12 +80,19 @@ const VideoPlayback: React.FC = () => {
   const [videoLikeData, setVideoLikeData] = useState<VideoLikeData | null>(
     null
   );
+  const [commentQueryStates, setCommentQueryStates] = useState<{
+    limit: number;
+    page: number;
+  }>({ limit: 10, page: 1 });
+  const [commentsData, setCommentsData] =
+    useState<GetVideoCommentsResponse | null>(null);
+
   const [isFetchError, setIsFetchError] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<isLoadingStates>({
     toggleSubscribe: false,
     toggleLike: false,
+    videoCommentsLoading: false,
   });
-  console.log("videoData: ", videoData);
 
   const [isSmallerScreen, setIsSmallerScreen] = useState<boolean>(true);
 
@@ -124,10 +124,10 @@ const VideoPlayback: React.FC = () => {
             error.response?.data.message || "Failed to change subscription",
           variant: "destructive",
         });
-
-        setIsFetchError(true);
-        console.error(error);
       }
+
+      setIsFetchError(true);
+      console.error(error);
     } finally {
       setIsLoading({ ...isLoading, toggleSubscribe: false });
     }
@@ -149,10 +149,10 @@ const VideoPlayback: React.FC = () => {
             error.response?.data.message || "Failed to fetch channel profile",
           variant: "destructive",
         });
-
-        setIsFetchError(true);
-        console.error(error);
       }
+
+      setIsFetchError(true);
+      console.error(error);
     }
   };
 
@@ -171,13 +171,48 @@ const VideoPlayback: React.FC = () => {
           title: error.response?.data.message || "Failed to fetch like data",
           variant: "destructive",
         });
-
-        setIsFetchError(true);
-        console.error(error);
       }
+
+      setIsFetchError(true);
+      console.error(error);
     } finally {
       setIsLoading({ ...isLoading, toggleLike: false });
     }
+  };
+
+  const fetchVideoComments = async () => {
+    try {
+      setIsLoading({ ...isLoading, videoCommentsLoading: true });
+
+      const { data } = await AxiosAPIInstance.get<
+        APIResponse<GetVideoCommentsResponse>
+      >(
+        `/api/v1/comment/${videoData.video._id}?page=${commentQueryStates.page}&limit=${commentQueryStates.limit}`
+      );
+
+      if (data.success && data.data) {
+        setCommentsData(data.data);
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        toast({
+          title:
+            error.response?.data.message || "Failed to fetch comments data",
+          variant: "destructive",
+        });
+      }
+
+      setIsFetchError(true);
+      console.error(error);
+    } finally {
+      setIsLoading({ ...isLoading, videoCommentsLoading: false });
+    }
+  };
+  const refreshVideoComments = async () => {
+    setCommentsData(null);
+    setCommentQueryStates({ limit: 10, page: 1 });
+
+    await fetchVideoComments();
   };
 
   const toggleLike = async () => {
@@ -198,10 +233,10 @@ const VideoPlayback: React.FC = () => {
           title: error.response?.data.message || "Failed to like video",
           variant: "destructive",
         });
-
-        setIsFetchError(true);
-        console.error(error);
       }
+
+      setIsFetchError(true);
+      console.error(error);
     } finally {
       setIsLoading({ ...isLoading, toggleLike: false });
     }
@@ -224,10 +259,10 @@ const VideoPlayback: React.FC = () => {
           title: error.response?.data.message || "Failed to dislike video",
           variant: "destructive",
         });
-
-        setIsFetchError(true);
-        console.error(error);
       }
+
+      setIsFetchError(true);
+      console.error(error);
     } finally {
       setIsLoading({ ...isLoading, toggleLike: false });
     }
@@ -238,6 +273,7 @@ const VideoPlayback: React.FC = () => {
       await fetchChannelProfile(videoData.video.owner.username);
     }
     await fetchVideoLikeData();
+    setCommentQueryStates({ limit: 10, page: 1 });
 
     setIsFetchError(false);
   };
@@ -247,6 +283,9 @@ const VideoPlayback: React.FC = () => {
     }
     fetchVideoLikeData();
   }, [videoData.video.owner.username]);
+  useEffect(() => {
+    fetchVideoComments();
+  }, [videoData.video._id, commentQueryStates.page, commentQueryStates.limit]);
 
   useEffect(() => {
     resizeHandler();
@@ -259,7 +298,7 @@ const VideoPlayback: React.FC = () => {
   }, []);
 
   return (
-    <PageContainer className="py-4 sm:py-8 lg:py-16 px-2 md:px-4 lg:px-6">
+    <PageContainer className="py-4 sm:py-6 lg:py-8 px-2 md:px-4 lg:px-6">
       <div
         className="grid"
         style={{ gridTemplateColumns: isSmallerScreen ? "1fr" : "1fr 350px" }}
@@ -379,10 +418,38 @@ const VideoPlayback: React.FC = () => {
               </>
             )}
           </div>
+
+          <div className="mt-6">
+            <h3 className="font-semibold">Comments</h3>
+
+            <CommentInput
+              isInputFocusedByDefault={false}
+              userAvatarUrl={userData?.avatar.url || ""}
+              refreshVideoComments={refreshVideoComments}
+              videoId={videoData.video._id}
+            />
+
+            {commentsData?.totalDocs === 0 && (
+              <p className="w-full text-center text-muted-foreground">
+                This video does not have any comment yet.
+              </p>
+            )}
+
+            {/* Comments */}
+            {commentsData?.docs.map((comment: VideoCommentData) => (
+              <CommentCard
+                key={comment._id}
+                commentData={comment}
+                currTimestamp={now}
+                refreshVideoComments={refreshVideoComments}
+                videoId={videoData.video._id}
+              />
+            ))}
+          </div>
         </div>
 
         <div className={`${isSmallerScreen ? "py-4" : "pl-2"}`}>
-          Suggestions
+          <h3 className="font-semibold">Suggestions</h3>
         </div>
       </div>
     </PageContainer>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Slider } from "../ui/slider";
 import {
   Tooltip,
@@ -20,6 +20,7 @@ import {
   VolumeXIcon,
 } from "lucide-react";
 import { AxiosAPIInstance } from "@/lib/AxiosInstance";
+import { useAppSelector } from "@/hooks/useStore";
 
 interface VideoPlayerProps {
   videoData: IVideo;
@@ -27,6 +28,7 @@ interface VideoPlayerProps {
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoData }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const { preventCustomKeyPress } = useAppSelector((state) => state.uiReducer);
 
   const [duration, setDuration] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState<number>(0);
@@ -118,18 +120,23 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoData }) => {
     }
   };
 
-  const handleKeyPress = (event: KeyboardEvent) => {
-    if (event.key.toLowerCase() === "f") toggleFullscreen();
-    if (event.code === "Space") {
-      event.preventDefault();
-      togglePlay();
-    }
-  };
+  const handleKeyPress = useCallback(
+    (event: KeyboardEvent) => {
+      if (preventCustomKeyPress) return;
+
+      if (event.key.toLowerCase() === "f") toggleFullscreen();
+      if (event.code === "Space") {
+        event.preventDefault();
+        togglePlay();
+      }
+    },
+    [preventCustomKeyPress]
+  );
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyPress);
     return () => document.removeEventListener("keydown", handleKeyPress);
-  }, []);
+  }, [handleKeyPress]);
 
   useEffect(() => {
     videoData._id && setIsViewCountIncremented(false);
