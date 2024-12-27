@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { VideoCommentData } from "@/types/APIResponse";
+import { APIResponse, VideoCommentData } from "@/types/APIResponse";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 import dayjs from "dayjs";
@@ -8,6 +8,9 @@ import { formatCount } from "@/lib/video";
 import { ChevronDown, ChevronUp, ThumbsDown, ThumbsUp } from "lucide-react";
 import CommentInput from "./CommentInput";
 import { useAppSelector } from "@/hooks/useStore";
+import { AxiosAPIInstance } from "@/lib/AxiosInstance";
+import { useToast } from "@/hooks/use-toast";
+import { AxiosError } from "axios";
 
 type CommentCardProps = {
   commentData: VideoCommentData;
@@ -26,9 +29,71 @@ const CommentCard: React.FC<CommentCardProps> = ({
   parentCommentId,
 }) => {
   const { userData } = useAppSelector((state) => state.authReducer);
+  const { toast } = useToast();
 
   const [isRepliesVisible, setIsRepliesVisible] = useState<boolean>(false);
   const [isReplying, setIsReplying] = useState<boolean>(false);
+  const [isLiking, setIsLiking] = useState<boolean>(false);
+
+  const toggleCommentLike = async () => {
+    try {
+      setIsLiking(true);
+
+      const { data } = await AxiosAPIInstance.post<APIResponse<null>>(
+        `/api/v1/like/comment/${commentData._id}?likeType=${
+          commentData.isLiked ? "delete" : "like"
+        }`
+      );
+
+      if (data.success) {
+        toast({
+          title: data.message,
+        });
+        refreshVideoComments();
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        toast({
+          title: error.response?.data.message || "Failed to like comment",
+          variant: "destructive",
+        });
+      }
+
+      console.error(error);
+    } finally {
+      setIsLiking(false);
+    }
+  };
+
+  const toggleCommentDislike = async () => {
+    try {
+      setIsLiking(true);
+
+      const { data } = await AxiosAPIInstance.post<APIResponse<null>>(
+        `/api/v1/like/comment/${commentData._id}?likeType=${
+          commentData.isDisliked ? "delete" : "dislike"
+        }`
+      );
+
+      if (data.success) {
+        toast({
+          title: data.message,
+        });
+        refreshVideoComments();
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        toast({
+          title: error.response?.data.message || "Failed to dislike comment",
+          variant: "destructive",
+        });
+      }
+
+      console.error(error);
+    } finally {
+      setIsLiking(false);
+    }
+  };
 
   return (
     <div className="flex items-start gap-x-2 my-4">
@@ -61,6 +126,8 @@ const CommentCard: React.FC<CommentCardProps> = ({
           <Button
             variant={"ghost"}
             className="flex items-center p-2 rounded-full"
+            onClick={toggleCommentLike}
+            disabled={isLiking}
           >
             <ThumbsUp
               className={`h-4 w-4 ${commentData?.isLiked && "fill-current"}`}
@@ -73,6 +140,8 @@ const CommentCard: React.FC<CommentCardProps> = ({
           <Button
             variant={"ghost"}
             className="flex items-center p-2 rounded-full"
+            onClick={toggleCommentDislike}
+            disabled={isLiking}
           >
             <ThumbsDown
               className={`h-4 w-4 ${commentData?.isDisliked && "fill-current"}`}
