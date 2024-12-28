@@ -15,6 +15,11 @@ type CommentInputProps = {
 
   videoId: string;
   parentCommentId?: string;
+
+  isUpdate?: boolean;
+  initialCommentText?: string;
+  updateCommentId?: string;
+  setIsEditingComment?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const CommentInput: React.FC<CommentInputProps> = ({
@@ -23,12 +28,18 @@ const CommentInput: React.FC<CommentInputProps> = ({
   videoId,
   parentCommentId,
   refreshVideoComments,
+  isUpdate,
+  initialCommentText,
+  updateCommentId,
+  setIsEditingComment,
 }) => {
   const dispatch = useAppDispatch();
   const { toast } = useToast();
 
   const commentTextRef = useRef<HTMLInputElement>(null);
-  const [commentText, setCommentText] = useState<string>("");
+  const [commentText, setCommentText] = useState<string>(
+    initialCommentText ?? ""
+  );
   const [isInputFocused, setIsInputFocused] = useState<boolean>(
     isInputFocusedByDefault
   );
@@ -70,6 +81,47 @@ const CommentInput: React.FC<CommentInputProps> = ({
     } finally {
       setIsCommenting(false);
     }
+  };
+
+  const handleCommentUpdate = async () => {
+    if (!commentText.length) return;
+
+    try {
+      setIsCommenting(true);
+
+      const { data } = await AxiosAPIInstance.patch<APIResponse<null>>(
+        `/api/v1/comment/${updateCommentId}`,
+        {
+          content: commentText,
+        }
+      );
+
+      if (data.success) {
+        toast({
+          title: data.message,
+        });
+
+        setIsEditingComment?.(false);
+        refreshVideoComments();
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        toast({
+          title: error.response?.data.message || "Failed to update comment",
+          variant: "destructive",
+        });
+      }
+
+      console.error(error);
+    } finally {
+      setIsCommenting(false);
+    }
+  };
+
+  const onCancel = () => {
+    setIsInputFocused(false);
+
+    setIsEditingComment?.(false);
   };
 
   useEffect(() => {
@@ -115,7 +167,7 @@ const CommentInput: React.FC<CommentInputProps> = ({
 
               <div className="flex gap-2">
                 <Button
-                  onClick={() => setIsInputFocused(false)}
+                  onClick={onCancel}
                   variant="outline"
                   disabled={isCommenting}
                 >
@@ -123,9 +175,9 @@ const CommentInput: React.FC<CommentInputProps> = ({
                 </Button>
                 <Button
                   disabled={!commentText.length || isCommenting}
-                  onClick={handleCommentSubmit}
+                  onClick={isUpdate ? handleCommentUpdate : handleCommentSubmit}
                 >
-                  Comment
+                  {isUpdate ? "Update" : "Comment"}
                 </Button>
               </div>
             </>
