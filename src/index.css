@@ -121,7 +121,7 @@
 
 .outer-bottom {
   height: calc(100dvh - var(--navbar-height));
-  overflow-y: auto;
+  overflow: auto;
 }
 
 .page-container {

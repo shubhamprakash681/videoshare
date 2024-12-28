@@ -19,21 +19,22 @@ import {
 } from "./pages/index.ts";
 import { Toaster } from "./components/ui/toaster.tsx";
 import ProtectedAuthLayout from "./components/auth/ProtectedAuthLayout.tsx";
+import { PathConstants } from "./lib/variables.ts";
 
 const appRouter = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/" element={<App />}>
+    <Route path={PathConstants.HOME} element={<App />}>
       <Route
-        path="/"
+        path={PathConstants.HOME}
         element={
           <ProtectedAuthLayout authentication={false}>
             <HomePage />
           </ProtectedAuthLayout>
         }
       />
-      <Route path="/video/:id" element={<VideoPlaybackPage />} />
+      <Route path={PathConstants.VIDEO} element={<VideoPlaybackPage />} />
       <Route
-        path="/dashboard"
+        path={PathConstants.DASHBOARD}
         element={
           <ProtectedAuthLayout authentication>
             <DashboardPage />
@@ -41,7 +42,7 @@ const appRouter = createBrowserRouter(
         }
       />
       <Route
-        path="/signup"
+        path={PathConstants.SIGNUP}
         element={
           <ProtectedAuthLayout authentication={false}>
             <SignupPage />
@@ -49,7 +50,7 @@ const appRouter = createBrowserRouter(
         }
       />
       <Route
-        path="/login"
+        path={PathConstants.LOGIN}
         element={
           <ProtectedAuthLayout authentication={false}>
             <LoginPage />
