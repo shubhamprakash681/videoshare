@@ -7,6 +7,8 @@ import { AxiosAPIInstance } from "@/lib/AxiosInstance";
 import { APIResponse } from "@/types/APIResponse";
 import { AxiosError } from "axios";
 import { useToast } from "@/hooks/use-toast";
+import { Card } from "../ui/card";
+import EmojiInputPopup from "./EmojiInputPopup";
 
 type CommentInputProps = {
   isInputFocusedByDefault: boolean;
@@ -139,7 +141,11 @@ const CommentInput: React.FC<CommentInputProps> = ({
   }, [isInputFocused]);
 
   return (
-    <div className="flex items-center gap-x-2 mt-2">
+    <Card
+      className={`flex items-center gap-x-4 mt-2 ${
+        isUpdate ? "border-none shadow-none" : "p-4"
+      }`}
+    >
       <Avatar>
         <AvatarImage src={userAvatarUrl} alt="AC" />
         <AvatarFallback>AC</AvatarFallback>
@@ -163,7 +169,10 @@ const CommentInput: React.FC<CommentInputProps> = ({
         <div className="h-10 flex justify-between items-center mt-2">
           {isInputFocused && (
             <>
-              <div>Emoji</div>
+              <EmojiInputPopup
+                setCommentText={setCommentText}
+                commentTextRef={commentTextRef}
+              />
 
               <div className="flex gap-2">
                 <Button
@@ -184,7 +193,7 @@ const CommentInput: React.FC<CommentInputProps> = ({
           )}
         </div>
       </div>
-    </div>
+    </Card>
   );
 };
 
