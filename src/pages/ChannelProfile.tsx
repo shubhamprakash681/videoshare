@@ -1,3 +1,4 @@
+import { VideoCard } from "@/components";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import PageContainer from "@/components/ui/PageContainer";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAppSelector } from "@/hooks/useStore";
 import { AxiosAPIInstance } from "@/lib/AxiosInstance";
@@ -19,22 +21,46 @@ import { formatCount } from "@/lib/video";
 import {
   APIResponse,
   ChannelProfile as ChannelProfileType,
+  GetVideosResponse,
 } from "@/types/APIResponse";
-import { IUser } from "@/types/collections";
+import { IUser, IVideo } from "@/types/collections";
 import { AxiosError } from "axios";
-import { Camera, Check, ImagePlus, Trash } from "lucide-react";
+import {
+  Camera,
+  Check,
+  Grid,
+  ImagePlus,
+  ListVideo,
+  MessageCircle,
+  Trash,
+  Users,
+} from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+// Extend Day.js with the relativeTime plugin
+dayjs.extend(relativeTime);
 
 type isLoadingStates = {
   toggleSubscribe: boolean;
   coverImageChange: boolean;
   avatarImageChange: boolean;
+  channelVideos: boolean;
 };
+interface QueryStates {
+  channelVideosQuery: {
+    page: number;
+    limit: number;
+  };
+}
 
 const ChannelProfile: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const params = useParams();
+  const now = dayjs();
 
   const { userData } = useAppSelector((state) => state.authReducer);
   const { toast } = useToast();
@@ -57,7 +83,18 @@ const ChannelProfile: React.FC = () => {
     toggleSubscribe: false,
     coverImageChange: false,
     avatarImageChange: false,
+    channelVideos: false,
   });
+
+  const [queryStates, setQueryStates] = useState<QueryStates>({
+    channelVideosQuery: {
+      page: 1,
+      limit: 10,
+    },
+  });
+
+  const [channelVideos, setChannelVideos] = useState<IVideo[]>([]);
+
   const [isFetchError, setIsFetchError] = useState<boolean>(false);
 
   const fetchChannelProfile = async (channelname: string) => {
@@ -80,6 +117,31 @@ const ChannelProfile: React.FC = () => {
 
       setIsFetchError(true);
       console.error(error);
+    }
+  };
+
+  const fetchChannelVideos = async (channelId: string) => {
+    try {
+      setIsLoading({ ...isLoading, channelVideos: true });
+      const res = await AxiosAPIInstance.get<APIResponse<GetVideosResponse>>(
+        `/api/v1/video?page=${queryStates.channelVideosQuery.page}&limit=${queryStates.channelVideosQuery.limit}&userId=${channelId}`
+      );
+
+      if (res.data.success && res.data.data?.docs) {
+        setChannelVideos(res.data.data.docs);
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        toast({
+          title: error.response?.data.message || "Failed to fetch videos",
+          variant: "destructive",
+        });
+      }
+
+      setIsFetchError(true);
+      console.error(error);
+    } finally {
+      setIsLoading({ ...isLoading, channelVideos: false });
     }
   };
 
@@ -217,6 +279,8 @@ const ChannelProfile: React.FC = () => {
           return {
             ...prevValue,
             isSubscribed: !prevValue.isSubscribed,
+            subscriberCount:
+              prevValue.subscriberCount + (prevValue.isSubscribed ? -1 : 1),
           };
         });
       }
@@ -238,7 +302,10 @@ const ChannelProfile: React.FC = () => {
 
   useEffect(() => {
     channelname && fetchChannelProfile(channelname);
-  }, []);
+  }, [channelname]);
+  useEffect(() => {
+    channelProfile?._id && fetchChannelVideos(channelProfile._id);
+  }, [channelProfile?._id]);
 
   return (
     <PageContainer>
@@ -323,7 +390,7 @@ const ChannelProfile: React.FC = () => {
         )}
       </div>
 
-      <div className="p-4 md:p-6 flex flex-col md:flex-row items-start md:items-end gap-4">
+      <div className="p-2 sm:p-4 md:p-6 flex flex-col md:flex-row items-start md:items-end gap-4">
         <div className="flex-1">
           <h1 className="text-xl md:text-2xl font-bold">
             {channelProfile?.fullname}
@@ -369,6 +436,65 @@ const ChannelProfile: React.FC = () => {
         </div>
       </div>
       <Separator />
+
+      <div className="my-2 p-2 sm:p-4">
+        <Tabs defaultValue="videos" className="space-y-2">
+          <div className="overflow-x-auto">
+            <TabsList>
+              <TabsTrigger value="videos" className="gap-2">
+                <ListVideo className="h-4 w-4" />
+                Videos
+              </TabsTrigger>
+              <TabsTrigger value="playlists" className="gap-2">
+                <Grid className="h-4 w-4" />
+                Playlists
+              </TabsTrigger>
+              <TabsTrigger value="subscribed" className="gap-2">
+                <Users className="h-4 w-4" />
+                Subscribed
+              </TabsTrigger>
+              <TabsTrigger value="tweets" className="gap-2">
+                <MessageCircle className="h-4 w-4" />
+                Tweets
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          <TabsContent value="videos">
+            {channelVideos.length ? (
+              <>
+                <div className="px-2 py-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-center justify-items-center gap-4">
+                  {channelVideos.map((video: IVideo) => (
+                    <VideoCard
+                      key={video._id}
+                      title={video.title}
+                      createdAt={dayjs(new Date(video.createdAt)).from(now)}
+                      duration={video.duration}
+                      thumbnail={video.thumbnail.url}
+                      views={video.views}
+                      channelDetails={{
+                        channelAvatar: video.owner.avatar as unknown as string,
+                        channelName: video.owner.fullname,
+                      }}
+                      onClick={() =>
+                        navigate(`/video/${video._id}`, {
+                          state: {
+                            video,
+                          },
+                        })
+                      }
+                    />
+                  ))}
+                </div>
+              </>
+            ) : (
+              <p className="px-2 py-4 h-36 flex items-center justify-evenly">
+                {!isLoading.channelVideos && "This channel has no videos yet."}
+              </p>
+            )}
+          </TabsContent>
+        </Tabs>
+      </div>
 
       <AlertDialog open={openDeleteCoverPopup}>
         <AlertDialogContent>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { IVideo } from "@/types/collections";
 import PageContainer from "@/components/ui/PageContainer";
 import { CommentCard, CommentInput, VideoPlayer } from "@/components";
@@ -314,26 +314,36 @@ const VideoPlayback: React.FC = () => {
             ) : (
               <>
                 <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-4">
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage
-                        src={videoData.video.owner.avatar as unknown as string}
-                        alt="Channel Avatar"
-                      />
-                      <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h2 className="font-semibold">
-                        {videoData.video.owner.fullname}
-                      </h2>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {channelProfile && channelProfile.subscriberCount}{" "}
-                        {channelProfile && channelProfile.subscriberCount > 1
-                          ? "Subscribers"
-                          : "Subscriber"}
-                      </p>
+                  <Link
+                    to={
+                      userData?._id === videoData.video.owner._id
+                        ? "/me"
+                        : `/${videoData.video.owner.username}`
+                    }
+                  >
+                    <div className="flex items-center space-x-4">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage
+                          src={
+                            videoData.video.owner.avatar as unknown as string
+                          }
+                          alt="Channel Avatar"
+                        />
+                        <AvatarFallback>CN</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <h2 className="font-semibold">
+                          {videoData.video.owner.fullname}
+                        </h2>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          {channelProfile && channelProfile.subscriberCount}{" "}
+                          {channelProfile && channelProfile.subscriberCount > 1
+                            ? "Subscribers"
+                            : "Subscriber"}
+                        </p>
+                      </div>
                     </div>
-                  </div>
+                  </Link>
 
                   {channelProfile?.isSubscribed ? (
                     <Button
