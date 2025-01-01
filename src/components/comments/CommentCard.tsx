@@ -23,6 +23,7 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
+  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -174,7 +175,13 @@ const CommentCard: React.FC<CommentCardProps> = ({
 
           <div className="w-full">
             <div className="flex items-center">
-              <Link to={commentData.owner.username}>
+              <Link
+                to={
+                  userData?.username === commentData.owner.username
+                    ? `/me`
+                    : `/${commentData.owner.username}`
+                }
+              >
                 <Button className="px-1 py-0 h-fit" variant={"ghost"}>
                   @{commentData.owner.username}
                 </Button>
@@ -314,6 +321,7 @@ const CommentCard: React.FC<CommentCardProps> = ({
             <AlertDialogTitle>
               Are you sure you want to delete this comment?
             </AlertDialogTitle>
+            <AlertDialogDescription />
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel

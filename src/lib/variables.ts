@@ -14,4 +14,6 @@ export const PathConstants = {
   SIGNUP: "/signup",
   DASHBOARD: "/dashboard",
   VIDEO: "/video/:id",
+  MYCHANNEL: "/me",
+  CHANNEL: "/:channelname",
 };

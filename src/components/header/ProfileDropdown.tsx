@@ -57,7 +57,11 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ avatarUrl }) => {
         className="w-44 flex flex-col space-y-2"
         onClick={() => setIsPopoverOpen(false)}
       >
-        <Button variant="ghost">Profile</Button>
+        <Link to="/me">
+          <Button className="w-full" variant="ghost">
+            My Channel
+          </Button>
+        </Link>
         <Button variant="ghost">Update Password</Button>
 
         <Separator className="my-2" />

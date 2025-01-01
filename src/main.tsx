@@ -11,6 +11,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import {
+  ChannelProfilePage,
   DashboardPage,
   HomePage,
   LoginPage,
@@ -38,6 +39,22 @@ const appRouter = createBrowserRouter(
         element={
           <ProtectedAuthLayout authentication>
             <DashboardPage />
+          </ProtectedAuthLayout>
+        }
+      />
+      <Route
+        path={PathConstants.MYCHANNEL}
+        element={
+          <ProtectedAuthLayout authentication>
+            <ChannelProfilePage />
+          </ProtectedAuthLayout>
+        }
+      />
+      <Route
+        path={PathConstants.CHANNEL}
+        element={
+          <ProtectedAuthLayout authentication>
+            <ChannelProfilePage />
           </ProtectedAuthLayout>
         }
       />
