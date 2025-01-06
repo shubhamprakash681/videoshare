@@ -5,6 +5,7 @@ import Header from "./header/Header";
 import SidebarContainer from "./sidebar/SidebarContainer";
 import VideoCard from "./home/VideoCard";
 import VideoPlayer from "./videoplayer/VideoPlayer";
+import AddPlaylistModal from "./videoplayer/AddPlaylistModal";
 
 import StatCard from "./dashboard/StatCard";
 import VideoUploadDialog from "./dashboard/VideoUploadDialog";
@@ -14,6 +15,9 @@ import VideoTable from "./dashboard/VideoTable";
 import CommentCard from "./comments/CommentCard";
 import CommentInput from "./comments/CommentInput";
 
+import ChannelVideos from "./channelProfile/ChannelVideos";
+import ChannelPlaylists from "./channelProfile/ChannelPlaylists";
+
 export {
   Login as LoginCard,
   SignUp as SignupCard,
@@ -22,10 +26,13 @@ export {
   SidebarContainer,
   VideoCard,
   VideoPlayer,
+  AddPlaylistModal,
   StatCard,
   VideoUploadDialog,
   VideoUpdateDialog,
   VideoTable,
   CommentCard,
   CommentInput,
+  ChannelVideos,
+  ChannelPlaylists,
 };

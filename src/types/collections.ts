@@ -34,3 +34,50 @@ export interface IVideo {
   owner: IUser;
   createdAt: Date;
 }
+
+interface PlaylistVideo {
+  _id: string;
+  videoFile: {
+    public_id: string;
+    url: string;
+  };
+  thumbnail: {
+    public_id: string;
+    url: string;
+  };
+  title: string;
+  description: string;
+  duration: number;
+  views: number;
+  isPublic: boolean;
+  createdAt: Date;
+  updatedAt: string;
+  owner: {
+    _id: string;
+    username: string;
+    fullname: string;
+    avatar: string;
+  };
+}
+export interface IPlaylist {
+  _id: string;
+  title: string;
+  description: string;
+  visibility: "public" | "private";
+  owner: string;
+  createdAt: Date;
+  updatedAt: string;
+  videos: PlaylistVideo[];
+}
+
+export interface PlaylistOptions {
+  _id: string;
+  title: string;
+  description: string;
+  visibility: "private" | "public";
+  videos: string[];
+  isPresent: boolean;
+  owner: string;
+  createdAt: Date;
+  updatedAt: Date;
+}

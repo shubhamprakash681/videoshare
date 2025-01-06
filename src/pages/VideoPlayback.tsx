@@ -2,7 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { IVideo } from "@/types/collections";
 import PageContainer from "@/components/ui/PageContainer";
-import { CommentCard, CommentInput, VideoPlayer } from "@/components";
+import {
+  AddPlaylistModal,
+  CommentCard,
+  CommentInput,
+  VideoPlayer,
+} from "@/components";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import parse from "html-react-parser";
@@ -399,13 +404,10 @@ const VideoPlayback: React.FC = () => {
                     />
                     <span>Dislike</span>
                   </Button>
-                  <Button
-                    variant="outline"
-                    className="flex items-center space-x-2"
-                  >
-                    <Share2 className="h-4 w-4" />
-                    <span>Share</span>
-                  </Button>
+                  <AddPlaylistModal
+                    videoId={videoData.video._id}
+                    videoTitle={videoData.video.title}
+                  />
                   <Button variant="outline" size="icon">
                     <MoreVertical className="h-4 w-4" />
                   </Button>

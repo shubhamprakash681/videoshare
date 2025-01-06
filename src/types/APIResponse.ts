@@ -1,4 +1,4 @@
-import { IVideo } from "./collections";
+import { IPlaylist, IVideo } from "./collections";
 
 export type APIResponse<T> = {
   statusCode: number;
@@ -83,6 +83,19 @@ export interface VideoCommentData {
 }
 export interface GetVideoCommentsResponse {
   docs: VideoCommentData[];
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+  limit: number;
+  nextPage: number | null;
+  page: number;
+  pagingCounter: number;
+  prevPage: number | null;
+  totalDocs: number;
+  totalPages: number;
+}
+
+export interface GetPlaylistResponse {
+  docs: IPlaylist[];
   hasNextPage: boolean;
   hasPrevPage: boolean;
   limit: number;

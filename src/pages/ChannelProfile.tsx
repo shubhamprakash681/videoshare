@@ -1,4 +1,4 @@
-import { VideoCard } from "@/components";
+import { ChannelPlaylists, ChannelVideos } from "@/components";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,9 +21,10 @@ import { formatCount } from "@/lib/video";
 import {
   APIResponse,
   ChannelProfile as ChannelProfileType,
+  GetPlaylistResponse,
   GetVideosResponse,
 } from "@/types/APIResponse";
-import { IUser, IVideo } from "@/types/collections";
+import { IUser } from "@/types/collections";
 import { AxiosError } from "axios";
 import {
   Camera,
@@ -36,31 +37,30 @@ import {
   Users,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-
-// Extend Day.js with the relativeTime plugin
-dayjs.extend(relativeTime);
+import { useLocation, useParams } from "react-router-dom";
 
 type isLoadingStates = {
   toggleSubscribe: boolean;
   coverImageChange: boolean;
   avatarImageChange: boolean;
   channelVideos: boolean;
+  channelPlaylist: boolean;
 };
 interface QueryStates {
   channelVideosQuery: {
     page: number;
     limit: number;
   };
+  channelPlaylistQuery: {
+    page: number;
+    limit: number;
+    visibility: "public" | "private" | "all";
+  };
 }
 
 const ChannelProfile: React.FC = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const params = useParams();
-  const now = dayjs();
 
   const { userData } = useAppSelector((state) => state.authReducer);
   const { toast } = useToast();
@@ -84,6 +84,7 @@ const ChannelProfile: React.FC = () => {
     coverImageChange: false,
     avatarImageChange: false,
     channelVideos: false,
+    channelPlaylist: false,
   });
 
   const [queryStates, setQueryStates] = useState<QueryStates>({
@@ -91,9 +92,38 @@ const ChannelProfile: React.FC = () => {
       page: 1,
       limit: 10,
     },
+    channelPlaylistQuery: {
+      page: 1,
+      limit: 10,
+      visibility: "all",
+    },
   });
 
-  const [channelVideos, setChannelVideos] = useState<IVideo[]>([]);
+  const [channelVideosRes, setChannelVideosRes] = useState<GetVideosResponse>({
+    docs: [],
+    hasNextPage: false,
+    hasPrevPage: false,
+    limit: 10,
+    nextPage: null,
+    page: 1,
+    pagingCounter: 1,
+    prevPage: null,
+    totalDocs: 0,
+    totalPages: 0,
+  });
+  const [channelPlaylistRes, setChannelPlaylistRes] =
+    useState<GetPlaylistResponse>({
+      docs: [],
+      hasNextPage: false,
+      hasPrevPage: false,
+      limit: 10,
+      nextPage: null,
+      page: 1,
+      pagingCounter: 1,
+      prevPage: null,
+      totalDocs: 0,
+      totalPages: 0,
+    });
 
   const [isFetchError, setIsFetchError] = useState<boolean>(false);
 
@@ -127,8 +157,8 @@ const ChannelProfile: React.FC = () => {
         `/api/v1/video?page=${queryStates.channelVideosQuery.page}&limit=${queryStates.channelVideosQuery.limit}&userId=${channelId}`
       );
 
-      if (res.data.success && res.data.data?.docs) {
-        setChannelVideos(res.data.data.docs);
+      if (res.data.success && res.data.data) {
+        setChannelVideosRes(res.data.data);
       }
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -300,11 +330,43 @@ const ChannelProfile: React.FC = () => {
     }
   };
 
+  const fetchChannelPlaylist = async (channelId: string) => {
+    try {
+      setIsLoading({ ...isLoading, channelPlaylist: true });
+      const res = await AxiosAPIInstance.get<APIResponse<GetPlaylistResponse>>(
+        `/api/v1/playlist?userId=${channelId}&visibility=${
+          isOwner ? queryStates.channelPlaylistQuery.visibility : "public"
+        }&page=${queryStates.channelPlaylistQuery.page}&limit=${
+          queryStates.channelPlaylistQuery.limit
+        }`
+      );
+
+      if (res.data.success && res.data.data) {
+        setChannelPlaylistRes(res.data.data);
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        toast({
+          title: error.response?.data.message || "Failed to fetch playlist",
+          variant: "destructive",
+        });
+      }
+
+      setIsFetchError(true);
+      console.error(error);
+    } finally {
+      setIsLoading({ ...isLoading, channelPlaylist: false });
+    }
+  };
+
   useEffect(() => {
     channelname && fetchChannelProfile(channelname);
   }, [channelname]);
   useEffect(() => {
-    channelProfile?._id && fetchChannelVideos(channelProfile._id);
+    if (channelProfile?._id) {
+      fetchChannelVideos(channelProfile._id);
+      fetchChannelPlaylist(channelProfile._id);
+    }
   }, [channelProfile?._id]);
 
   return (
@@ -461,37 +523,14 @@ const ChannelProfile: React.FC = () => {
           </div>
 
           <TabsContent value="videos">
-            {channelVideos.length ? (
-              <>
-                <div className="px-2 py-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-center justify-items-center gap-4">
-                  {channelVideos.map((video: IVideo) => (
-                    <VideoCard
-                      key={video._id}
-                      title={video.title}
-                      createdAt={dayjs(new Date(video.createdAt)).from(now)}
-                      duration={video.duration}
-                      thumbnail={video.thumbnail.url}
-                      views={video.views}
-                      channelDetails={{
-                        channelAvatar: video.owner.avatar as unknown as string,
-                        channelName: video.owner.fullname,
-                      }}
-                      onClick={() =>
-                        navigate(`/video/${video._id}`, {
-                          state: {
-                            video,
-                          },
-                        })
-                      }
-                    />
-                  ))}
-                </div>
-              </>
-            ) : (
-              <p className="px-2 py-4 h-36 flex items-center justify-evenly">
-                {!isLoading.channelVideos && "This channel has no videos yet."}
-              </p>
-            )}
+            <ChannelVideos
+              channelVideosRes={channelVideosRes}
+              isLoading={isLoading.channelVideos}
+            />
+          </TabsContent>
+
+          <TabsContent value="playlists">
+            <ChannelPlaylists channelPlaylistRes={channelPlaylistRes} />
           </TabsContent>
         </Tabs>
       </div>
