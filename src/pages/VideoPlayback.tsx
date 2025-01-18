@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import parse from "html-react-parser";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { ThumbsUp, ThumbsDown, Share2, MoreVertical } from "lucide-react";
+import { ThumbsUp, ThumbsDown, MoreVertical } from "lucide-react";
 import {
   APIResponse,
   ChannelProfile,

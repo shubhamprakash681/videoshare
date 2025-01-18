@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Button, ButtonProps } from "../ui/button";
-import { Bookmark, BookmarkCheck, Plus, X } from "lucide-react";
+import { Button } from "../ui/button";
+import { Bookmark, BookmarkCheck, X } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,15 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "../ui/checkbox";
 import Loader from "../ui/Loader";
 import { Separator } from "../ui/separator";
-
-const CreatePlaylistButton: React.FC<ButtonProps> = ({ ...props }) => {
-  return (
-    <Button {...props} className="w-full flex items-center space-x-2">
-      <Plus className="h-4 w-4" />
-      <span>Create New Playlist</span>
-    </Button>
-  );
-};
+import NewPlaylistModal from "./NewPlaylistModal";
 
 type AddPlaylistModalProps = {
   videoId: string;
@@ -135,9 +127,6 @@ const AddPlaylistModal: React.FC<AddPlaylistModalProps> = ({
     fetchPlaylistOptions();
   }, []);
 
-  console.log("playlistsIdsToRemove: ", playlistsIdsToRemove);
-  console.log("playlistsIdsToSave: ", playlistsIdsToSave);
-
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -218,7 +207,12 @@ const AddPlaylistModal: React.FC<AddPlaylistModalProps> = ({
 
                   <Separator className="mt-2" />
 
-                  <CreatePlaylistButton variant="secondary" />
+                  <NewPlaylistModal
+                    triggerBtnVariant="secondary"
+                    videoTitle={videoTitle}
+                    videoId={videoId}
+                    fetchPlaylistOptions={fetchPlaylistOptions}
+                  />
                 </>
               ) : (
                 <>
@@ -246,7 +240,12 @@ const AddPlaylistModal: React.FC<AddPlaylistModalProps> = ({
               </AlertDialogAction>
             </>
           ) : (
-            <CreatePlaylistButton variant="default" />
+            <NewPlaylistModal
+              triggerBtnVariant="default"
+              videoTitle={videoTitle}
+              videoId={videoId}
+              fetchPlaylistOptions={fetchPlaylistOptions}
+            />
           )}
         </AlertDialogFooter>
       </AlertDialogContent>
