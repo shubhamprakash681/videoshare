@@ -24,6 +24,7 @@ import {
   GetPlaylistResponse,
   GetVideosResponse,
 } from "@/types/APIResponse";
+import { QueryStates } from "@/types/channelProfile";
 import { IUser } from "@/types/collections";
 import { AxiosError } from "axios";
 import {
@@ -46,17 +47,6 @@ type isLoadingStates = {
   channelVideos: boolean;
   channelPlaylist: boolean;
 };
-interface QueryStates {
-  channelVideosQuery: {
-    page: number;
-    limit: number;
-  };
-  channelPlaylistQuery: {
-    page: number;
-    limit: number;
-    visibility: "public" | "private" | "all";
-  };
-}
 
 const ChannelProfile: React.FC = () => {
   const location = useLocation();
@@ -365,9 +355,13 @@ const ChannelProfile: React.FC = () => {
   useEffect(() => {
     if (channelProfile?._id) {
       fetchChannelVideos(channelProfile._id);
+    }
+  }, [channelProfile?._id, queryStates.channelVideosQuery]);
+  useEffect(() => {
+    if (channelProfile?._id) {
       fetchChannelPlaylist(channelProfile._id);
     }
-  }, [channelProfile?._id]);
+  }, [channelProfile?._id, queryStates.channelPlaylistQuery]);
 
   return (
     <PageContainer>
@@ -530,7 +524,13 @@ const ChannelProfile: React.FC = () => {
           </TabsContent>
 
           <TabsContent value="playlists">
-            <ChannelPlaylists channelPlaylistRes={channelPlaylistRes} />
+            <ChannelPlaylists
+              queryStates={queryStates}
+              setQueryStates={setQueryStates}
+              channelPlaylistRes={channelPlaylistRes}
+              isOwner={isOwner}
+              isLoading={isLoading.channelPlaylist}
+            />
           </TabsContent>
         </Tabs>
       </div>
