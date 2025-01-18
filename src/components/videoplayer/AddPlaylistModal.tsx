@@ -229,7 +229,10 @@ const AddPlaylistModal: React.FC<AddPlaylistModalProps> = ({
         <AlertDialogFooter>
           {playlistOptions.length ? (
             <>
-              <AlertDialogCancel disabled={isLoading.savePlaylist}>
+              <AlertDialogCancel
+                disabled={isLoading.savePlaylist}
+                onClick={() => fetchPlaylistOptions()}
+              >
                 Cancel
               </AlertDialogCancel>
               <AlertDialogAction
