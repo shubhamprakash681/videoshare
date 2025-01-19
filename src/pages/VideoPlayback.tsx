@@ -26,6 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AxiosAPIInstance } from "@/lib/AxiosInstance";
 import { useAppSelector } from "@/hooks/useStore";
 import { formatCount } from "@/lib/video";
+import useSanitizedHTML from "@/hooks/useSanitizedHTML";
 
 // Extend Day.js with the relativeTime plugin
 dayjs.extend(relativeTime);
@@ -75,6 +76,7 @@ const VideoPlayback: React.FC = () => {
   const location = useLocation();
   const { userData } = useAppSelector((state) => state.authReducer);
   const { toast } = useToast();
+  const { sanitizeHTMLContent } = useSanitizedHTML();
 
   const now = dayjs();
 
@@ -424,7 +426,7 @@ const VideoPlayback: React.FC = () => {
                     </span>
                   </p>
                   <p className="text-sm">
-                    {parse(videoData.video.description)}
+                    {parse(sanitizeHTMLContent(videoData.video.description))}
                   </p>
                 </div>
               </>

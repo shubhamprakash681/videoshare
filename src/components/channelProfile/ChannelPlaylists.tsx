@@ -15,7 +15,6 @@ import { Globe, Lock, MoreVertical, Pencil, Play, Trash } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Separator } from "../ui/separator";
 import parse from "html-react-parser";
-import sanitizeHtml from "sanitize-html";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import {
@@ -30,6 +29,7 @@ import {
 } from "../ui/alert-dialog";
 import { AxiosAPIInstance } from "@/lib/AxiosInstance";
 import { useToast } from "@/hooks/use-toast";
+import useSanitizedHTML from "@/hooks/useSanitizedHTML";
 
 // Extend Day.js with the relativeTime plugin
 dayjs.extend(relativeTime);
@@ -37,43 +37,10 @@ dayjs.extend(relativeTime);
 const FormattedPlaylistDescription: React.FC<{ htmlContent: string }> = ({
   htmlContent,
 }) => {
+  const { sanitizeHTMLContent } = useSanitizedHTML();
+
   const truncateHTML = (html: string, length: number) => {
-    const stripped = sanitizeHtml(html, {
-      allowedTags: [
-        "a",
-        "b",
-        "i",
-        "u",
-        "strong",
-        "em",
-        "strike",
-        "ol",
-        "ul",
-        "li",
-        "p",
-        "br",
-        "blockquote",
-        "code",
-        "pre",
-        "hr",
-        "div",
-        "span",
-        "img",
-        "table",
-        "thead",
-        "tbody",
-        "tr",
-        "td",
-        "th",
-        "h1",
-        "h2",
-        "h3",
-        "h4",
-        "h5",
-        "h6",
-      ],
-      allowedAttributes: {},
-    });
+    const stripped = sanitizeHTMLContent(html);
 
     const truncated =
       stripped.length > length ? `${stripped.slice(0, length)}...` : stripped;
