@@ -349,6 +349,12 @@ const ChannelProfile: React.FC = () => {
     }
   };
 
+  const refreshChannelPlaylist = async () => {
+    if (channelProfile?._id) {
+      await fetchChannelPlaylist(channelProfile._id);
+    }
+  };
+
   useEffect(() => {
     channelname && fetchChannelProfile(channelname);
   }, [channelname]);
@@ -358,9 +364,7 @@ const ChannelProfile: React.FC = () => {
     }
   }, [channelProfile?._id, queryStates.channelVideosQuery]);
   useEffect(() => {
-    if (channelProfile?._id) {
-      fetchChannelPlaylist(channelProfile._id);
-    }
+    refreshChannelPlaylist();
   }, [channelProfile?._id, queryStates.channelPlaylistQuery]);
 
   return (
@@ -530,6 +534,7 @@ const ChannelProfile: React.FC = () => {
               channelPlaylistRes={channelPlaylistRes}
               isOwner={isOwner}
               isLoading={isLoading.channelPlaylist}
+              refreshChannelPlaylist={refreshChannelPlaylist}
             />
           </TabsContent>
         </Tabs>
