@@ -195,7 +195,7 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
                   <div className="mt-2 relative group">
                     <img
                       src={URL.createObjectURL(thumbnailPreview[0])}
-                      className="w-full rounded-lg"
+                      className="w-full rounded-lg object-cover"
                       alt="thumbnail"
                     />
                     <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">

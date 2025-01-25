@@ -37,7 +37,7 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ avatarUrl }) => {
         navigate("/");
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setIsLogoutInProgress(false);
     }

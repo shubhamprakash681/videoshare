@@ -6,6 +6,10 @@ const getRouteSpecificMinWidth = (route: string): string => {
       return "272px";
     case "/video":
       return "460px";
+    case "/edit-playlist":
+      return "460px";
+    case "/playlist":
+      return "460px";
     case "/dashboard":
       return "360px";
     default:

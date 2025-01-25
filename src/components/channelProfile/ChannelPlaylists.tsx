@@ -30,6 +30,7 @@ import {
 import { AxiosAPIInstance } from "@/lib/AxiosInstance";
 import { useToast } from "@/hooks/use-toast";
 import useSanitizedHTML from "@/hooks/useSanitizedHTML";
+import { useNavigate } from "react-router-dom";
 
 // Extend Day.js with the relativeTime plugin
 dayjs.extend(relativeTime);
@@ -66,6 +67,7 @@ const PlaylistResult: React.FC<PlaylistResultProps> = ({
   const now = dayjs();
 
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const [playlistIdToDelete, setPlaylistIdToDelete] = useState<string | null>(
     null
@@ -137,7 +139,7 @@ const PlaylistResult: React.FC<PlaylistResultProps> = ({
           <CardHeader className="relative p-0">
             <div className="group relative">
               <img
-                src={playlist.videos[0].thumbnail.url || "/placeholder.svg"}
+                src={playlist.videos[0]?.thumbnail.url || "/placeholder.svg"}
                 alt={playlist.title}
                 className="w-full h-48 object-cover"
               />
@@ -182,7 +184,14 @@ const PlaylistResult: React.FC<PlaylistResultProps> = ({
                       <Play className="h-4 w-4" />
                       Play
                     </Button>
-                    <Button variant={"ghost"}>
+                    <Button
+                      variant={"ghost"}
+                      onClick={() =>
+                        navigate(`/edit-playlist/${playlist._id}`, {
+                          state: { playlist },
+                        })
+                      }
+                    >
                       <Pencil className="h-4 w-4" />
                       Edit
                     </Button>

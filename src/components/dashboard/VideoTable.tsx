@@ -78,7 +78,7 @@ const VideoTable: React.FC<VideoTableProps> = ({
         });
       }
 
-      console.log(error);
+      console.error(error);
     } finally {
       setToggleVideoInProgress(false);
     }

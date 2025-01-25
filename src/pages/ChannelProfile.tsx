@@ -57,7 +57,6 @@ const ChannelProfile: React.FC = () => {
 
   const isOwner = location.pathname === "/me";
   const channelname = params.channelname || userData?.username;
-  //   console.log("isOwner: ", isOwner);
 
   const [channelProfile, setChannelProfile] =
     useState<ChannelProfileType | null>(null);

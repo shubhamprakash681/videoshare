@@ -13,6 +13,7 @@ import {
 import {
   ChannelProfilePage,
   DashboardPage,
+  EditPlaylistPage,
   HomePage,
   LoginPage,
   SignupPage,
@@ -55,6 +56,14 @@ const appRouter = createBrowserRouter(
         element={
           <ProtectedAuthLayout authentication>
             <ChannelProfilePage />
+          </ProtectedAuthLayout>
+        }
+      />
+      <Route
+        path={PathConstants.EDITPLAYLIST}
+        element={
+          <ProtectedAuthLayout authentication>
+            <EditPlaylistPage />
           </ProtectedAuthLayout>
         }
       />

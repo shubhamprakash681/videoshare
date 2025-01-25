@@ -4,6 +4,7 @@ import Home from "./Home";
 import VideoPlayback from "./VideoPlayback";
 import Dashboard from "./Dashboard";
 import ChannelProfile from "./ChannelProfile";
+import EditPlaylist from "./EditPlaylist";
 
 export {
   Login as LoginPage,
@@ -12,4 +13,5 @@ export {
   VideoPlayback as VideoPlaybackPage,
   Dashboard as DashboardPage,
   ChannelProfile as ChannelProfilePage,
+  EditPlaylist as EditPlaylistPage,
 };
