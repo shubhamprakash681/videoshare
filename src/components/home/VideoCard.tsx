@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatVideoDuration } from "@/lib/video";
 import React from "react";
+import { Card } from "../ui/card";
 
 type VideoCardProps = {
   title: string;
@@ -26,10 +27,10 @@ const VideoCard: React.FC<VideoCardProps> = ({
   onClick,
 }) => {
   return (
-    <div
+    <Card
       onClick={onClick}
       style={{ maxWidth: "420px" }}
-      className="w-full bg-card rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 dark:shadow-gray-700/30 cursor-pointer"
+      className="w-full min-w-full overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 dark:shadow-gray-700/30 cursor-pointer"
     >
       <div className="relative">
         <img
@@ -58,7 +59,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
           <span>{createdAt}</span>
         </div>
       </div>
-    </div>
+    </Card>
   );
 };
 

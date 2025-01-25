@@ -23,7 +23,7 @@ const ChannelVideos: React.FC<ChannelVideoProps> = ({
 
   if (channelVideosRes.docs.length) {
     return (
-      <div className="px-2 py-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-center justify-items-center gap-4">
+      <div className="p-2 sm:p-3 md:p-4 lg:p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-center justify-items-center gap-4">
         {channelVideosRes.docs.map((video: IVideo) => (
           <VideoCard
             key={video._id}

@@ -133,9 +133,12 @@ const PlaylistResult: React.FC<PlaylistResultProps> = ({
   }
 
   return (
-    <div className="p-2 sm:p-3 md:p-4 lg:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-center justify-items-center gap-4">
+    <div className="p-2 sm:p-3 md:p-4 lg:p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-center justify-items-center gap-4">
       {channelPlaylistRes.docs.map((playlist) => (
-        <Card key={playlist._id} className="overflow-hidden">
+        <Card
+          key={playlist._id}
+          className="w-full min-w-full overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 dark:shadow-gray-700/30"
+        >
           <CardHeader className="relative p-0">
             <div className="group relative">
               <img
