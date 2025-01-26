@@ -89,16 +89,17 @@ const Header = () => {
       </div>
 
       <div
-        className="w-full grid items-center space-x-3"
+        className="w-full grid items-center space-x-1 sm:space-x-3"
         style={{ gridTemplateColumns: "1fr auto" }}
       >
         <SearchBox />
 
-        <div className="justify-self-end flex items-center space-x-1">
+        <div className="justify-self-end flex items-center space-x-1 sm:space-x-2">
           <ThemeToggleButton
             key={"theme-toggle-md"}
             theme={theme}
             dispatch={dispatch}
+            className="p-3 w-10 h-10 rounded-full"
           />
           {isAuthenticated ? (
             <ProfileDropdown avatarUrl={userData?.avatar.url || ""} />

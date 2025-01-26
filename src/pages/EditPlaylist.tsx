@@ -21,6 +21,7 @@ import {
   ArrowLeft,
   Globe,
   GripVertical,
+  Info,
   Lock,
   Pencil,
   Save,
@@ -43,6 +44,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // Extend Day.js with the relativeTime plugin
 dayjs.extend(relativeTime);
@@ -587,13 +594,36 @@ const EditPlaylist: React.FC<EditPlaylistProps> = ({}) => {
                           </div>
                         </div>
 
-                        <Button
-                          variant="ghost"
-                          className="flex items-center justify-center p-2 "
-                          onClick={() => setRemoveVideoId(video._id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <div className="flex items-center gap-1 md:gap-2">
+                          {playlistVideos.length === 1 && (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    className="flex items-center justify-center p-2 w-9 rounded-full cursor-default"
+                                  >
+                                    <Info className="h-2 w-2" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>
+                                    You cannot delete this video as it is the
+                                    only video in this Playlist
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          )}
+                          <Button
+                            variant="destructive"
+                            className="flex items-center justify-center p-2 w-9 rounded-full"
+                            onClick={() => setRemoveVideoId(video._id)}
+                            disabled={playlistVideos.length === 1}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     ))}
                   </div>
