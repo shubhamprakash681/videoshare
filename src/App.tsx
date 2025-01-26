@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "./hooks/useStore";
 import { Footer, Header, SidebarContainer } from "./components";
 import { IUser } from "./types/collections";
@@ -24,7 +24,6 @@ const App: React.FC = () => {
   const { bottomContainerMinWidth } = useResponsiveBottomContainer();
 
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const { toast } = useToast();
 
   const [SIDEBAR_WIDTH_CLOSED, setSIDEBAR_WIDTH_CLOSED] =
@@ -50,7 +49,6 @@ const App: React.FC = () => {
       toast({
         title: res.data.message,
       });
-      navigate("/");
     }
   };
 
@@ -122,7 +120,7 @@ const App: React.FC = () => {
                   : isSidebarOpen
                   ? `calc(100% - ${SIDEBAR_WIDTH})`
                   : `calc(100% - ${SIDEBAR_WIDTH_CLOSED})`,
-                border: "1px solid green",
+                // border: "1px solid green",
               }}
             >
               <Outlet />

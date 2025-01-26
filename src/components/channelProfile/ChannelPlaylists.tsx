@@ -31,6 +31,7 @@ import { AxiosAPIInstance } from "@/lib/AxiosInstance";
 import { useToast } from "@/hooks/use-toast";
 import useSanitizedHTML from "@/hooks/useSanitizedHTML";
 import { useNavigate } from "react-router-dom";
+import { IPlaylist } from "@/types/collections";
 
 // Extend Day.js with the relativeTime plugin
 dayjs.extend(relativeTime);
@@ -96,6 +97,12 @@ const PlaylistResult: React.FC<PlaylistResultProps> = ({
     }
   };
 
+  const navigateToPlaylist = (playlist: IPlaylist) => {
+    navigate(`/playlist/${playlist._id}`, {
+      state: { playlist, video: playlist.videos[0] },
+    });
+  };
+
   const getVisibilityIcon = (visibility: "public" | "private" | "all") => {
     if (visibility === "private") {
       return <Lock className="h-4 w-4" />;
@@ -151,6 +158,7 @@ const PlaylistResult: React.FC<PlaylistResultProps> = ({
                   variant="secondary"
                   size="icon"
                   className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={() => navigateToPlaylist(playlist)}
                 >
                   <Play className="h-6 w-6" />
                 </Button>
@@ -183,7 +191,10 @@ const PlaylistResult: React.FC<PlaylistResultProps> = ({
                     className="w-36 flex flex-col space-y-2 p-2"
                     align="end"
                   >
-                    <Button variant={"ghost"}>
+                    <Button
+                      variant={"ghost"}
+                      onClick={() => navigateToPlaylist(playlist)}
+                    >
                       <Play className="h-4 w-4" />
                       Play
                     </Button>

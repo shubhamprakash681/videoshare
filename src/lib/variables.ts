@@ -13,8 +13,11 @@ export const PathConstants = {
   LOGIN: "/login",
   SIGNUP: "/signup",
   DASHBOARD: "/dashboard",
-  VIDEO: "/video/:id",
+  VIDEO: "/video/:videoId",
+  PLAYLIST: "/playlist/:playlistId",
   MYCHANNEL: "/me",
   CHANNEL: "/:channelname",
   EDITPLAYLIST: "/edit-playlist/:playlistId",
 };
+
+export const authPaths = [PathConstants.LOGIN, PathConstants.SIGNUP];

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { IVideo } from "@/types/collections";
+import { IPlaylist, IVideo } from "@/types/collections";
 import PageContainer from "@/components/ui/PageContainer";
 import {
   AddPlaylistModal,
@@ -17,6 +17,7 @@ import { ThumbsUp, ThumbsDown, MoreVertical } from "lucide-react";
 import {
   APIResponse,
   ChannelProfile,
+  GetPlaylistResponse,
   GetVideoCommentsResponse,
   VideoCommentData,
   VideoLikeData,
@@ -27,6 +28,7 @@ import { AxiosAPIInstance } from "@/lib/AxiosInstance";
 import { useAppSelector } from "@/hooks/useStore";
 import { formatCount } from "@/lib/video";
 import useSanitizedHTML from "@/hooks/useSanitizedHTML";
+import Loader from "@/components/ui/Loader";
 
 // Extend Day.js with the relativeTime plugin
 dayjs.extend(relativeTime);
@@ -83,7 +85,23 @@ const VideoPlayback: React.FC = () => {
   const [channelProfile, setChannelProfile] = useState<ChannelProfile>(
     defaultChannelProfileData
   );
-  const videoData = location.state as { video: IVideo };
+
+  const locationStates = location.state as {
+    video: IVideo;
+    playlist: IPlaylist;
+  };
+  console.log("here, locationStates", locationStates);
+
+  const [videoData, setVideoData] = useState<IVideo | undefined>(
+    locationStates && locationStates.video ? locationStates.video : undefined
+  );
+  const [playlistData, setPlaylistData] = useState<IPlaylist | undefined>(
+    locationStates && locationStates.playlist
+      ? locationStates.playlist
+      : undefined
+  );
+  const [loadingFirstTime, setLoadingFirstTime] = useState<boolean>(true);
+
   const [videoLikeData, setVideoLikeData] = useState<VideoLikeData | null>(
     null
   );
@@ -115,7 +133,7 @@ const VideoPlayback: React.FC = () => {
     try {
       setIsLoading({ ...isLoading, toggleSubscribe: true });
       const { data } = await AxiosAPIInstance.post<APIResponse<null>>(
-        `/api/v1/subscription/channel/${videoData.video.owner._id}`
+        `/api/v1/subscription/channel/${videoData?.owner._id}`
       );
       if (data.success) {
         toast({ title: data.message });
@@ -167,7 +185,7 @@ const VideoPlayback: React.FC = () => {
     try {
       setIsLoading({ ...isLoading, toggleLike: true });
       const { data } = await AxiosAPIInstance.get<APIResponse<VideoLikeData>>(
-        `/api/v1/video/likes/${videoData.video._id}`
+        `/api/v1/video/likes/${videoData?._id}`
       );
       if (data.success && data.data) {
         setVideoLikeData(data.data);
@@ -194,7 +212,7 @@ const VideoPlayback: React.FC = () => {
       const { data } = await AxiosAPIInstance.get<
         APIResponse<GetVideoCommentsResponse>
       >(
-        `/api/v1/comment/${videoData.video._id}?page=${commentQueryStates.page}&limit=${commentQueryStates.limit}`
+        `/api/v1/comment/${videoData?._id}?page=${commentQueryStates.page}&limit=${commentQueryStates.limit}`
       );
 
       if (data.success && data.data) {
@@ -226,7 +244,7 @@ const VideoPlayback: React.FC = () => {
     try {
       setIsLoading({ ...isLoading, toggleLike: true });
       const { data } = await AxiosAPIInstance.post<APIResponse<null>>(
-        `/api/v1/like/video/${videoData.video._id}?likeType=${
+        `/api/v1/like/video/${videoData?._id}?likeType=${
           videoLikeData?.isLiked ? "delete" : "like"
         }`
       );
@@ -252,7 +270,7 @@ const VideoPlayback: React.FC = () => {
     try {
       setIsLoading({ ...isLoading, toggleLike: true });
       const { data } = await AxiosAPIInstance.post<APIResponse<null>>(
-        `/api/v1/like/video/${videoData.video._id}?likeType=${
+        `/api/v1/like/video/${videoData?._id}?likeType=${
           videoLikeData?.isDisliked ? "delete" : "dislike"
         }`
       );
@@ -276,23 +294,94 @@ const VideoPlayback: React.FC = () => {
   };
 
   const handleRefresh = async () => {
-    if (videoData.video.owner.username) {
-      await fetchChannelProfile(videoData.video.owner.username);
+    if (videoData?.owner.username) {
+      await fetchChannelProfile(videoData?.owner.username);
     }
     await fetchVideoLikeData();
     setCommentQueryStates({ limit: 10, page: 1 });
 
     setIsFetchError(false);
   };
-  useEffect(() => {
-    if (videoData.video.owner.username) {
-      fetchChannelProfile(videoData.video.owner.username);
+
+  const getPageName: () => "video" | "playlist" | null = () => {
+    const splittedPathname = location.pathname.split("/");
+
+    if (splittedPathname.includes("video")) {
+      return "video";
+    } else if (splittedPathname.includes("playlist")) {
+      return "playlist";
     }
-    fetchVideoLikeData();
-  }, [videoData.video.owner.username]);
+
+    return null;
+  };
+  // Function to handle full page refresh when error occurs or when user landed on the page directly
+  const handleFullPageRefresh = async () => {
+    const pageName = getPageName();
+    const splittedPathname = location.pathname.split("/");
+
+    if (pageName === "video" && !videoData) {
+      // fetch video data
+      try {
+        const { data } = await AxiosAPIInstance.get<APIResponse<IVideo>>(
+          `/api/v1/video/${splittedPathname[splittedPathname.length - 1]}`
+        );
+
+        if (data.success && data.data) {
+          setVideoData(data.data);
+          setLoadingFirstTime(false);
+        }
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          toast({
+            title: error.response?.data.message || "Failed to fetch video",
+            variant: "destructive",
+          });
+        }
+
+        console.error(error);
+      }
+    } else if (pageName === "playlist" && !playlistData) {
+      // fetch playlist data
+      try {
+        const { data } = await AxiosAPIInstance.get<
+          APIResponse<GetPlaylistResponse>
+        >(`/api/v1/playlist/${splittedPathname[splittedPathname.length - 1]}`);
+
+        if (data.success && data.data?.docs.length) {
+          setPlaylistData(data.data?.docs[0]);
+          setVideoData(data.data?.docs[0].videos[0] as unknown as IVideo);
+          setLoadingFirstTime(false);
+        }
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          toast({
+            title: error.response?.data.message || "Failed to fetch playlist",
+            variant: "destructive",
+          });
+        }
+
+        console.error(error);
+      }
+    } else {
+      setLoadingFirstTime(false);
+    }
+  };
+
   useEffect(() => {
-    fetchVideoComments();
-  }, [videoData.video._id, commentQueryStates.page, commentQueryStates.limit]);
+    handleFullPageRefresh();
+  }, []);
+
+  useEffect(() => {
+    if (videoData?._id) {
+      fetchChannelProfile(videoData.owner.username);
+      fetchVideoLikeData();
+    }
+  }, [videoData?._id]);
+  useEffect(() => {
+    if (videoData?._id) {
+      fetchVideoComments();
+    }
+  }, [videoData?._id, commentQueryStates.page, commentQueryStates.limit]);
 
   useEffect(() => {
     resizeHandler();
@@ -304,6 +393,22 @@ const VideoPlayback: React.FC = () => {
     };
   }, []);
 
+  if (loadingFirstTime) {
+    return (
+      <PageContainer className="py-4 sm:py-6 lg:py-8 px-2 md:px-4 lg:px-6 flex items-center">
+        <Loader />
+      </PageContainer>
+    );
+  }
+
+  if (!videoData) {
+    return (
+      <PageContainer className="py-4 sm:py-6 lg:py-8 px-2 md:px-4 lg:px-6 flex items-center">
+        <ErrorStateComp handleRefresh={handleFullPageRefresh} />
+      </PageContainer>
+    );
+  }
+
   return (
     <PageContainer className="py-4 sm:py-6 lg:py-8 px-2 md:px-4 lg:px-6">
       <div
@@ -311,10 +416,10 @@ const VideoPlayback: React.FC = () => {
         style={{ gridTemplateColumns: isSmallerScreen ? "1fr" : "1fr 350px" }}
       >
         <div className="mx-auto max-w-7xl">
-          <VideoPlayer videoData={videoData.video} />
+          <VideoPlayer videoData={videoData} />
 
           <div className="mt-4">
-            <h1 className="text-2xl font-bold mb-2">{videoData.video.title}</h1>
+            <h1 className="text-2xl font-bold mb-2">{videoData?.title}</h1>
 
             {isFetchError ? (
               <ErrorStateComp handleRefresh={handleRefresh} />
@@ -323,24 +428,22 @@ const VideoPlayback: React.FC = () => {
                 <div className="flex items-center justify-between mb-4">
                   <Link
                     to={
-                      userData?._id === videoData.video.owner._id
+                      userData?._id === videoData?.owner._id
                         ? "/me"
-                        : `/${videoData.video.owner.username}`
+                        : `/${videoData?.owner.username}`
                     }
                   >
                     <div className="flex items-center space-x-4">
                       <Avatar className="h-10 w-10">
                         <AvatarImage
-                          src={
-                            videoData.video.owner.avatar as unknown as string
-                          }
+                          src={videoData?.owner.avatar as unknown as string}
                           alt="Channel Avatar"
                         />
                         <AvatarFallback>CN</AvatarFallback>
                       </Avatar>
                       <div>
                         <h2 className="font-semibold">
-                          {videoData.video.owner.fullname}
+                          {videoData?.owner.fullname}
                         </h2>
                         <p className="text-sm text-gray-500 dark:text-gray-400">
                           {channelProfile && channelProfile.subscriberCount}{" "}
@@ -407,8 +510,8 @@ const VideoPlayback: React.FC = () => {
                     <span>Dislike</span>
                   </Button>
                   <AddPlaylistModal
-                    videoId={videoData.video._id}
-                    videoTitle={videoData.video.title}
+                    videoId={videoData?._id}
+                    videoTitle={videoData?.title}
                   />
                   <Button variant="outline" size="icon">
                     <MoreVertical className="h-4 w-4" />
@@ -417,16 +520,16 @@ const VideoPlayback: React.FC = () => {
                 <div className="bg-secondary rounded-lg p-4">
                   <p className="text-sm mb-2 space-x-1">
                     <span>
-                      {formatCount(videoData.video.views)}
-                      {videoData.video.views > 1 ? " views" : " view"}
+                      {formatCount(videoData?.views)}
+                      {videoData?.views > 1 ? " views" : " view"}
                     </span>
                     <span>•</span>
                     <span>
-                      {dayjs(new Date(videoData.video.createdAt)).from(now)}
+                      {dayjs(new Date(videoData?.createdAt)).from(now)}
                     </span>
                   </p>
                   <p className="text-sm">
-                    {parse(sanitizeHTMLContent(videoData.video.description))}
+                    {parse(sanitizeHTMLContent(videoData?.description))}
                   </p>
                 </div>
               </>
@@ -440,7 +543,7 @@ const VideoPlayback: React.FC = () => {
               isInputFocusedByDefault={false}
               userAvatarUrl={userData?.avatar.url || ""}
               refreshVideoComments={refreshVideoComments}
-              videoId={videoData.video._id}
+              videoId={videoData?._id}
             />
 
             {commentsData?.totalDocs === 0 && (
@@ -456,7 +559,7 @@ const VideoPlayback: React.FC = () => {
                 commentData={comment}
                 currTimestamp={now}
                 refreshVideoComments={refreshVideoComments}
-                videoId={videoData.video._id}
+                videoId={videoData?._id}
               />
             ))}
           </div>

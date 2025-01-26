@@ -21,7 +21,7 @@ const Footer: React.FC<FooterProps> = ({
           : isSidebarOpen
           ? `calc(100% - ${SIDEBAR_WIDTH})`
           : `calc(100% - ${SIDEBAR_WIDTH_CLOSED})`,
-        border: "1px solid green",
+        // border: "1px solid green",
       }}
       className="p-3 bg-secondary"
     >

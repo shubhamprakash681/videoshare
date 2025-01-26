@@ -34,7 +34,22 @@ const appRouter = createBrowserRouter(
           </ProtectedAuthLayout>
         }
       />
-      <Route path={PathConstants.VIDEO} element={<VideoPlaybackPage />} />
+      <Route
+        path={PathConstants.VIDEO}
+        element={
+          <ProtectedAuthLayout authentication={false}>
+            <VideoPlaybackPage />
+          </ProtectedAuthLayout>
+        }
+      />
+      <Route
+        path={PathConstants.PLAYLIST}
+        element={
+          <ProtectedAuthLayout authentication={false}>
+            <VideoPlaybackPage />
+          </ProtectedAuthLayout>
+        }
+      />
       <Route
         path={PathConstants.DASHBOARD}
         element={

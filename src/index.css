@@ -131,7 +131,7 @@
 
 .custom-sidebar {
   height: calc(100dvh - var(--navbar-height)) !important;
-  border: 1px solid red;
+  /* border: 1px solid red; */
   position: fixed;
   top: var(--navbar-height);
 
