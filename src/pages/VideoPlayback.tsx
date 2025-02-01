@@ -6,6 +6,7 @@ import {
   AddPlaylistModal,
   CommentCard,
   CommentInput,
+  RightPanel,
   VideoPlayer,
 } from "@/components";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -412,8 +413,8 @@ const VideoPlayback: React.FC = () => {
   return (
     <PageContainer className="py-4 sm:py-6 lg:py-8 px-2 md:px-4 lg:px-6">
       <div
-        className="grid"
-        style={{ gridTemplateColumns: isSmallerScreen ? "1fr" : "1fr 350px" }}
+        className={`grid ${!isSmallerScreen && "gap-3 2xl:gap-6"}`}
+        style={{ gridTemplateColumns: isSmallerScreen ? "1fr" : "1fr 480px" }}
       >
         <div className="mx-auto max-w-7xl">
           <VideoPlayer videoData={videoData} />
@@ -565,9 +566,15 @@ const VideoPlayback: React.FC = () => {
           </div>
         </div>
 
-        <div className={`${isSmallerScreen ? "py-4" : "pl-2"}`}>
-          <h3 className="font-semibold">Suggestions</h3>
-        </div>
+        {getPageName() && (
+          <div className={`${isSmallerScreen ? "py-4" : "pl-2 2xl:pl-4"}`}>
+            <RightPanel
+              pageName={getPageName() as "video" | "playlist"}
+              playlistData={playlistData}
+              setVideoData={setVideoData}
+            />
+          </div>
+        )}
       </div>
     </PageContainer>
   );

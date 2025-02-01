@@ -5,6 +5,7 @@ import Header from "./header/Header";
 import SidebarContainer from "./sidebar/SidebarContainer";
 import VideoCard from "./home/VideoCard";
 import VideoPlayer from "./videoplayer/VideoPlayer";
+import RightPanel from "./videoplayer/RightPanel";
 import AddPlaylistModal from "./videoplayer/AddPlaylistModal";
 
 import StatCard from "./dashboard/StatCard";
@@ -26,6 +27,7 @@ export {
   SidebarContainer,
   VideoCard,
   VideoPlayer,
+  RightPanel,
   AddPlaylistModal,
   StatCard,
   VideoUploadDialog,
