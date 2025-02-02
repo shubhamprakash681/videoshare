@@ -30,6 +30,7 @@ import { useAppSelector } from "@/hooks/useStore";
 import { formatCount } from "@/lib/video";
 import useSanitizedHTML from "@/hooks/useSanitizedHTML";
 import Loader from "@/components/ui/Loader";
+import ErrorStateComp from "@/components/ui/ErrorStateComp";
 
 // Extend Day.js with the relativeTime plugin
 dayjs.extend(relativeTime);
@@ -50,23 +51,6 @@ const defaultChannelProfileData: ChannelProfile = {
   subscribedToCount: 0,
   subscriberCount: 0,
   username: "",
-};
-
-type ErrorStateCompProps = {
-  handleRefresh: () => void;
-};
-const ErrorStateComp: React.FC<ErrorStateCompProps> = ({ handleRefresh }) => {
-  return (
-    <div className="w-full h-28 flex flex-col items-center justify-evenly">
-      <p>
-        Failed to fetch resources. Please{" "}
-        <Button onClick={handleRefresh} className="p-0 h-fit" variant="link">
-          Refresh
-        </Button>{" "}
-        this page
-      </p>
-    </div>
-  );
 };
 
 type isLoadingStates = {
@@ -91,7 +75,6 @@ const VideoPlayback: React.FC = () => {
     video: IVideo;
     playlist: IPlaylist;
   };
-  console.log("here, locationStates", locationStates);
 
   const [videoData, setVideoData] = useState<IVideo | undefined>(
     locationStates && locationStates.video ? locationStates.video : undefined
@@ -315,12 +298,16 @@ const VideoPlayback: React.FC = () => {
 
     return null;
   };
+
   // Function to handle full page refresh when error occurs or when user landed on the page directly
   const handleFullPageRefresh = async () => {
     const pageName = getPageName();
     const splittedPathname = location.pathname.split("/");
 
-    if (pageName === "video" && !videoData) {
+    if (
+      pageName === "video" &&
+      (!videoData || videoData._id !== locationStates?.video?._id)
+    ) {
       // fetch video data
       try {
         const { data } = await AxiosAPIInstance.get<APIResponse<IVideo>>(
@@ -341,7 +328,10 @@ const VideoPlayback: React.FC = () => {
 
         console.error(error);
       }
-    } else if (pageName === "playlist" && !playlistData) {
+    } else if (
+      pageName === "playlist" &&
+      (!playlistData || playlistData._id !== locationStates?.playlist?._id)
+    ) {
       // fetch playlist data
       try {
         const { data } = await AxiosAPIInstance.get<
@@ -370,7 +360,7 @@ const VideoPlayback: React.FC = () => {
 
   useEffect(() => {
     handleFullPageRefresh();
-  }, []);
+  }, [locationStates]);
 
   useEffect(() => {
     if (videoData?._id) {
@@ -571,7 +561,9 @@ const VideoPlayback: React.FC = () => {
             <RightPanel
               pageName={getPageName() as "video" | "playlist"}
               playlistData={playlistData}
+              currentVideoId={videoData._id}
               setVideoData={setVideoData}
+              handleFullPageRefresh={handleFullPageRefresh}
             />
           </div>
         )}
