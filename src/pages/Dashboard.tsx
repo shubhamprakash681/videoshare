@@ -23,12 +23,13 @@ import { updateVideoSchema } from "@/schema";
 import {
   APIResponse,
   ChannelStatsResponse,
-  ChannelVideosResponse,
+  ChannelVideoDoc,
 } from "@/types/APIResponse";
 import { z } from "zod";
 import { AxiosError } from "axios";
 import { Eye, ThumbsUp, Upload, Users, Video } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import useInfiniteFetch from "@/hooks/useInfiniteFetch";
 
 interface UpdateVideoModalData {
   videoId: string | null;
@@ -50,20 +51,6 @@ const Dashboard: React.FC = () => {
     totalViews: 0,
   });
 
-  const [channelVideosState, setChannelVideosState] =
-    useState<ChannelVideosResponse>({
-      docs: [],
-      hasNextPage: false,
-      hasPrevPage: false,
-      limit: 10,
-      nextPage: null,
-      page: 1,
-      pagingCounter: 0,
-      prevPage: null,
-      totalDocs: 0,
-      totalPages: 0,
-    });
-
   const [deleteVideoId, setDeleteVideoId] = useState<string | null>(null);
   const [updateVideoModalData, setUpdateVideoModalData] =
     useState<UpdateVideoModalData>({ initialValues: null, videoId: null });
@@ -82,7 +69,7 @@ const Dashboard: React.FC = () => {
           toast({ title: data.message });
 
           await fetchChannelStats();
-          await fetchChannelVideos();
+          await refetchChannelVideos();
 
           setDeleteVideoId(null);
         }
@@ -123,40 +110,16 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const fetchChannelVideos = async () => {
-    try {
-      const { data } = await AxiosAPIInstance.get<
-        APIResponse<ChannelVideosResponse>
-      >(
-        `/api/v1/dashboard/videos?page=${channelVideosState.page}&limit=${channelVideosState.limit}`
-      );
+  const {
+    data: channelVideosState,
+    error: channelVideosResError,
+    isLoading: isChannelVideosResLoading,
+    loaderRef: channelVideosResLoaderRef,
+    refreshData: channelVideosRefetch,
+  } = useInfiniteFetch<ChannelVideoDoc>("/api/v1/dashboard/videos");
 
-      if (data.success && data.data) {
-        setChannelVideosState(data.data);
-      }
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        toast({
-          title:
-            error.response?.data.message || "Failed to fetch Chennel Videos",
-          variant: "destructive",
-        });
-
-        setChannelVideosState({
-          docs: [],
-          hasNextPage: false,
-          hasPrevPage: false,
-          limit: 10,
-          nextPage: null,
-          page: 1,
-          pagingCounter: 0,
-          prevPage: null,
-          totalDocs: 0,
-          totalPages: 0,
-        });
-        console.error(error);
-      }
-    }
+  const refetchChannelVideos = async () => {
+    await channelVideosRefetch();
   };
 
   useEffect(() => {
@@ -168,14 +131,14 @@ const Dashboard: React.FC = () => {
       videoUploadModalDirty
     ) {
       fetchChannelStats();
-      fetchChannelVideos();
+      refetchChannelVideos();
       setVideoUploadModalDirty(false);
     }
   }, [openVideoUploadModal, updateVideoModalData.videoId]);
 
-  useEffect(() => {
-    fetchChannelVideos();
-  }, [channelVideosState.limit, channelVideosState.page]);
+  // useEffect(() => {
+  //   refetchChannelVideos();
+  // }, [channelVideosState.limit, channelVideosState.page]);
 
   return (
     <PageContainer className="py-4 sm:py-8 lg:py-16 px-2 md:px-4 lg:px-6">
@@ -226,7 +189,10 @@ const Dashboard: React.FC = () => {
         <TabsContent value="videos">
           <VideoTable
             channelVideosState={channelVideosState}
-            setChannelVideosState={setChannelVideosState}
+            channelVideosResError={channelVideosResError}
+            isChannelVideosResLoading={isChannelVideosResLoading}
+            channelVideosResLoaderRef={channelVideosResLoaderRef}
+            refetchChannelVideos={refetchChannelVideos}
             setDeleteVideoId={setDeleteVideoId}
             setUpdateVideoModalData={setUpdateVideoModalData}
           />

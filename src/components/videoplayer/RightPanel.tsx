@@ -72,9 +72,11 @@ const SuggestionSection: React.FC<ISuggestionSection> = memo(
 
         {!data.hasNextPage &&
           (data.docs.length ? (
-            <div className="text-center my-5">No more suggestions</div>
+            <div className="text-center my-5 text-muted-foreground">
+              No more suggestions
+            </div>
           ) : (
-            <div className="text-center my-5">
+            <div className="text-center my-5 text-muted-foreground">
               No Suggestions for this video
             </div>
           ))}

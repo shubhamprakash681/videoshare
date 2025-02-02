@@ -1,28 +1,39 @@
-import { GetVideosResponse } from "@/types/APIResponse";
+import { AggregatedResponse } from "@/types/APIResponse";
 import React from "react";
 import VideoCard from "../home/VideoCard";
 import { IVideo } from "@/types/collections";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import ErrorStateComp from "../ui/ErrorStateComp";
+import Loader from "../ui/Loader";
 
 // Extend Day.js with the relativeTime plugin
 dayjs.extend(relativeTime);
 
 type ChannelVideoProps = {
-  channelVideosRes: GetVideosResponse;
-  isLoading: boolean;
+  channelVideosRes: AggregatedResponse<IVideo>;
+  channelVideosError: Error | undefined;
+  channelVideosLoading: boolean;
+  channelVideosLoaderRef: React.RefObject<HTMLDivElement>;
+  channelVideosRefresh: () => Promise<void>;
 };
 
 const ChannelVideos: React.FC<ChannelVideoProps> = ({
   channelVideosRes,
-  isLoading,
+  channelVideosError,
+  channelVideosLoaderRef,
+  channelVideosLoading,
+  channelVideosRefresh,
 }) => {
   const navigate = useNavigate();
   const now = dayjs();
 
-  if (channelVideosRes.docs.length) {
-    return (
+  if (channelVideosError)
+    return <ErrorStateComp handleRefresh={channelVideosRefresh} />;
+
+  return (
+    <div>
       <div className="p-2 sm:p-3 md:p-4 lg:p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-center justify-items-center gap-4">
         {channelVideosRes.docs.map((video: IVideo) => (
           <VideoCard
@@ -46,12 +57,22 @@ const ChannelVideos: React.FC<ChannelVideoProps> = ({
           />
         ))}
       </div>
-    );
-  }
-  return (
-    <p className="px-2 py-4 h-36 flex items-center justify-evenly">
-      {!isLoading && "This channel has no videos yet."}
-    </p>
+
+      <div ref={channelVideosLoaderRef} className="text-center my-5">
+        {channelVideosLoading && <Loader />}
+      </div>
+
+      {!channelVideosRes.hasNextPage &&
+        (channelVideosRes.docs.length ? (
+          <div className="text-center my-5 text-muted-foreground">
+            No more videos
+          </div>
+        ) : (
+          <div className="text-center my-5 text-muted-foreground">
+            This channel has no videos yet.
+          </div>
+        ))}
+    </div>
   );
 };
 

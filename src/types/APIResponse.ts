@@ -7,25 +7,13 @@ export type APIResponse<T> = {
   success: boolean;
 };
 
-export interface GetVideosResponse {
-  docs: IVideo[];
-  hasNextPage: boolean;
-  hasPrevPage: boolean;
-  limit: number;
-  nextPage: number | null;
-  page: number;
-  pagingCounter: number;
-  prevPage: number | null;
-  totalDocs: number;
-  totalPages: number;
-}
 export interface ChannelStatsResponse {
   totalLikes: number;
   totalViews: number;
   totalVideos: number;
   totalSubscribers: number;
 }
-interface ChannelVideoDoc extends IVideo {
+export interface ChannelVideoDoc extends IVideo {
   likeCount: number;
   commentCount: number;
 }
@@ -80,18 +68,6 @@ export interface VideoCommentData {
   isDisliked: boolean;
 
   replies?: VideoCommentData[];
-}
-export interface GetVideoCommentsResponse {
-  docs: VideoCommentData[];
-  hasNextPage: boolean;
-  hasPrevPage: boolean;
-  limit: number;
-  nextPage: number | null;
-  page: number;
-  pagingCounter: number;
-  prevPage: number | null;
-  totalDocs: number;
-  totalPages: number;
 }
 
 export interface GetPlaylistResponse {

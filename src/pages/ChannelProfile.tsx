@@ -15,17 +15,15 @@ import PageContainer from "@/components/ui/PageContainer";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import useInfiniteFetch from "@/hooks/useInfiniteFetch";
 import { useAppSelector } from "@/hooks/useStore";
 import { AxiosAPIInstance } from "@/lib/AxiosInstance";
 import { formatCount } from "@/lib/video";
 import {
   APIResponse,
   ChannelProfile as ChannelProfileType,
-  GetPlaylistResponse,
-  GetVideosResponse,
 } from "@/types/APIResponse";
-import { QueryStates } from "@/types/channelProfile";
-import { IUser } from "@/types/collections";
+import { IPlaylist, IUser, IVideo } from "@/types/collections";
 import { AxiosError } from "axios";
 import {
   Camera,
@@ -44,8 +42,6 @@ type isLoadingStates = {
   toggleSubscribe: boolean;
   coverImageChange: boolean;
   avatarImageChange: boolean;
-  channelVideos: boolean;
-  channelPlaylist: boolean;
 };
 
 const ChannelProfile: React.FC = () => {
@@ -57,6 +53,10 @@ const ChannelProfile: React.FC = () => {
 
   const isOwner = location.pathname === "/me";
   const channelname = params.channelname || userData?.username;
+
+  const [selectedPlaylistVisibility, setSelectedPlaylistVisibility] = useState<
+    "public" | "private" | "all"
+  >("all");
 
   const [channelProfile, setChannelProfile] =
     useState<ChannelProfileType | null>(null);
@@ -72,49 +72,27 @@ const ChannelProfile: React.FC = () => {
     toggleSubscribe: false,
     coverImageChange: false,
     avatarImageChange: false,
-    channelVideos: false,
-    channelPlaylist: false,
   });
 
-  const [queryStates, setQueryStates] = useState<QueryStates>({
-    channelVideosQuery: {
-      page: 1,
-      limit: 10,
-    },
-    channelPlaylistQuery: {
-      page: 1,
-      limit: 10,
-      visibility: "all",
-    },
-  });
+  const {
+    data: channelVideosRes,
+    error: channelVideosError,
+    isLoading: channelVideosLoading,
+    loaderRef: channelVideosLoaderRef,
+    refreshData: channelVideosRefresh,
+  } = useInfiniteFetch<IVideo>(`/api/v1/video?userId=${channelProfile?._id}`);
 
-  const [channelVideosRes, setChannelVideosRes] = useState<GetVideosResponse>({
-    docs: [],
-    hasNextPage: false,
-    hasPrevPage: false,
-    limit: 10,
-    nextPage: null,
-    page: 1,
-    pagingCounter: 1,
-    prevPage: null,
-    totalDocs: 0,
-    totalPages: 0,
-  });
-  const [channelPlaylistRes, setChannelPlaylistRes] =
-    useState<GetPlaylistResponse>({
-      docs: [],
-      hasNextPage: false,
-      hasPrevPage: false,
-      limit: 10,
-      nextPage: null,
-      page: 1,
-      pagingCounter: 1,
-      prevPage: null,
-      totalDocs: 0,
-      totalPages: 0,
-    });
-
-  const [isFetchError, setIsFetchError] = useState<boolean>(false);
+  const {
+    data: channelPlaylistRes,
+    error: channelPlaylistErr,
+    isLoading: channelPlaylistLoading,
+    loaderRef: channelPlaylistLoaderRef,
+    refreshData: refreshChannelPlaylist,
+  } = useInfiniteFetch<IPlaylist>(
+    `/api/v1/playlist?userId=${channelProfile?._id}&visibility=${
+      isOwner ? selectedPlaylistVisibility : "public"
+    }`
+  );
 
   const fetchChannelProfile = async (channelname: string) => {
     try {
@@ -134,33 +112,8 @@ const ChannelProfile: React.FC = () => {
         });
       }
 
-      setIsFetchError(true);
+      // setIsFetchError(true);
       console.error(error);
-    }
-  };
-
-  const fetchChannelVideos = async (channelId: string) => {
-    try {
-      setIsLoading({ ...isLoading, channelVideos: true });
-      const res = await AxiosAPIInstance.get<APIResponse<GetVideosResponse>>(
-        `/api/v1/video?page=${queryStates.channelVideosQuery.page}&limit=${queryStates.channelVideosQuery.limit}&userId=${channelId}`
-      );
-
-      if (res.data.success && res.data.data) {
-        setChannelVideosRes(res.data.data);
-      }
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        toast({
-          title: error.response?.data.message || "Failed to fetch videos",
-          variant: "destructive",
-        });
-      }
-
-      setIsFetchError(true);
-      console.error(error);
-    } finally {
-      setIsLoading({ ...isLoading, channelVideos: false });
     }
   };
 
@@ -202,7 +155,7 @@ const ChannelProfile: React.FC = () => {
             variant: "destructive",
           });
         }
-        setIsFetchError(true);
+        // setIsFetchError(true);
         console.error(error);
       } finally {
         setIsLoading({ ...isLoading, coverImageChange: false });
@@ -228,7 +181,7 @@ const ChannelProfile: React.FC = () => {
           variant: "destructive",
         });
       }
-      setIsFetchError(true);
+      // setIsFetchError(true);
       console.error(error);
     } finally {
       setIsLoading({ ...isLoading, coverImageChange: false });
@@ -276,7 +229,7 @@ const ChannelProfile: React.FC = () => {
           });
         }
 
-        setIsFetchError(true);
+        // setIsFetchError(true);
         console.error(error);
       } finally {
         setIsLoading({ ...isLoading, avatarImageChange: false });
@@ -312,59 +265,16 @@ const ChannelProfile: React.FC = () => {
         });
       }
 
-      setIsFetchError(true);
+      // setIsFetchError(true);
       console.error(error);
     } finally {
       setIsLoading({ ...isLoading, toggleSubscribe: false });
     }
   };
 
-  const fetchChannelPlaylist = async (channelId: string) => {
-    try {
-      setIsLoading({ ...isLoading, channelPlaylist: true });
-      const res = await AxiosAPIInstance.get<APIResponse<GetPlaylistResponse>>(
-        `/api/v1/playlist?userId=${channelId}&visibility=${
-          isOwner ? queryStates.channelPlaylistQuery.visibility : "public"
-        }&page=${queryStates.channelPlaylistQuery.page}&limit=${
-          queryStates.channelPlaylistQuery.limit
-        }`
-      );
-
-      if (res.data.success && res.data.data) {
-        setChannelPlaylistRes(res.data.data);
-      }
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        toast({
-          title: error.response?.data.message || "Failed to fetch playlist",
-          variant: "destructive",
-        });
-      }
-
-      setIsFetchError(true);
-      console.error(error);
-    } finally {
-      setIsLoading({ ...isLoading, channelPlaylist: false });
-    }
-  };
-
-  const refreshChannelPlaylist = async () => {
-    if (channelProfile?._id) {
-      await fetchChannelPlaylist(channelProfile._id);
-    }
-  };
-
   useEffect(() => {
     channelname && fetchChannelProfile(channelname);
   }, [channelname]);
-  useEffect(() => {
-    if (channelProfile?._id) {
-      fetchChannelVideos(channelProfile._id);
-    }
-  }, [channelProfile?._id, queryStates.channelVideosQuery]);
-  useEffect(() => {
-    refreshChannelPlaylist();
-  }, [channelProfile?._id, queryStates.channelPlaylistQuery]);
 
   return (
     <PageContainer>
@@ -522,17 +432,22 @@ const ChannelProfile: React.FC = () => {
           <TabsContent value="videos">
             <ChannelVideos
               channelVideosRes={channelVideosRes}
-              isLoading={isLoading.channelVideos}
+              channelVideosLoading={channelVideosLoading}
+              channelVideosError={channelVideosError}
+              channelVideosLoaderRef={channelVideosLoaderRef}
+              channelVideosRefresh={channelVideosRefresh}
             />
           </TabsContent>
 
           <TabsContent value="playlists">
             <ChannelPlaylists
-              queryStates={queryStates}
-              setQueryStates={setQueryStates}
               channelPlaylistRes={channelPlaylistRes}
+              channelPlaylistErr={channelPlaylistErr}
+              channelPlaylistLoaderRef={channelPlaylistLoaderRef}
+              channelPlaylistLoading={channelPlaylistLoading}
+              selectedPlaylistVisibility={selectedPlaylistVisibility}
+              setSelectedPlaylistVisibility={setSelectedPlaylistVisibility}
               isOwner={isOwner}
-              isLoading={isLoading.channelPlaylist}
               refreshChannelPlaylist={refreshChannelPlaylist}
             />
           </TabsContent>

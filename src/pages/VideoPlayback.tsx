@@ -19,7 +19,6 @@ import {
   APIResponse,
   ChannelProfile,
   GetPlaylistResponse,
-  GetVideoCommentsResponse,
   VideoCommentData,
   VideoLikeData,
 } from "@/types/APIResponse";
@@ -31,6 +30,7 @@ import { formatCount } from "@/lib/video";
 import useSanitizedHTML from "@/hooks/useSanitizedHTML";
 import Loader from "@/components/ui/Loader";
 import ErrorStateComp from "@/components/ui/ErrorStateComp";
+import useManualFetch from "@/hooks/useManualFetch";
 
 // Extend Day.js with the relativeTime plugin
 dayjs.extend(relativeTime);
@@ -56,7 +56,6 @@ const defaultChannelProfileData: ChannelProfile = {
 type isLoadingStates = {
   toggleSubscribe: boolean;
   toggleLike: boolean;
-  videoCommentsLoading: boolean;
 };
 
 const VideoPlayback: React.FC = () => {
@@ -89,18 +88,19 @@ const VideoPlayback: React.FC = () => {
   const [videoLikeData, setVideoLikeData] = useState<VideoLikeData | null>(
     null
   );
-  const [commentQueryStates, setCommentQueryStates] = useState<{
-    limit: number;
-    page: number;
-  }>({ limit: 10, page: 1 });
-  const [commentsData, setCommentsData] =
-    useState<GetVideoCommentsResponse | null>(null);
+
+  const {
+    data: commentsData,
+    error: commentsError,
+    isLoading: isCommentsLoading,
+    onLoadMoreClick: onCommentsLoadMoreClick,
+    refreshData: refreshVideoComments,
+  } = useManualFetch<VideoCommentData>(`/api/v1/comment/${videoData?._id}`);
 
   const [isFetchError, setIsFetchError] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<isLoadingStates>({
     toggleSubscribe: false,
     toggleLike: false,
-    videoCommentsLoading: false,
   });
 
   const [isSmallerScreen, setIsSmallerScreen] = useState<boolean>(true);
@@ -189,41 +189,6 @@ const VideoPlayback: React.FC = () => {
     }
   };
 
-  const fetchVideoComments = async () => {
-    try {
-      setIsLoading({ ...isLoading, videoCommentsLoading: true });
-
-      const { data } = await AxiosAPIInstance.get<
-        APIResponse<GetVideoCommentsResponse>
-      >(
-        `/api/v1/comment/${videoData?._id}?page=${commentQueryStates.page}&limit=${commentQueryStates.limit}`
-      );
-
-      if (data.success && data.data) {
-        setCommentsData(data.data);
-      }
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        toast({
-          title:
-            error.response?.data.message || "Failed to fetch comments data",
-          variant: "destructive",
-        });
-      }
-
-      setIsFetchError(true);
-      console.error(error);
-    } finally {
-      setIsLoading({ ...isLoading, videoCommentsLoading: false });
-    }
-  };
-  const refreshVideoComments = async () => {
-    setCommentsData(null);
-    setCommentQueryStates({ limit: 10, page: 1 });
-
-    await fetchVideoComments();
-  };
-
   const toggleLike = async () => {
     try {
       setIsLoading({ ...isLoading, toggleLike: true });
@@ -282,7 +247,7 @@ const VideoPlayback: React.FC = () => {
       await fetchChannelProfile(videoData?.owner.username);
     }
     await fetchVideoLikeData();
-    setCommentQueryStates({ limit: 10, page: 1 });
+    await refreshVideoComments();
 
     setIsFetchError(false);
   };
@@ -368,11 +333,6 @@ const VideoPlayback: React.FC = () => {
       fetchVideoLikeData();
     }
   }, [videoData?._id]);
-  useEffect(() => {
-    if (videoData?._id) {
-      fetchVideoComments();
-    }
-  }, [videoData?._id, commentQueryStates.page, commentQueryStates.limit]);
 
   useEffect(() => {
     resizeHandler();
@@ -537,22 +497,45 @@ const VideoPlayback: React.FC = () => {
               videoId={videoData?._id}
             />
 
-            {commentsData?.totalDocs === 0 && (
-              <p className="w-full text-center text-muted-foreground">
-                This video does not have any comment yet.
-              </p>
-            )}
+            {commentsError ? (
+              <ErrorStateComp handleRefresh={handleRefresh} />
+            ) : (
+              <>
+                {commentsData?.docs.map((comment: VideoCommentData) => (
+                  <CommentCard
+                    key={comment._id}
+                    commentData={comment}
+                    currTimestamp={now}
+                    refreshVideoComments={refreshVideoComments}
+                    videoId={videoData?._id}
+                  />
+                ))}
 
-            {/* Comments */}
-            {commentsData?.docs.map((comment: VideoCommentData) => (
-              <CommentCard
-                key={comment._id}
-                commentData={comment}
-                currTimestamp={now}
-                refreshVideoComments={refreshVideoComments}
-                videoId={videoData?._id}
-              />
-            ))}
+                {commentsData.hasNextPage ? (
+                  <div className="my-5">
+                    {isCommentsLoading ? (
+                      <Loader />
+                    ) : (
+                      <Button
+                        onClick={onCommentsLoadMoreClick}
+                        className="w-full"
+                        variant="secondary"
+                      >
+                        Load More
+                      </Button>
+                    )}
+                  </div>
+                ) : commentsData.docs.length ? (
+                  <div className="text-center my-5 text-muted-foreground">
+                    No more comments
+                  </div>
+                ) : (
+                  <div className="text-center my-5 text-muted-foreground">
+                    This video does not have any comment yet.
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
 

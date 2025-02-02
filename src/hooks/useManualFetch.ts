@@ -1,32 +1,27 @@
-import { AxiosAPIInstance } from "@/lib/AxiosInstance";
-import { AggregatedResponse, APIResponse } from "@/types/APIResponse";
-import { AxiosError } from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import useSWR, { SWRConfiguration } from "swr";
 import { useToast } from "./use-toast";
+import { AggregatedResponse, APIResponse } from "@/types/APIResponse";
+import { AxiosAPIInstance } from "@/lib/AxiosInstance";
+import { AxiosError } from "axios";
 
-interface UseInfiniteScrollResult<T> {
+interface UseManualFetchResult<T> {
   data: AggregatedResponse<T>;
   isLoading: boolean;
   error: Error | undefined;
-  loaderRef: React.RefObject<HTMLDivElement>;
   refreshData: () => Promise<void>;
+  onLoadMoreClick: () => void;
 }
 
-const useInfiniteFetch = <T>(
+const useManualFetch = <T>(
   url: string,
   page: number = 1,
   limit: number = 10,
   options: SWRConfiguration = {}
-): UseInfiniteScrollResult<T> => {
+): UseManualFetchResult<T> => {
   const [curentPage, setCurrentPage] = useState<number>(page);
-  const loaderRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
 
-  // State to track the debounce timeout
-  const [debounceTimeout, setDebounceTimeout] = useState<NodeJS.Timeout | null>(
-    null
-  );
+  const { toast } = useToast();
 
   const [result, setReult] = useState<AggregatedResponse<T>>(initialResult);
 
@@ -80,55 +75,21 @@ const useInfiniteFetch = <T>(
     }
   }, [data]);
 
-  // Handle intersection observer for infinite scroll
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !isValidating) {
-          // Clear the previous timeout (if any)
-          if (debounceTimeout) {
-            clearTimeout(debounceTimeout);
-          }
-
-          // Set a new timeout to delay the API call
-          const timeout = setTimeout(() => {
-            setCurrentPage(curentPage + 1); // Load the next page
-          }, 300); // Adjust the delay as needed (e.g., 300ms)
-
-          // Save the timeout ID to state
-          setDebounceTimeout(timeout);
-        }
-      },
-      { threshold: 1.0 } // Trigger when the loader is fully visible
-    );
-
-    if (loaderRef.current) {
-      observer.observe(loaderRef.current);
-    }
-
-    return () => {
-      if (loaderRef.current) {
-        observer.unobserve(loaderRef.current);
-      }
-
-      // Clear the timeout when the component unmounts
-      if (debounceTimeout) {
-        clearTimeout(debounceTimeout);
-      }
-    };
-  }, [curentPage, isValidating, debounceTimeout]);
-
   const refreshData = async () => {
     setCurrentPage(1);
     curentPage === 1 && (await mutate());
+  };
+
+  const onLoadMoreClick = () => {
+    setCurrentPage(curentPage + 1);
   };
 
   return {
     data: result,
     isLoading: isLoading || isValidating,
     error: error,
-    loaderRef,
     refreshData,
+    onLoadMoreClick,
   };
 };
 
@@ -145,4 +106,4 @@ const initialResult = {
   totalPages: 0,
 };
 
-export default useInfiniteFetch;
+export default useManualFetch;

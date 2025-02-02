@@ -1,5 +1,4 @@
-import { APIResponse, GetPlaylistResponse } from "@/types/APIResponse";
-import { QueryStates } from "@/types/channelProfile";
+import { AggregatedResponse, APIResponse } from "@/types/APIResponse";
 import React, { useState } from "react";
 import {
   Select,
@@ -32,6 +31,7 @@ import { useToast } from "@/hooks/use-toast";
 import useSanitizedHTML from "@/hooks/useSanitizedHTML";
 import { useNavigate } from "react-router-dom";
 import { IPlaylist } from "@/types/collections";
+import ErrorStateComp from "../ui/ErrorStateComp";
 
 // Extend Day.js with the relativeTime plugin
 dayjs.extend(relativeTime);
@@ -53,16 +53,56 @@ const FormattedPlaylistDescription: React.FC<{ htmlContent: string }> = ({
   return <div>{parse(truncatedHTML)}</div>;
 };
 
-interface PlaylistResultProps {
+type EmptyPlaylistTextSectionProps = {
   isOwner: boolean;
-  queryStates: QueryStates;
-  channelPlaylistRes: GetPlaylistResponse;
+  selectedPlaylistVisibility: "public" | "private" | "all";
+};
+const EmptyPlaylistTextSection: React.FC<EmptyPlaylistTextSectionProps> = ({
+  isOwner,
+  selectedPlaylistVisibility,
+}) => {
+  if (isOwner) {
+    if (
+      selectedPlaylistVisibility === "private" ||
+      selectedPlaylistVisibility === "public"
+    ) {
+      return (
+        <div className="text-center my-5 text-muted-foreground">
+          Your Channel has no {selectedPlaylistVisibility} playlist yet.
+        </div>
+      );
+    }
+
+    return (
+      <div className="text-center my-5 text-muted-foreground">
+        Your Channel has no playlist yet.
+      </div>
+    );
+  }
+
+  return (
+    <div className="text-center my-5 text-muted-foreground">
+      This Channel has no playlist yet.
+    </div>
+  );
+};
+
+interface PlaylistResultProps {
+  selectedPlaylistVisibility: "public" | "private" | "all";
+  isOwner: boolean;
+  channelPlaylistRes: AggregatedResponse<IPlaylist>;
+  channelPlaylistErr: Error | undefined;
+  channelPlaylistLoading: boolean;
+  channelPlaylistLoaderRef: React.RefObject<HTMLDivElement>;
   refreshChannelPlaylist: () => Promise<void>;
 }
 const PlaylistResult: React.FC<PlaylistResultProps> = ({
+  selectedPlaylistVisibility,
   isOwner,
-  queryStates,
   channelPlaylistRes,
+  channelPlaylistErr,
+  channelPlaylistLoaderRef,
+  channelPlaylistLoading,
   refreshChannelPlaylist,
 }) => {
   const now = dayjs();
@@ -111,125 +151,120 @@ const PlaylistResult: React.FC<PlaylistResultProps> = ({
     return <Globe className="h-4 w-4" />;
   };
 
-  if (!channelPlaylistRes.docs.length) {
-    if (isOwner) {
-      if (
-        queryStates.channelPlaylistQuery.visibility === "private" ||
-        queryStates.channelPlaylistQuery.visibility === "public"
-      ) {
-        return (
-          <div className="px-2 py-4 h-36 flex items-center justify-evenly">
-            Your Channel has no {queryStates.channelPlaylistQuery.visibility}{" "}
-            playlist yet.
-          </div>
-        );
-      }
-
-      return (
-        <div className="px-2 py-4 h-36 flex items-center justify-evenly">
-          Your Channel has no playlist yet.
-        </div>
-      );
-    }
-
-    return (
-      <div className="px-2 py-4 h-36 flex items-center justify-evenly">
-        This Channel has no playlist yet.
-      </div>
-    );
-  }
+  if (channelPlaylistErr)
+    return <ErrorStateComp handleRefresh={refreshChannelPlaylist} />;
 
   return (
-    <div className="p-2 sm:p-3 md:p-4 lg:p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-center justify-items-center gap-4">
-      {channelPlaylistRes.docs.map((playlist) => (
-        <Card
-          key={playlist._id}
-          className="w-full min-w-full overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 dark:shadow-gray-700/30"
-        >
-          <CardHeader className="relative p-0">
-            <div className="group relative">
-              <img
-                src={playlist.videos[0]?.thumbnail.url || "/placeholder.svg"}
-                alt={playlist.title}
-                className="w-full h-48 object-cover"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center">
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  className="opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => navigateToPlaylist(playlist)}
-                >
-                  <Play className="h-6 w-6" />
-                </Button>
-              </div>
-              <div className="absolute bottom-2 right-2 bg-black bg-opacity-75 px-2 py-1 rounded text-white text-sm">
-                {playlist.videos.length} videos
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="p-4">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <h3 className="font-semibold text-lg line-clamp-1">
-                  {playlist.title}
-                </h3>
-                <p className="mt-1 text-sm text-muted-foreground h-10">
-                  <FormattedPlaylistDescription
-                    htmlContent={playlist.description}
-                  />
-                </p>
-              </div>
-              {isOwner && (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    className="w-36 flex flex-col space-y-2 p-2"
-                    align="end"
+    <>
+      <div className="p-2 sm:p-3 md:p-4 lg:p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-center justify-items-center gap-4">
+        {channelPlaylistRes.docs.map((playlist) => (
+          <Card
+            key={playlist._id}
+            className="w-full min-w-full overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 dark:shadow-gray-700/30"
+          >
+            <CardHeader className="relative p-0">
+              <div className="group relative">
+                <img
+                  src={playlist.videos[0]?.thumbnail.url || "/placeholder.svg"}
+                  alt={playlist.title}
+                  className="w-full h-48 object-cover"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center">
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => navigateToPlaylist(playlist)}
                   >
-                    <Button
-                      variant={"ghost"}
-                      onClick={() => navigateToPlaylist(playlist)}
+                    <Play className="h-6 w-6" />
+                  </Button>
+                </div>
+                <div className="absolute bottom-2 right-2 bg-black bg-opacity-75 px-2 py-1 rounded text-white text-sm">
+                  {playlist.videos.length} videos
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <h3 className="font-semibold text-lg line-clamp-1">
+                    {playlist.title}
+                  </h3>
+                  <p className="mt-1 text-sm text-muted-foreground h-10">
+                    <FormattedPlaylistDescription
+                      htmlContent={playlist.description}
+                    />
+                  </p>
+                </div>
+                {isOwner && (
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-36 flex flex-col space-y-2 p-2"
+                      align="end"
                     >
-                      <Play className="h-4 w-4" />
-                      Play
-                    </Button>
-                    <Button
-                      variant={"ghost"}
-                      onClick={() =>
-                        navigate(`/edit-playlist/${playlist._id}`, {
-                          state: { playlist },
-                        })
-                      }
-                    >
-                      <Pencil className="h-4 w-4" />
-                      Edit
-                    </Button>
-                    <Separator className="my-2" />
-                    <Button
-                      variant={"destructive"}
-                      onClick={() => setPlaylistIdToDelete(playlist._id)}
-                    >
-                      <Trash className="h-4 w-4" /> Delete
-                    </Button>
-                  </PopoverContent>
-                </Popover>
-              )}
-            </div>
-          </CardContent>
-          <CardFooter className="p-4 pt-0 flex justify-between text-sm text-muted-foreground">
-            <div className="flex items-center">
-              {getVisibilityIcon(playlist.visibility)}
-              <span className="ml-1 capitalize">{playlist.visibility}</span>
-            </div>
-            <div>Updated {dayjs(new Date(playlist.updatedAt)).from(now)}</div>
-          </CardFooter>
-        </Card>
-      ))}
+                      <Button
+                        variant={"ghost"}
+                        onClick={() => navigateToPlaylist(playlist)}
+                      >
+                        <Play className="h-4 w-4" />
+                        Play
+                      </Button>
+                      <Button
+                        variant={"ghost"}
+                        onClick={() =>
+                          navigate(`/edit-playlist/${playlist._id}`, {
+                            state: { playlist },
+                          })
+                        }
+                      >
+                        <Pencil className="h-4 w-4" />
+                        Edit
+                      </Button>
+                      <Separator className="my-2" />
+                      <Button
+                        variant={"destructive"}
+                        onClick={() => setPlaylistIdToDelete(playlist._id)}
+                      >
+                        <Trash className="h-4 w-4" /> Delete
+                      </Button>
+                    </PopoverContent>
+                  </Popover>
+                )}
+              </div>
+            </CardContent>
+            <CardFooter className="p-4 pt-0 flex justify-between text-sm text-muted-foreground">
+              <div className="flex items-center">
+                {getVisibilityIcon(playlist.visibility)}
+                <span className="ml-1 capitalize">{playlist.visibility}</span>
+              </div>
+              <div>Updated {dayjs(new Date(playlist.updatedAt)).from(now)}</div>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+
+      <div ref={channelPlaylistLoaderRef} className="text-center my-5">
+        {channelPlaylistLoading && <Loader />}
+      </div>
+
+      {!channelPlaylistRes.hasNextPage &&
+        (channelPlaylistRes.docs.length ? (
+          <div className="text-center my-5 text-muted-foreground">
+            No more playlists
+          </div>
+        ) : (
+          <>
+            <EmptyPlaylistTextSection
+              isOwner={isOwner}
+              selectedPlaylistVisibility={selectedPlaylistVisibility}
+            />
+          </>
+        ))}
 
       <AlertDialog open={playlistIdToDelete !== null}>
         <AlertDialogContent>
@@ -259,38 +294,38 @@ const PlaylistResult: React.FC<PlaylistResultProps> = ({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </>
   );
 };
 
 type ChannelPlaylistsProps = {
-  queryStates: QueryStates;
-  setQueryStates: React.Dispatch<React.SetStateAction<QueryStates>>;
-  channelPlaylistRes: GetPlaylistResponse;
+  selectedPlaylistVisibility: "public" | "private" | "all";
+  setSelectedPlaylistVisibility: React.Dispatch<
+    React.SetStateAction<"public" | "private" | "all">
+  >;
+
+  channelPlaylistRes: AggregatedResponse<IPlaylist>;
+  channelPlaylistErr: Error | undefined;
+  channelPlaylistLoading: boolean;
+  channelPlaylistLoaderRef: React.RefObject<HTMLDivElement>;
+
   isOwner: boolean;
-  isLoading: boolean;
   refreshChannelPlaylist: () => Promise<void>;
 };
 
 const ChannelPlaylists: React.FC<ChannelPlaylistsProps> = ({
-  queryStates,
-  setQueryStates,
+  selectedPlaylistVisibility,
+  setSelectedPlaylistVisibility,
   channelPlaylistRes,
+  channelPlaylistLoading,
+  channelPlaylistErr,
+  channelPlaylistLoaderRef,
   isOwner,
-  isLoading,
   refreshChannelPlaylist,
 }) => {
   const onVisibilityChangeChange = (
     value: "public" | "private" | "all"
-  ): void => {
-    setQueryStates({
-      ...queryStates,
-      channelPlaylistQuery: {
-        ...queryStates.channelPlaylistQuery,
-        visibility: value,
-      },
-    });
-  };
+  ): void => setSelectedPlaylistVisibility(value);
 
   return (
     <div>
@@ -298,7 +333,7 @@ const ChannelPlaylists: React.FC<ChannelPlaylistsProps> = ({
         <div className="flex items-center justify-end">
           <Select
             name="visibility"
-            value={queryStates.channelPlaylistQuery.visibility}
+            value={selectedPlaylistVisibility}
             onValueChange={onVisibilityChangeChange}
           >
             <SelectTrigger className="w-32">
@@ -331,12 +366,13 @@ const ChannelPlaylists: React.FC<ChannelPlaylistsProps> = ({
 
       <PlaylistResult
         channelPlaylistRes={channelPlaylistRes}
-        isOwner={isOwner}
-        queryStates={queryStates}
+        channelPlaylistErr={channelPlaylistErr}
+        channelPlaylistLoaderRef={channelPlaylistLoaderRef}
+        channelPlaylistLoading={channelPlaylistLoading}
         refreshChannelPlaylist={refreshChannelPlaylist}
+        selectedPlaylistVisibility={selectedPlaylistVisibility}
+        isOwner={isOwner}
       />
-
-      {isLoading && <Loader color="secondary" />}
     </div>
   );
 };
