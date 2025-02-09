@@ -49,8 +49,7 @@ const useInfiniteFetch = <T>(
     } catch (error) {
       if (error instanceof AxiosError) {
         toast({
-          title:
-            error.response?.data.message || "Failed to change subscription",
+          title: error.response?.data.message || "Something went wrong!",
           variant: "destructive",
         });
       }
