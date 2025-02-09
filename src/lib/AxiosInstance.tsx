@@ -3,8 +3,7 @@ import { envVariables } from "./variables";
 import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 
-const API_BASE_URL =
-  envVariables.MODE === "development" ? "" : envVariables.API_BASE_URI;
+const API_BASE_URL = envVariables.API_BASE_URI;
 
 const AxiosAPIInstance = axios.create({
   baseURL: API_BASE_URL,

@@ -9,15 +9,15 @@ export default defineConfig({
       "@": resolve(__dirname, "./src"),
     },
   },
-  server: {
-    proxy: {
-      "/api": {
-        target: "http://127.0.0.1:5000",
-        changeOrigin: true,
-        secure: false,
-        // Use false if you're not using HTTPS in development
-        // rewrite: (path) => path.replace(/^\/api/, ""), // Optional, modify this based on your API routes
-      },
-    },
-  },
+  // server: {
+  //   proxy: {
+  //     "/api": {
+  //       target: "http://127.0.0.1:5000",
+  //       changeOrigin: true,
+  //       secure: false,
+  //       // Use false if you're not using HTTPS in development
+  //       // rewrite: (path) => path.replace(/^\/api/, ""), // Optional, modify this based on your API routes
+  //     },
+  //   },
+  // },
 });
