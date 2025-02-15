@@ -1,4 +1,3 @@
-// useSuggestions.ts
 import { useState, useEffect } from "react";
 import { AxiosError } from "axios";
 import { APIResponse, SearchSuggestions } from "@/types/APIResponse";

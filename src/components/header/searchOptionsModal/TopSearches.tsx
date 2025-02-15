@@ -1,4 +1,3 @@
-// TopSearches.tsx
 import React, { useEffect } from "react";
 import { useAppSelector } from "@/hooks/useStore";
 import { formatCount, formatSearchText } from "@/lib/video";

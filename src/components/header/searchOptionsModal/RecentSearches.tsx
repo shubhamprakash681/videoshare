@@ -1,4 +1,3 @@
-// RecentSearches.tsx
 import React, { useEffect } from "react";
 import { Clock } from "lucide-react";
 import { formatSearchText } from "@/lib/video";

@@ -1,4 +1,3 @@
-// useRecentSearches.ts
 import { useState, useEffect } from "react";
 
 export const useRecentSearches = () => {

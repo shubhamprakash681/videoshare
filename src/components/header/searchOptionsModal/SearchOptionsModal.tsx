@@ -1,4 +1,3 @@
-// SearchOptionsModal.tsx
 import React, { useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/hooks/useStore";
 import { useKeyboardNavigation } from "./hooks/useKeyboardNavigation";
@@ -48,8 +47,6 @@ export const SearchOptionsModal: React.FC<
     if (selectedOption) {
       dispatch(setVideoStates({ query: selectedOption }));
       dispatch(setSearchboxOpen(false));
-
-      console.log(`Selected option: ${selectedOption}`);
     }
   };
 

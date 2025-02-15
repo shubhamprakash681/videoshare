@@ -1,4 +1,3 @@
-// useKeyboardNavigation.ts
 import { useState, useEffect } from "react";
 
 export const useKeyboardNavigation = (
@@ -14,7 +13,7 @@ export const useKeyboardNavigation = (
       setSelectedIndex((curr) => (curr - 1 + totalItems) % totalItems);
     } else if (e.key === "Enter") {
       e.preventDefault();
-      onEnter(selectedIndex); // Trigger the callback with the selected index
+      onEnter(selectedIndex);
     }
   };
 

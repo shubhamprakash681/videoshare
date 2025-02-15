@@ -1,4 +1,3 @@
-// Suggestions.tsx
 import React, { useEffect } from "react";
 import { useAppSelector } from "@/hooks/useStore";
 import { ListVideo } from "lucide-react";
