@@ -1,12 +1,14 @@
 // SearchOptionsModal.tsx
 import React, { useState } from "react";
-import { useAppSelector } from "@/hooks/useStore";
+import { useAppDispatch, useAppSelector } from "@/hooks/useStore";
 import { useKeyboardNavigation } from "./hooks/useKeyboardNavigation";
 import { Card, CardContent } from "@/components/ui/card";
 import Suggestions from "./Suggestions";
 import TopSearches from "./TopSearches";
 import RecentSearches from "./RecentSearches";
 import { useSuggestions } from "./hooks/useSuggestions";
+import { setVideoStates } from "@/features/videoSlice";
+import { setSearchboxOpen } from "@/features/uiSlice";
 
 export const SearchOptionsModal: React.FC<
   React.AllHTMLAttributes<HTMLDivElement>
@@ -21,6 +23,8 @@ export const SearchOptionsModal: React.FC<
   );
   const { searchKey } = useAppSelector((state) => state.videoReducer);
   const { suggestions } = useSuggestions(searchKey);
+
+  const dispatch = useAppDispatch();
 
   const totalItems = suggestionLength + topSearchLength + recentSearchLength;
 
@@ -42,6 +46,9 @@ export const SearchOptionsModal: React.FC<
     }
 
     if (selectedOption) {
+      dispatch(setVideoStates({ query: selectedOption }));
+      dispatch(setSearchboxOpen(false));
+
       console.log(`Selected option: ${selectedOption}`);
     }
   };

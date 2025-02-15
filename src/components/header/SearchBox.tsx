@@ -12,7 +12,7 @@ const SearchBox = () => {
   const dispatch = useAppDispatch();
 
   const { isSearchboxOpen } = useAppSelector((state) => state.uiReducer);
-  const { searchKey } = useAppSelector((state) => state.videoReducer);
+  const { searchKey, query } = useAppSelector((state) => state.videoReducer);
 
   const inputBoxRef1 = useRef<HTMLInputElement>(null);
   const inputBoxRef2 = useRef<HTMLInputElement>(null);
@@ -86,6 +86,12 @@ const SearchBox = () => {
       clearTimeout(timer);
     };
   }, [searchText]);
+
+  useEffect(() => {
+    if (searchText !== query) {
+      setSearchText(query);
+    }
+  }, [query]);
 
   return (
     <div
