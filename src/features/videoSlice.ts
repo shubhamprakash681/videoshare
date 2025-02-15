@@ -1,25 +1,25 @@
+import { TopSearchOption } from "@/types/APIResponse";
 import { IVideo } from "@/types/collections";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface IVideoSlice {
-  // page: number;
-  // limit: number;
+  searchKey: string;
   query: string;
   sortBy: keyof IVideo;
   sortType: "asc" | "des";
   userId: string | null;
+  topSearches: TopSearchOption[];
 }
 const initialState: IVideoSlice = {
-  // page: 1,
-  // limit: 10,
+  searchKey: "",
   query: "",
   sortBy: "createdAt",
   sortType: "des",
   userId: null,
+  topSearches: [],
 };
 type setVideoPayload = {
-  // page?: number;
-  // limit?: number;
+  searchKey?: string;
   query?: string;
   sortBy?: keyof IVideo;
   sortType?: "asc" | "des";
@@ -32,9 +32,13 @@ const videoSlice = createSlice({
     setVideoStates: (state, actions: PayloadAction<setVideoPayload>) => {
       return { ...state, ...actions.payload };
     },
+
+    setTopSearches: (state, actions: PayloadAction<TopSearchOption[]>) => {
+      return { ...state, topSearches: actions.payload };
+    },
   },
 });
 
-export const { setVideoStates } = videoSlice.actions;
+export const { setVideoStates, setTopSearches } = videoSlice.actions;
 const videoReducer = videoSlice.reducer;
 export default videoReducer;

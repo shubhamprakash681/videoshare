@@ -95,3 +95,23 @@ export interface AggregatedResponse<T> {
   totalDocs: number;
   totalPages: number;
 }
+
+export interface TopSearchOption {
+  _id: string;
+  searchText: string;
+  count: number;
+}
+
+export interface SearchSuggestions {
+  title: string;
+  description: string;
+  score: number;
+  highlights: {
+    score: number;
+    path: "description" | "title";
+    texts: {
+      value: string;
+      type: "text" | "hit";
+    }[];
+  }[];
+}

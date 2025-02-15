@@ -2,6 +2,7 @@ import SignUp from "./auth/SignUp";
 import Login from "./auth/Login";
 import Footer from "./footer/Footer";
 import Header from "./header/Header";
+import SearchOptionsModal from "./header/SearchOptionsModal";
 import SidebarContainer from "./sidebar/SidebarContainer";
 import VideoCard from "./home/VideoCard";
 import VideoPlayer from "./videoplayer/VideoPlayer";
@@ -24,6 +25,7 @@ export {
   SignUp as SignupCard,
   Footer,
   Header,
+  SearchOptionsModal,
   SidebarContainer,
   VideoCard,
   VideoPlayer,
