@@ -21,3 +21,10 @@ export const formatCount = (count: number): string => {
   }
   return count.toString();
 };
+
+export const formatSearchText = (text: string): string => {
+  return text
+    .split(".")
+    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+    .join(".");
+};
