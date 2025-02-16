@@ -44,6 +44,8 @@ type isLoadingStates = {
   avatarImageChange: boolean;
 };
 
+type TabValues = "tweets" | "subscribed" | "playlists" | "videos";
+
 const ChannelProfile: React.FC = () => {
   const location = useLocation();
   const params = useParams();
@@ -53,6 +55,8 @@ const ChannelProfile: React.FC = () => {
 
   const isOwner = location.pathname === "/me";
   const channelname = params.channelname || userData?.username;
+
+  const [selectedTab, setSelectedTab] = useState<TabValues>("videos");
 
   const [selectedPlaylistVisibility, setSelectedPlaylistVisibility] = useState<
     "public" | "private" | "all"
@@ -272,6 +276,40 @@ const ChannelProfile: React.FC = () => {
     }
   };
 
+  const onChannelTabValueChange = (value: string) => {
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set("tab", value);
+    const newUrl = `${location.pathname}?${searchParams.toString()}`;
+    window.history.replaceState(null, "", newUrl);
+
+    setSelectedTab(value as TabValues);
+  };
+
+  const getTabValue = (): void => {
+    const searchParams = new URLSearchParams(location.search);
+    const tabName = searchParams.get("tab");
+
+    if (!tabName) {
+      setSelectedTab("videos");
+      return;
+    }
+
+    if (
+      ["tweets", "subscribed", "playlists", "videos"].some(
+        (key) => key === tabName
+      )
+    ) {
+      setSelectedTab(tabName as TabValues);
+      return;
+    }
+
+    setSelectedTab("videos");
+  };
+
+  useEffect(() => {
+    getTabValue();
+  }, [location.search]);
+
   useEffect(() => {
     channelname && fetchChannelProfile(channelname);
   }, [channelname]);
@@ -407,7 +445,11 @@ const ChannelProfile: React.FC = () => {
       <Separator />
 
       <div className="my-2 p-2 sm:p-4">
-        <Tabs defaultValue="videos" className="space-y-2">
+        <Tabs
+          className="space-y-2"
+          onValueChange={onChannelTabValueChange}
+          value={selectedTab}
+        >
           <div className="overflow-x-auto">
             <TabsList>
               <TabsTrigger value="videos" className="gap-2">

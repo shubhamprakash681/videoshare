@@ -81,3 +81,21 @@ export interface PlaylistOptions {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface Subscription {
+  _id: string;
+  subscriber: string;
+  createdAt: Date;
+  updatedAt: Date;
+  channel: {
+    _id: string;
+    username: string;
+    fullname: string;
+    avatar: {
+      url: string;
+    };
+    recentVideos: IVideo[];
+    createdAt: Date;
+    updatedAt: Date;
+  };
+}
