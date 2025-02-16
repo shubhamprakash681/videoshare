@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { forwardRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/hooks/useStore";
 import { useKeyboardNavigation } from "./hooks/useKeyboardNavigation";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,9 +9,13 @@ import { useSuggestions } from "./hooks/useSuggestions";
 import { setVideoStates } from "@/features/videoSlice";
 import { setSearchboxOpen } from "@/features/uiSlice";
 
-export const SearchOptionsModal: React.FC<
-  React.AllHTMLAttributes<HTMLDivElement>
-> = ({ ...props }) => {
+interface SearchOptionsModalProps
+  extends React.AllHTMLAttributes<HTMLDivElement> {}
+
+export const SearchOptionsModal = forwardRef<
+  HTMLDivElement,
+  SearchOptionsModalProps
+>((props, ref) => {
   const [suggestionLength, setSuggestionLength] = useState<number>(0);
   const [topSearchLength, setTopSearchLength] = useState<number>(0);
   const [recentSearchLength, setRecentSearchLength] = useState<number>(0);
@@ -45,7 +49,14 @@ export const SearchOptionsModal: React.FC<
     }
 
     if (selectedOption) {
-      dispatch(setVideoStates({ query: selectedOption }));
+      dispatch(setVideoStates({ query: selectedOption.toLowerCase() }));
+      dispatch(setSearchboxOpen(false));
+    }
+  };
+
+  const handleOptionClick = (selectedOption: string) => {
+    if (selectedOption) {
+      dispatch(setVideoStates({ query: selectedOption.toLowerCase() }));
       dispatch(setSearchboxOpen(false));
     }
   };
@@ -54,6 +65,7 @@ export const SearchOptionsModal: React.FC<
 
   return (
     <Card
+      ref={ref}
       {...props}
       className={`${props.className} absolute top-[64px] z-20 rounded-t-none`}
     >
@@ -61,21 +73,24 @@ export const SearchOptionsModal: React.FC<
         <Suggestions
           selectedOptionIndex={selectedIndex}
           setSuggestionLength={setSuggestionLength}
+          handleOptionClick={handleOptionClick}
         />
         <TopSearches
           suggestionLength={suggestionLength}
           selectedOptionIndex={selectedIndex}
           setTopSearchLength={setTopSearchLength}
+          handleOptionClick={handleOptionClick}
         />
         <RecentSearches
           suggestionLength={suggestionLength}
           topSearchLength={topSearchLength}
           selectedOptionIndex={selectedIndex}
           setRecentSearchLength={setRecentSearchLength}
+          handleOptionClick={handleOptionClick}
         />
       </CardContent>
     </Card>
   );
-};
+});
 
 export default SearchOptionsModal;

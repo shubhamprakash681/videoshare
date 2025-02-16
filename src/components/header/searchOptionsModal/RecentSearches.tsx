@@ -8,6 +8,7 @@ interface RecentSearchesProps {
   topSearchLength: number;
   selectedOptionIndex: number;
   setRecentSearchLength: React.Dispatch<React.SetStateAction<number>>;
+  handleOptionClick: (selectedOption: string) => void;
 }
 
 const RecentSearches: React.FC<RecentSearchesProps> = ({
@@ -15,6 +16,7 @@ const RecentSearches: React.FC<RecentSearchesProps> = ({
   topSearchLength,
   selectedOptionIndex,
   setRecentSearchLength,
+  handleOptionClick,
 }) => {
   const recentSearches = useRecentSearches();
 
@@ -42,6 +44,7 @@ const RecentSearches: React.FC<RecentSearchesProps> = ({
             selectedOptionIndex ===
               index + suggestionLength + topSearchLength && "bg-secondary"
           }`}
+          onClick={() => handleOptionClick(searchContent)}
         >
           <Clock className="h-4 w-4 min-w-4 text-muted-foreground" />
           <span className="max-w-full text-ellipsis whitespace-nowrap overflow-hidden">

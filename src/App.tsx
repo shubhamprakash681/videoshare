@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "./hooks/useStore";
 import {
@@ -32,6 +32,7 @@ const App: React.FC = () => {
   );
   const { isAuthenticated } = useAppSelector((state) => state.authReducer);
   const { bottomContainerMinWidth } = useResponsiveBottomContainer();
+  const searchOptionsModalRef = useRef<HTMLDivElement>(null);
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -152,11 +153,12 @@ const App: React.FC = () => {
       <AxiosInterceptor>
         <div className="app-container bg-background text-foreground">
           <div className="outer-top shadow-md backdrop-blur supports-[backdrop-filter]:bg-background">
-            <Header />
+            <Header searchOptionsModalRef={searchOptionsModalRef} />
           </div>
 
           {isSearchboxOpen && (
             <SearchOptionsModal
+              ref={searchOptionsModalRef}
               style={{
                 left: searchOptionModalLeftPos,
                 width: searchOptionModalWidth,
@@ -185,11 +187,12 @@ const App: React.FC = () => {
     <AxiosInterceptor>
       <div className="app-container bg-background text-foreground">
         <div className="outer-top shadow-md backdrop-blur supports-[backdrop-filter]:bg-background">
-          <Header />
+          <Header searchOptionsModalRef={searchOptionsModalRef} />
         </div>
 
         {isSearchboxOpen && (
           <SearchOptionsModal
+            ref={searchOptionsModalRef}
             style={{
               left: searchOptionModalLeftPos,
               width: searchOptionModalWidth,

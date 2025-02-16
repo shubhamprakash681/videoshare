@@ -63,7 +63,10 @@ const SidebarToggleButton: React.FC<SidebarToggleButtonProps> = ({
   );
 };
 
-const Header = () => {
+interface HeaderProps {
+  searchOptionsModalRef: React.RefObject<HTMLDivElement>;
+}
+const Header: React.FC<HeaderProps> = ({ searchOptionsModalRef }) => {
   const { theme } = useAppSelector((state) => state.themeReducer);
   const { isAuthenticated, userData } = useAppSelector(
     (state) => state.authReducer
@@ -92,7 +95,7 @@ const Header = () => {
         className="w-full grid items-center space-x-1 sm:space-x-3"
         style={{ gridTemplateColumns: "1fr auto" }}
       >
-        <SearchBox />
+        <SearchBox searchOptionsModalRef={searchOptionsModalRef} />
 
         <div className="justify-self-end flex items-center space-x-1 sm:space-x-2">
           <ThemeToggleButton

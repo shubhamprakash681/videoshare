@@ -9,11 +9,13 @@ import { SearchSuggestions } from "@/types/APIResponse";
 interface SuggestionsProps {
   selectedOptionIndex: number;
   setSuggestionLength: React.Dispatch<React.SetStateAction<number>>;
+  handleOptionClick: (selectedOption: string) => void;
 }
 
 const Suggestions: React.FC<SuggestionsProps> = ({
   selectedOptionIndex,
   setSuggestionLength,
+  handleOptionClick,
 }) => {
   const { searchKey } = useAppSelector((state) => state.videoReducer);
   const { suggestions, isLoading } = useSuggestions(searchKey);
@@ -57,6 +59,7 @@ const Suggestions: React.FC<SuggestionsProps> = ({
           }`}
           variant={"outline"}
           disabled={isLoading}
+          onClick={() => handleOptionClick(suggestion.title)}
         >
           <ListVideo className="h-4 w-4 min-w-4 text-muted-foreground" />
 

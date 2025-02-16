@@ -7,12 +7,14 @@ interface TopSearchesProps {
   suggestionLength: number;
   selectedOptionIndex: number;
   setTopSearchLength: React.Dispatch<React.SetStateAction<number>>;
+  handleOptionClick: (selectedOption: string) => void;
 }
 
 const TopSearches: React.FC<TopSearchesProps> = ({
   suggestionLength,
   selectedOptionIndex,
   setTopSearchLength,
+  handleOptionClick,
 }) => {
   const { topSearches } = useAppSelector((state) => state.videoReducer);
 
@@ -34,6 +36,7 @@ const TopSearches: React.FC<TopSearchesProps> = ({
           className={`py-1 px-1 sm:px-2 rounded-md flex items-center justify-start cursor-pointer hover:bg-secondary text-sm gap-2 my-1 ${
             selectedOptionIndex === index + suggestionLength && "bg-secondary"
           }`}
+          onClick={() => handleOptionClick(searchContent.searchText)}
         >
           <TrendingUp className="h-4 w-4 min-w-4 text-muted-foreground" />
           <div className="w-full flex items-center justify-between">

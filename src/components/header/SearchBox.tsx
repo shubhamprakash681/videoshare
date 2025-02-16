@@ -6,7 +6,10 @@ import { setSearchboxOpen } from "@/features/uiSlice";
 import { setVideoStates } from "@/features/videoSlice";
 import { SearchIcon } from "lucide-react";
 
-const SearchBox = () => {
+interface SearchBoxProps {
+  searchOptionsModalRef: React.RefObject<HTMLDivElement>;
+}
+const SearchBox: React.FC<SearchBoxProps> = ({ searchOptionsModalRef }) => {
   const [searchText, setSearchText] = useState<string>("");
 
   const dispatch = useAppDispatch();
@@ -24,7 +27,7 @@ const SearchBox = () => {
   };
 
   const onSearchClick = () => {
-    dispatch(setVideoStates({ query: searchKey }));
+    dispatch(setVideoStates({ query: searchKey.toLowerCase() }));
     setSearchText("");
   };
 
@@ -41,9 +44,13 @@ const SearchBox = () => {
       if (inputBoxRef2.current.contains(e.target as Node)) {
         dispatch(setSearchboxOpen(true));
       } else {
-        setTimeout(() => {
+        if (
+          !searchOptionsModalRef.current ||
+          (searchOptionsModalRef.current &&
+            !searchOptionsModalRef.current.contains(e.target as Node))
+        ) {
           dispatch(setSearchboxOpen(false));
-        }, 200);
+        }
       }
 
       return;
@@ -53,7 +60,13 @@ const SearchBox = () => {
       if (inputBoxRef1.current.contains(e.target as Node)) {
         dispatch(setSearchboxOpen(true));
       } else {
-        dispatch(setSearchboxOpen(false));
+        if (
+          !searchOptionsModalRef.current ||
+          (searchOptionsModalRef.current &&
+            !searchOptionsModalRef.current.contains(e.target as Node))
+        ) {
+          dispatch(setSearchboxOpen(false));
+        }
       }
     }
   };
