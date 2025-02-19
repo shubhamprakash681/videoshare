@@ -134,6 +134,7 @@
   /* border: 1px solid red; */
   position: fixed;
   top: var(--navbar-height);
-
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }

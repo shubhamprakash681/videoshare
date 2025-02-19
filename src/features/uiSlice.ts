@@ -19,6 +19,9 @@ const uiSlice = createSlice({
     toggleSidebarOpen: (state) => {
       state.isSidebarOpen = !state.isSidebarOpen;
     },
+    setSidebarOpen: (state, actions: { payload: boolean }) => {
+      state.isSidebarOpen = actions.payload;
+    },
     setSearchboxOpen: (state, actions: { payload: boolean }) => {
       state.isSearchboxOpen = actions.payload;
     },
@@ -28,7 +31,11 @@ const uiSlice = createSlice({
   },
 });
 
-export const { toggleSidebarOpen, setSearchboxOpen, setPreventCustomKeyPress } =
-  uiSlice.actions;
+export const {
+  setSidebarOpen,
+  toggleSidebarOpen,
+  setSearchboxOpen,
+  setPreventCustomKeyPress,
+} = uiSlice.actions;
 const uiReducer = uiSlice.reducer;
 export default uiReducer;

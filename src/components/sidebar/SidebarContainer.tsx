@@ -10,6 +10,8 @@ import {
   MessageCircle,
   LayoutDashboard,
   ArrowRight,
+  PanelLeftOpen,
+  PanelLeftClose,
 } from "lucide-react";
 import {
   Collapsible,
@@ -19,7 +21,7 @@ import {
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 import { AxiosAPIInstance } from "@/lib/AxiosInstance";
-import { useAppSelector } from "@/hooks/useStore";
+import { useAppDispatch, useAppSelector } from "@/hooks/useStore";
 import { AggregatedResponse, APIResponse } from "@/types/APIResponse";
 import { Subscription } from "@/types/collections";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -27,6 +29,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AxiosError } from "axios";
 import Loader from "../ui/Loader";
 import { Separator } from "../ui/separator";
+import { setSidebarOpen } from "@/features/uiSlice";
 
 type MenuItem = {
   title: string;
@@ -73,6 +76,7 @@ const SidebarContainer: React.FC<SidebarProps> = ({
 
   const { toast } = useToast();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const fetchSubscriptions = async () => {
     setIsSubscriptionsLoading(true);
@@ -132,32 +136,45 @@ const SidebarContainer: React.FC<SidebarProps> = ({
       >
         <div
           {...props}
-          className={`${className} custom-sidebar px-1 py-6`}
+          className={`${className} custom-sidebar`}
           style={{ width: SIDEBAR_WIDTH_CLOSED }}
         >
-          {menuItems
-            .filter((menuItem) => menuItem.title !== "Subscriptions")
-            .map((menuItem, menuItemIndex) => (
-              <div
-                key={`sm-${menuItem.title}-${menuItemIndex}`}
-                className="flex flex-col items-center"
-              >
-                {menuItem.title}
+          <div className="w-full h-full px-1 overflow-y-auto">
+            {menuItems
+              .filter((menuItem) => menuItem.title !== "Subscriptions")
+              .map((menuItem, menuItemIndex) => (
+                <div
+                  key={`sm-${menuItem.title}-${menuItemIndex}`}
+                  className="flex flex-col items-center"
+                >
+                  {menuItem.title}
 
-                {menuItem.items.map((item, index) => (
-                  <Button
-                    variant={"ghost"}
-                    key={`sm-subitem-${item.name}-${index}`}
-                    onClick={() => navigate(item.url)}
-                    className="my-1 scale-[110%] flex items-center justify-start space-x-2 transition duration-150 ease-linear hover:scale-[120%]"
-                  >
-                    {item.icon}
-                  </Button>
-                ))}
+                  {menuItem.items.map((item, index) => (
+                    <Button
+                      variant={"ghost"}
+                      key={`sm-subitem-${item.name}-${index}`}
+                      onClick={() => navigate(item.url)}
+                      className="my-1 scale-[110%] flex items-center justify-start space-x-2 transition duration-150 ease-linear hover:scale-[120%]"
+                    >
+                      {item.icon}
+                    </Button>
+                  ))}
 
-                {menuItemIndex !== 2 && <Separator className="my-2" />}
-              </div>
-            ))}
+                  {menuItemIndex !== 2 && <Separator className="my-2" />}
+                </div>
+              ))}
+          </div>
+
+          <div className="p-2">
+            <Button
+              onClick={() => dispatch(setSidebarOpen(true))}
+              variant="outline"
+              className="w-full p-2"
+            >
+              Expand
+              <PanelLeftOpen className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -170,70 +187,84 @@ const SidebarContainer: React.FC<SidebarProps> = ({
     >
       <div
         {...props}
-        className={`${className} custom-sidebar space-y-2 px-3 py-6`}
+        className={`${className} custom-sidebar`}
         style={{ width: SIDEBAR_WIDTH }}
       >
-        {menuItems.map((menuItem, menuItemIndex) => (
-          <Collapsible
-            key={`${menuItem.title}-${menuItemIndex}`}
-            open={menuItem.isExpanded}
-            onOpenChange={() => toggleMenuOpen(menuItemIndex)}
-            className="w-full space-y-2"
-          >
-            <CollapsibleTrigger asChild>
-              <Button
-                className="min-h-fit w-full flex items-center justify-between"
-                variant="ghost"
-                size="sm"
-              >
-                <h4 className="text-sm font-semibold">{menuItem.title}</h4>
-                {menuItem.isExpanded ? (
-                  <ChevronsUp className="h-4 w-4" />
-                ) : (
-                  <ChevronsDown className="h-4 w-4" />
-                )}
-              </Button>
-            </CollapsibleTrigger>
-
-            <CollapsibleContent className="transition duration-150 ease-linear">
-              {menuItem.title === "Subscriptions" && isSubscriptionsLoading ? (
-                <div className="my-10">
-                  <Loader />
-                </div>
-              ) : (
-                menuItem.items.map((item, index) => (
-                  <Button
-                    variant={"ghost"}
-                    key={`subitem-${item.name}-${index}`}
-                    onClick={() => navigate(item.url)}
-                    className="min-h-fit w-full flex items-center justify-start space-x-2 transition duration-150 ease-linear hover:scale-[101%]"
-                  >
-                    {menuItem.title === "Subscriptions" ? (
-                      <Avatar>
-                        <AvatarImage src={item.url} alt="CN" />
-                        <AvatarFallback>CN</AvatarFallback>
-                      </Avatar>
-                    ) : (
-                      item.icon
-                    )}
-                    {item.name}
-                  </Button>
-                ))
-              )}
-
-              {menuItem.title === "Subscriptions" && true && (
+        <div className="w-full h-full px-2 overflow-y-auto">
+          {menuItems.map((menuItem, menuItemIndex) => (
+            <Collapsible
+              key={`${menuItem.title}-${menuItemIndex}`}
+              open={menuItem.isExpanded}
+              onOpenChange={() => toggleMenuOpen(menuItemIndex)}
+              className="w-full space-y-2"
+            >
+              <CollapsibleTrigger asChild>
                 <Button
-                  onClick={() => navigate("/me?tab=subscribed")}
-                  variant="link"
-                  className="flex items-center space-x-2 transition duration-150 ease-linear hover:scale-[101%] group"
+                  className="min-h-fit w-full flex items-center justify-between"
+                  variant="ghost"
+                  size="sm"
                 >
-                  More
-                  <ArrowRight className="h-4 w-4 transition duration-150 ease-linear group-hover:translate-x-1" />
+                  <h4 className="text-sm font-semibold">{menuItem.title}</h4>
+                  {menuItem.isExpanded ? (
+                    <ChevronsUp className="h-4 w-4" />
+                  ) : (
+                    <ChevronsDown className="h-4 w-4" />
+                  )}
                 </Button>
-              )}
-            </CollapsibleContent>
-          </Collapsible>
-        ))}
+              </CollapsibleTrigger>
+
+              <CollapsibleContent className="transition duration-150 ease-linear">
+                {menuItem.title === "Subscriptions" &&
+                isSubscriptionsLoading ? (
+                  <div className="my-10">
+                    <Loader />
+                  </div>
+                ) : (
+                  menuItem.items.map((item, index) => (
+                    <Button
+                      variant={"ghost"}
+                      key={`subitem-${item.name}-${index}`}
+                      onClick={() => navigate(item.url)}
+                      className="min-h-fit w-full flex items-center justify-start space-x-2 transition duration-150 ease-linear hover:scale-[101%]"
+                    >
+                      {menuItem.title === "Subscriptions" ? (
+                        <Avatar>
+                          <AvatarImage src={item.url} alt="CN" />
+                          <AvatarFallback>CN</AvatarFallback>
+                        </Avatar>
+                      ) : (
+                        item.icon
+                      )}
+                      {item.name}
+                    </Button>
+                  ))
+                )}
+
+                {menuItem.title === "Subscriptions" && true && (
+                  <Button
+                    onClick={() => navigate("/me?tab=subscribed")}
+                    variant="link"
+                    className="flex items-center space-x-2 transition duration-150 ease-linear hover:scale-[101%] group"
+                  >
+                    More
+                    <ArrowRight className="h-4 w-4 transition duration-150 ease-linear group-hover:translate-x-1" />
+                  </Button>
+                )}
+              </CollapsibleContent>
+            </Collapsible>
+          ))}
+        </div>
+
+        <div className="p-2">
+          <Button
+            onClick={() => dispatch(setSidebarOpen(false))}
+            variant="outline"
+            className="w-full p-2"
+          >
+            Collapse Sidebar
+            <PanelLeftClose className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );
