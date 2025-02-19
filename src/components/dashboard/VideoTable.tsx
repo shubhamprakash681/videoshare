@@ -118,37 +118,48 @@ const VideoTable: React.FC<VideoTableProps> = ({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Video</TableHead>
-                  <TableHead>Views</TableHead>
-                  <TableHead>Likes</TableHead>
-                  <TableHead>Comments</TableHead>
-                  <TableHead>Published</TableHead>
-                  <TableHead>Toggle Published</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead className="text-center min-w-[300px] w-auto">
+                    Video
+                  </TableHead>
+                  <TableHead className="text-center">Views</TableHead>
+                  <TableHead className="text-center">Likes</TableHead>
+                  <TableHead className="text-center">Comments</TableHead>
+                  <TableHead className="text-center">Published</TableHead>
+                  <TableHead className="text-center whitespace-nowrap">
+                    Toggle Published
+                  </TableHead>
+                  <TableHead className="text-center min-w-36">
+                    Actions
+                  </TableHead>
                 </TableRow>
               </TableHeader>
 
               <TableBody>
                 {channelVideosState.docs.map((video) => (
                   <TableRow key={video._id}>
-                    <TableCell className="font-medium">
+                    <TableCell className="font-medium min-w-[300px] w-auto">
                       <div className="flex items-center space-x-3">
                         <img
                           src={video.thumbnail.url}
                           alt={video.title}
                           className="w-20 h-12 object-cover rounded"
                         />
-                        <span className="font-medium">{video.title}</span>
+                        <span
+                          className="font-medium whitespace-nowrap overflow-hidden text-ellipsis"
+                          title={video.title}
+                        >
+                          {video.title}
+                        </span>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center">
+                      <div className="flex items-center justify-center">
                         <Eye className="h-4 w-4 mr-2 text-gray-400" />
                         {video.views.toLocaleString()}
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center">
+                      <div className="flex items-center justify-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
@@ -166,7 +177,7 @@ const VideoTable: React.FC<VideoTableProps> = ({
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center">
+                      <div className="flex items-center justify-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
@@ -183,10 +194,12 @@ const VideoTable: React.FC<VideoTableProps> = ({
                       </div>
                     </TableCell>
                     <TableCell>
-                      <VideoPublicTag isPublic={video.isPublic} />
+                      <div className="flex items-center justify-center">
+                        <VideoPublicTag isPublic={video.isPublic} />
+                      </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center justify-center">
                         <Switch
                           id={`${video._id}-toggle`}
                           checked={video.isPublic}
@@ -195,7 +208,7 @@ const VideoTable: React.FC<VideoTableProps> = ({
                         />
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="min-w-36">
                       <div className="w-full h-full flex items-center justify-evenly">
                         <Button
                           variant="outline"
