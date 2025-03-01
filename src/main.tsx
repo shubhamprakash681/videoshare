@@ -15,6 +15,7 @@ import {
   DashboardPage,
   EditPlaylistPage,
   HomePage,
+  LikedVideosPage,
   LoginPage,
   SignupPage,
   VideoPlaybackPage,
@@ -51,6 +52,14 @@ const appRouter = createBrowserRouter(
         }
       />
       <Route
+        path={PathConstants.LIKEPLAYLIST}
+        element={
+          <ProtectedAuthLayout authentication>
+            <VideoPlaybackPage />
+          </ProtectedAuthLayout>
+        }
+      />
+      <Route
         path={PathConstants.DASHBOARD}
         element={
           <ProtectedAuthLayout authentication>
@@ -63,6 +72,14 @@ const appRouter = createBrowserRouter(
         element={
           <ProtectedAuthLayout authentication>
             <ChannelProfilePage />
+          </ProtectedAuthLayout>
+        }
+      />
+      <Route
+        path={PathConstants.LIKEDVIDEOS}
+        element={
+          <ProtectedAuthLayout authentication>
+            <LikedVideosPage />
           </ProtectedAuthLayout>
         }
       />

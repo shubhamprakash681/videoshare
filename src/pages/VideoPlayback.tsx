@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { IPlaylist, IVideo } from "@/types/collections";
 import PageContainer from "@/components/ui/PageContainer";
 import {
@@ -31,6 +31,7 @@ import useSanitizedHTML from "@/hooks/useSanitizedHTML";
 import Loader from "@/components/ui/Loader";
 import ErrorStateComp from "@/components/ui/ErrorStateComp";
 import useManualFetch from "@/hooks/useManualFetch";
+import { PathConstants } from "@/lib/variables";
 
 // Extend Day.js with the relativeTime plugin
 dayjs.extend(relativeTime);
@@ -65,6 +66,7 @@ const VideoPlayback: React.FC = () => {
   const { sanitizeHTMLContent } = useSanitizedHTML();
 
   const now = dayjs();
+  const navigate = useNavigate();
 
   const [channelProfile, setChannelProfile] = useState<ChannelProfile>(
     defaultChannelProfileData
@@ -252,11 +254,17 @@ const VideoPlayback: React.FC = () => {
     setIsFetchError(false);
   };
 
-  const getPageName: () => "video" | "playlist" | null = () => {
+  const getPageName: () =>
+    | "video"
+    | "playlist"
+    | "like-playlist"
+    | null = () => {
     const splittedPathname = location.pathname.split("/");
 
     if (splittedPathname.includes("video")) {
       return "video";
+    } else if (splittedPathname.includes("like-playlist")) {
+      return "like-playlist";
     } else if (splittedPathname.includes("playlist")) {
       return "playlist";
     }
@@ -293,6 +301,9 @@ const VideoPlayback: React.FC = () => {
 
         console.error(error);
       }
+    } else if (pageName === "like-playlist" && !videoData) {
+      // navigate to liked videos
+      navigate(PathConstants.LIKEDVIDEOS);
     } else if (
       pageName === "playlist" &&
       (!playlistData || playlistData._id !== locationStates?.playlist?._id)
@@ -542,7 +553,7 @@ const VideoPlayback: React.FC = () => {
         {getPageName() && (
           <div className={`${isSmallerScreen ? "py-4" : "pl-2 2xl:pl-4"}`}>
             <RightPanel
-              pageName={getPageName() as "video" | "playlist"}
+              pageName={getPageName() as "video" | "playlist" | "like-playlist"}
               playlistData={playlistData}
               currentVideoId={videoData._id}
               setVideoData={setVideoData}

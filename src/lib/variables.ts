@@ -15,7 +15,9 @@ export const PathConstants = {
   DASHBOARD: "/dashboard",
   VIDEO: "/video/:videoId",
   PLAYLIST: "/playlist/:playlistId",
+  LIKEPLAYLIST: "/like-playlist/:likeId",
   MYCHANNEL: "/me",
+  LIKEDVIDEOS: "/liked-videos",
   CHANNEL: "/:channelname",
   EDITPLAYLIST: "/edit-playlist/:playlistId",
 };

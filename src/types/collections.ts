@@ -99,3 +99,12 @@ export interface Subscription {
     updatedAt: Date;
   };
 }
+
+export interface LikedVideo {
+  _id: string;
+  likeType: "like" | "dislike";
+  likedBy: string;
+  createdAt: Date;
+  updatedAt: Date;
+  video: PlaylistVideo;
+}
