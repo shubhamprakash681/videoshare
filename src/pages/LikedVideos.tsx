@@ -86,7 +86,7 @@ const LikedVideos: React.FC = () => {
           </div>
         ) : (
           <div className="text-center my-5 text-muted-foreground">
-            No Loked Videos
+            No Liked Videos
           </div>
         ))}
     </PageContainer>
