@@ -23,6 +23,8 @@ const ProtectedAuthLayout: React.FC<IProtectedAuthLayout> = ({
   useEffect(() => {
     // Check if user should be authenticated
     if (authentication && isAuthenticated !== authentication) {
+      console.log("navigating from Prr");
+
       navigate("/login");
     }
     // Check if user should not be authenticated

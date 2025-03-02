@@ -138,7 +138,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     resizeHandler();
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isSearchboxOpen]);
 
   useEffect(() => {
     if (isSearchboxOpen) {
@@ -151,9 +151,12 @@ const App: React.FC = () => {
   if (!isAuthenticated) {
     return (
       <AxiosInterceptor>
-        <div className="app-container bg-background text-foreground">
-          <div className="outer-top shadow-md backdrop-blur supports-[backdrop-filter]:bg-background">
-            <Header searchOptionsModalRef={searchOptionsModalRef} />
+        <div className="app-container bg-background text-foreground selection:bg-primary/80 dark:selection:bg-primary selection:text-primary-foreground">
+          <div className="outer-top">
+            <Header
+              searchOptionsModalRef={searchOptionsModalRef}
+              isSmallerScreen={isSmallerScreen}
+            />
           </div>
 
           {isSearchboxOpen && (
@@ -185,9 +188,12 @@ const App: React.FC = () => {
 
   return (
     <AxiosInterceptor>
-      <div className="app-container bg-background text-foreground">
-        <div className="outer-top shadow-md backdrop-blur supports-[backdrop-filter]:bg-background">
-          <Header searchOptionsModalRef={searchOptionsModalRef} />
+      <div className="app-container bg-background text-foreground selection:bg-primary/80 dark:selection:bg-primary selection:text-primary-foreground">
+        <div className="outer-top">
+          <Header
+            searchOptionsModalRef={searchOptionsModalRef}
+            isSmallerScreen={isSmallerScreen}
+          />
         </div>
 
         {isSearchboxOpen && (

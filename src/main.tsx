@@ -11,13 +11,16 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import {
+  AboutPage,
   ChannelProfilePage,
   DashboardPage,
   EditPlaylistPage,
   HomePage,
   LikedVideosPage,
   LoginPage,
+  PrivacyPage,
   SignupPage,
+  TermsConditionPage,
   VideoPlaybackPage,
 } from "./pages/index.ts";
 import { Toaster } from "./components/ui/toaster.tsx";
@@ -112,6 +115,30 @@ const appRouter = createBrowserRouter(
         element={
           <ProtectedAuthLayout authentication={false}>
             <LoginPage />
+          </ProtectedAuthLayout>
+        }
+      />
+      <Route
+        path={PathConstants.TERMS}
+        element={
+          <ProtectedAuthLayout authentication={false}>
+            <TermsConditionPage />
+          </ProtectedAuthLayout>
+        }
+      />
+      <Route
+        path={PathConstants.ABOUT}
+        element={
+          <ProtectedAuthLayout authentication={false}>
+            <AboutPage />
+          </ProtectedAuthLayout>
+        }
+      />{" "}
+      <Route
+        path={PathConstants.PRIVACY}
+        element={
+          <ProtectedAuthLayout authentication={false}>
+            <PrivacyPage />
           </ProtectedAuthLayout>
         }
       />

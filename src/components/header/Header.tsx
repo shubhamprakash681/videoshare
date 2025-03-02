@@ -5,7 +5,7 @@ import { toggleTheme } from "@/features/themeSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/useStore";
 import { toggleSidebarOpen } from "@/features/uiSlice";
 import SearchBox from "./SearchBox";
-import { MenuIcon, MoonIcon, SunIcon } from "lucide-react";
+import { MenuIcon, MoonIcon, SunIcon, Video } from "lucide-react";
 import ProfileDropdown from "./ProfileDropdown";
 
 interface ThemeToggleButtonProps
@@ -65,8 +65,12 @@ const SidebarToggleButton: React.FC<SidebarToggleButtonProps> = ({
 
 interface HeaderProps {
   searchOptionsModalRef: React.RefObject<HTMLDivElement>;
+  isSmallerScreen: boolean;
 }
-const Header: React.FC<HeaderProps> = ({ searchOptionsModalRef }) => {
+const Header: React.FC<HeaderProps> = ({
+  searchOptionsModalRef,
+  isSmallerScreen,
+}) => {
   const { theme } = useAppSelector((state) => state.themeReducer);
   const { isAuthenticated, userData } = useAppSelector(
     (state) => state.authReducer
@@ -76,7 +80,7 @@ const Header: React.FC<HeaderProps> = ({ searchOptionsModalRef }) => {
 
   return (
     <header
-      className="p-3 grid items-center"
+      className="p-3 grid items-center border-b"
       style={{ gridTemplateColumns: "auto 1fr" }}
     >
       <div className="sm:space-x-2 flex items-center">
@@ -84,10 +88,11 @@ const Header: React.FC<HeaderProps> = ({ searchOptionsModalRef }) => {
           <SidebarToggleButton dispatch={dispatch} key={"sidebar-toggle-btn"} />
         )}
 
-        <Link to={"/"}>
-          <span className="text-xl font-bold" style={{ width: "70px" }}>
-            VideoShare
-          </span>
+        <Link to={"/"} className="flex items-center gap-1">
+          <Video className="h-6 w-6 text-primary" />
+          {!isSmallerScreen && (
+            <span className="text-xl font-bold w-fit">VideoShare</span>
+          )}
         </Link>
       </div>
 

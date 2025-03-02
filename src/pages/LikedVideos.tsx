@@ -57,7 +57,7 @@ const LikedVideos: React.FC = () => {
     <PageContainer className="p-2 sm:p-3 md:p-4 lg:p-8">
       <h1 className="text-xl font-semibold">Liked Videos</h1>
 
-      <div className="mt-2 sm:mt-3 md:mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-center justify-items-center gap-4">
+      <div className="mt-2 sm:mt-3 md:mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 items-center justify-items-center gap-4">
         {data?.docs?.map((likedVideo) => (
           <VideoCard
             key={likedVideo._id}

@@ -6,6 +6,9 @@ import Dashboard from "./Dashboard";
 import ChannelProfile from "./ChannelProfile";
 import LikedVideos from "./LikedVideos";
 import EditPlaylist from "./EditPlaylist";
+import TermsCondition from "./static/TermsCondition";
+import About from "./static/About";
+import Privacy from "./static/Privacy";
 
 export {
   Login as LoginPage,
@@ -16,4 +19,7 @@ export {
   ChannelProfile as ChannelProfilePage,
   LikedVideos as LikedVideosPage,
   EditPlaylist as EditPlaylistPage,
+  TermsCondition as TermsConditionPage,
+  About as AboutPage,
+  Privacy as PrivacyPage,
 };

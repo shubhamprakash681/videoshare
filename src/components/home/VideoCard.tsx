@@ -36,7 +36,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
         <img
           src={thumbnail}
           alt="Video thumbnail"
-          className="w-full h-48 object-cover"
+          className="w-full h-48 object-cover aspect-video"
         />
         <div className="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">
           {formatVideoDuration(duration)}

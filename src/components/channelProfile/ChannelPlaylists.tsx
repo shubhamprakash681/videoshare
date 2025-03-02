@@ -156,7 +156,7 @@ const PlaylistResult: React.FC<PlaylistResultProps> = ({
 
   return (
     <>
-      <div className="p-2 sm:p-3 md:p-4 lg:p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-center justify-items-center gap-4">
+      <div className="p-2 sm:p-3 md:p-4 lg:p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 items-center justify-items-center gap-4">
         {channelPlaylistRes.docs.map((playlist) => (
           <Card
             key={playlist._id}

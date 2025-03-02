@@ -139,7 +139,7 @@ const SidebarContainer: React.FC<SidebarProps> = ({
           className={`${className} custom-sidebar`}
           style={{ width: SIDEBAR_WIDTH_CLOSED }}
         >
-          <div className="w-full h-full px-1 overflow-y-auto">
+          <div className="w-full h-full px-1 py-2 overflow-y-auto">
             {menuItems
               .filter((menuItem) => menuItem.title !== "Subscriptions")
               .map((menuItem, menuItemIndex) => (
@@ -190,7 +190,7 @@ const SidebarContainer: React.FC<SidebarProps> = ({
         className={`${className} custom-sidebar`}
         style={{ width: SIDEBAR_WIDTH }}
       >
-        <div className="w-full h-full px-2 overflow-y-auto">
+        <div className="w-full h-full p-2 overflow-y-auto">
           {menuItems.map((menuItem, menuItemIndex) => (
             <Collapsible
               key={`${menuItem.title}-${menuItemIndex}`}
