@@ -1,5 +1,8 @@
 import Login from "./auth/Login";
 import SignUp from "./auth/SignUp";
+import ForgotPassword from "./auth/ForgotPassword";
+import ResetPassword from "./auth/ResetPassword";
+import UpdatePassword from "./auth/UpdatePassword";
 import Home from "./Home";
 import VideoPlayback from "./VideoPlayback";
 import Dashboard from "./Dashboard";
@@ -13,6 +16,9 @@ import Privacy from "./static/Privacy";
 export {
   Login as LoginPage,
   SignUp as SignupPage,
+  ForgotPassword as ForgotPasswordPage,
+  ResetPassword as ResetPasswordPage,
+  UpdatePassword as UpdatePasswordPage,
   Home as HomePage,
   VideoPlayback as VideoPlaybackPage,
   Dashboard as DashboardPage,

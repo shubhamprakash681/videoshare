@@ -86,3 +86,16 @@ export const registerUserSchema = z.object({
   avatar: avatarValidations,
   coverImage: coverImageValidations,
 });
+
+export const passwordResetValidator = z.object({
+  password: passwordValidation,
+  confirmPassword: confirmPasswordValidation,
+});
+
+export const passwordUpdateValidator = z.object({
+  currentPassword: z
+    .string()
+    .min(8, { message: "Old Password must be of atleast 8 characters" }),
+  password: passwordValidation,
+  confirmPassword: confirmPasswordValidation,
+});

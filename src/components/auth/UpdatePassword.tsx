@@ -1,9 +1,11 @@
-import { useAppDispatch } from "@/hooks/useStore";
+import { useToast } from "@/hooks/use-toast";
+import { passwordUpdateValidator } from "@/schema/user/signupValidator";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AxiosError } from "axios";
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { APIResponse } from "@/types/APIResponse";
-import { IUser } from "@/types/collections";
+import { useNavigate } from "react-router-dom";
+import { z } from "zod";
 import {
   Card,
   CardContent,
@@ -11,28 +13,24 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { Button } from "../ui/button";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { registerUserSchema } from "@/schema";
-import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import FormErrorStrip from "../ui/FormErrorStrip";
-import { logout } from "@/features/authSlice";
-import { AxiosError } from "axios";
-import { useToast } from "@/hooks/use-toast";
-import { AxiosAPIInstance } from "@/lib/AxiosInstance";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 import { Eye, EyeOff } from "lucide-react";
+import FormErrorStrip from "../ui/FormErrorStrip";
+import { PathConstants } from "@/lib/variables";
+import { AxiosAPIInstance } from "@/lib/AxiosInstance";
+import { APIResponse } from "@/types/APIResponse";
 
-type SignupFormInputs = z.infer<typeof registerUserSchema>;
-type SignupResponseData = {
-  user: IUser;
-};
+type UpdatePasswordInputs = z.infer<typeof passwordUpdateValidator>;
 
-const SignUp: React.FC = () => {
+const UpdatePassword: React.FC = () => {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const { toast } = useToast();
+
+  const [currPasswordInputType, setCurrPasswordInputType] = useState<
+    "password" | "text"
+  >("password");
 
   const [passwordInputType, setPasswordInputType] = useState<
     "password" | "text"
@@ -41,6 +39,14 @@ const SignUp: React.FC = () => {
   const [cnfPasswordInputType, setCnfPasswordInputType] = useState<
     "password" | "text"
   >("password");
+
+  const toggleCurrentPasswordInputType = () => {
+    if (currPasswordInputType === "password") {
+      setCurrPasswordInputType("text");
+    } else {
+      setCurrPasswordInputType("password");
+    }
+  };
 
   const togglePasswordInputType = () => {
     if (passwordInputType === "password") {
@@ -60,26 +66,21 @@ const SignUp: React.FC = () => {
 
   const {
     handleSubmit,
-    register,
     setError,
-    // watch,
+    register,
     formState: { errors, isSubmitting },
-  } = useForm<SignupFormInputs>({
+  } = useForm<UpdatePasswordInputs>({
     defaultValues: {
-      username: "",
-      fullname: "",
-      email: "",
+      currentPassword: "",
       password: "",
       confirmPassword: "",
-      avatar: undefined,
-      coverImage: undefined,
     },
-    resolver: zodResolver(registerUserSchema),
+    resolver: zodResolver(passwordUpdateValidator),
   });
 
-  const signupSubmitHandler: SubmitHandler<SignupFormInputs> = async (
-    data: SignupFormInputs
-  ) => {
+  const updatePasswordSubmitHandler: SubmitHandler<
+    UpdatePasswordInputs
+  > = async (data: UpdatePasswordInputs) => {
     if (data.password.toString() !== data.confirmPassword.toString()) {
       setError("root", {
         type: "value",
@@ -89,31 +90,22 @@ const SignUp: React.FC = () => {
       return;
     }
 
-    const payload = {
-      username: data.username,
-      fullname: data.fullname,
-      email: data.email,
-      password: data.password,
-      avatar: data.avatar[0],
-      coverImage: data.coverImage.length && data.coverImage[0],
-    };
-
     try {
-      const res = await AxiosAPIInstance.post<APIResponse<SignupResponseData>>(
-        "/api/v1/user/register",
-        payload,
+      const res = await AxiosAPIInstance.patch<APIResponse<null>>(
+        "/api/v1/user/password/update",
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          oldPassword: data.currentPassword,
+          newPassword: data.password,
         }
       );
 
       if (res.data.success) {
         toast({
           title: res.data.message,
+          description: "Next time you login, use your new password.",
         });
-        navigate("/login");
+
+        navigate(PathConstants.MYCHANNEL);
       }
     } catch (error: any) {
       if (error instanceof AxiosError) {
@@ -121,83 +113,58 @@ const SignUp: React.FC = () => {
           title: error.response?.data.message || "Something went wrong!",
           variant: "destructive",
         });
-      }
 
-      console.error(error);
-      dispatch(logout());
+        console.error(error);
+      }
     }
   };
-
-  // TODO: add image preview
-  // const avatarPreview = watch("avatar");
-  // const coverImagePreview = watch("coverImage");
 
   return (
     <Card className="w-[400px] mx-auto">
       <CardHeader className="text-center space-y-0">
         <CardTitle className="text-xl font-bold leading-tight">
-          Sign up to create account
+          Update Password
         </CardTitle>
 
-        <CardDescription>
-          Already have an account?&nbsp;
-          <Link
-            to="/login"
-            className="font-medium text-primary transition-all duration-200 hover:underline"
-          >
-            <Button className="p-0" variant="link">
-              Sign In
-            </Button>
-          </Link>
-        </CardDescription>
+        <CardDescription>Update your account Password</CardDescription>
       </CardHeader>
 
       <CardContent>
         <form
-          id="signup-form"
-          onSubmit={handleSubmit(signupSubmitHandler)}
+          id="update-password-form"
+          onSubmit={handleSubmit(updatePasswordSubmitHandler)}
           className="space-y-4"
         >
           <div className="grid w-full max-w-sm items-center gap-1">
-            <Label htmlFor="username">Username:</Label>
-            <Input
-              {...register("username")}
-              id="username"
-              type="text"
-              placeholder="Enter your preferred username"
-            />
-            {errors.username && (
-              <FormErrorStrip
-                errorMessage={errors.username.message as string}
+            <Label htmlFor="password">Current Password:</Label>
+            <div className="flex items-center">
+              <Input
+                {...register("currentPassword")}
+                id="currentPassword"
+                type={currPasswordInputType}
+                placeholder="Enter your current password"
               />
-            )}
-          </div>
-
-          <div className="grid w-full max-w-sm items-center gap-1">
-            <Label htmlFor="fullname">Full Name:</Label>
-            <Input
-              {...register("fullname")}
-              id="fullname"
-              type="text"
-              placeholder="Enter your full name"
-            />
-            {errors.fullname && (
+              <Button
+                type="button"
+                aria-label="Toggle current password visibility"
+                data-state={currPasswordInputType}
+                data-disabled={isSubmitting}
+                onClick={toggleCurrentPasswordInputType}
+                variant="ghost"
+                className="-ml-12"
+              >
+                {currPasswordInputType === "password" && (
+                  <Eye className="h-4 w-4" />
+                )}
+                {currPasswordInputType === "text" && (
+                  <EyeOff className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+            {errors.currentPassword && (
               <FormErrorStrip
-                errorMessage={errors.fullname.message as string}
+                errorMessage={errors.currentPassword.message as string}
               />
-            )}
-          </div>
-
-          <div className="grid w-full max-w-sm items-center gap-1">
-            <Label htmlFor="email">Email:</Label>
-            <Input
-              {...register("email")}
-              id="email"
-              type="email"
-              placeholder="Enter your email"
-            />
-            {errors.email && (
-              <FormErrorStrip errorMessage={errors.email.message as string} />
             )}
           </div>
 
@@ -265,49 +232,28 @@ const SignUp: React.FC = () => {
             )}
           </div>
 
-          <div className="grid w-full max-w-sm items-center gap-1">
-            <Label htmlFor="avatar">Avatar:</Label>
-            <Input
-              {...register("avatar")}
-              id="avatar"
-              type="file"
-              accept="image/jpeg,image/png"
-              placeholder="Upload your profile picture"
-              multiple={false}
-            />
-            {errors.avatar && (
-              <FormErrorStrip errorMessage={errors.avatar.message as string} />
-            )}
-          </div>
-
-          <div className="grid w-full max-w-sm items-center gap-1">
-            <Label htmlFor="coverImage">Cover Image:</Label>
-            <Input
-              {...register("coverImage")}
-              id="coverImage"
-              type="file"
-              accept="image/jpeg,image/png"
-              placeholder="Upload your cover image"
-              multiple={false}
-            />
-            {errors.coverImage && (
-              <FormErrorStrip
-                errorMessage={errors.coverImage.message as string}
-              />
-            )}
-          </div>
-
           {errors.root && (
             <FormErrorStrip errorMessage={errors.root.message as string} />
           )}
 
           <Button disabled={isSubmitting} type="submit" className="w-full">
-            {isSubmitting ? "Creating Account..." : "Create Account"}
+            {isSubmitting ? "Updating Password..." : "Update Password"}
           </Button>
         </form>
+
+        <CardDescription className="text-center mt-4">
+          <Button
+            type="button"
+            className="w-full"
+            variant="outline"
+            onClick={() => navigate(PathConstants.MYCHANNEL)}
+          >
+            Back
+          </Button>
+        </CardDescription>
       </CardContent>
     </Card>
   );
 };
 
-export default SignUp;
+export default UpdatePassword;

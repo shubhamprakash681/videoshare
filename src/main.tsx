@@ -18,10 +18,13 @@ import {
   HomePage,
   LikedVideosPage,
   LoginPage,
-  PrivacyPage,
+  ForgotPasswordPage,
   SignupPage,
+  PrivacyPage,
   TermsConditionPage,
   VideoPlaybackPage,
+  ResetPasswordPage,
+  UpdatePasswordPage,
 } from "./pages/index.ts";
 import { Toaster } from "./components/ui/toaster.tsx";
 import ProtectedAuthLayout from "./components/auth/ProtectedAuthLayout.tsx";
@@ -79,6 +82,14 @@ const appRouter = createBrowserRouter(
         }
       />
       <Route
+        path={PathConstants.UPDATEPASSWORD}
+        element={
+          <ProtectedAuthLayout authentication>
+            <UpdatePasswordPage />
+          </ProtectedAuthLayout>
+        }
+      />
+      <Route
         path={PathConstants.LIKEDVIDEOS}
         element={
           <ProtectedAuthLayout authentication>
@@ -115,6 +126,22 @@ const appRouter = createBrowserRouter(
         element={
           <ProtectedAuthLayout authentication={false}>
             <LoginPage />
+          </ProtectedAuthLayout>
+        }
+      />
+      <Route
+        path={PathConstants.FORGOTPASSWORD}
+        element={
+          <ProtectedAuthLayout authentication={false}>
+            <ForgotPasswordPage />
+          </ProtectedAuthLayout>
+        }
+      />
+      <Route
+        path={PathConstants.RESETPASSWORD}
+        element={
+          <ProtectedAuthLayout authentication={false}>
+            <ResetPasswordPage />
           </ProtectedAuthLayout>
         }
       />

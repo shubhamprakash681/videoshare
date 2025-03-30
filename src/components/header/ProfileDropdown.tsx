@@ -10,6 +10,7 @@ import { APIResponse } from "@/types/APIResponse";
 import { logout } from "@/features/authSlice";
 import { useAppDispatch } from "@/hooks/useStore";
 import { Separator } from "../ui/separator";
+import { PathConstants } from "@/lib/variables";
 
 type ProfileDropdownProps = { avatarUrl: string };
 
@@ -62,7 +63,9 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ avatarUrl }) => {
             My Channel
           </Button>
         </Link>
-        <Button variant="ghost">Update Password</Button>
+        <Link to={PathConstants.UPDATEPASSWORD}>
+          <Button variant="ghost">Update Password</Button>
+        </Link>
 
         <Separator className="my-2" />
         <Link to="/dashboard">

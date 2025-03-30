@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -22,6 +22,8 @@ import { login, logout } from "@/features/authSlice";
 import { useToast } from "@/hooks/use-toast";
 import { AxiosError } from "axios";
 import { AxiosAPIInstance } from "@/lib/AxiosInstance";
+import { Eye, EyeOff } from "lucide-react";
+import { PathConstants } from "@/lib/variables";
 
 type LoginFormInputs = z.infer<typeof loginUserSchema>;
 type LoginResponseData = {
@@ -34,6 +36,18 @@ const Login: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const [passwordInputType, setPasswordInputType] = useState<
+    "password" | "text"
+  >("password");
+
+  const togglePasswordInputType = () => {
+    if (passwordInputType === "password") {
+      setPasswordInputType("text");
+    } else {
+      setPasswordInputType("password");
+    }
+  };
 
   const {
     handleSubmit,
@@ -122,17 +136,46 @@ const Login: React.FC = () => {
 
           <div className="grid w-full max-w-sm items-center gap-1">
             <Label htmlFor="password">Password:</Label>
-            <Input
-              {...register("password")}
-              id="password"
-              type="password"
-              placeholder="Enter your password"
-            />
+            <div className="flex items-center">
+              <Input
+                {...register("password")}
+                id="password"
+                type={passwordInputType}
+                placeholder="Enter your password"
+                className="w-full"
+              />
+              <Button
+                type="button"
+                aria-label="Toggle password visibility"
+                data-state={passwordInputType}
+                data-disabled={isSubmitting}
+                onClick={togglePasswordInputType}
+                variant="ghost"
+                className="-ml-12"
+              >
+                {passwordInputType === "password" && (
+                  <Eye className="h-4 w-4" />
+                )}
+                {passwordInputType === "text" && <EyeOff className="h-4 w-4" />}
+              </Button>
+            </div>
             {errors.password && (
               <FormErrorStrip
                 errorMessage={errors.password.message as string}
               />
             )}
+
+            <div className="flex items-center justify-end mt-1">
+              <Link to={PathConstants.FORGOTPASSWORD}>
+                <Button
+                  type="button"
+                  className="py-0 text-primary"
+                  variant="link"
+                >
+                  Forgot Password?
+                </Button>
+              </Link>
+            </div>
           </div>
 
           {errors.root && (

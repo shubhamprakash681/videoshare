@@ -91,7 +91,9 @@ const Header: React.FC<HeaderProps> = ({
         <Link to={"/"} className="flex items-center gap-1">
           <Video className="h-6 w-6 text-primary" />
           {!isSmallerScreen && (
-            <span className="text-xl font-bold w-fit">VideoShare</span>
+            <span className="text-xl font-bold w-fit prevent-select">
+              VideoShare
+            </span>
           )}
         </Link>
       </div>

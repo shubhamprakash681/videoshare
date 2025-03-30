@@ -1,5 +1,8 @@
 import SignUp from "./auth/SignUp";
 import Login from "./auth/Login";
+import ForgotPassword from "./auth/ForgotPassword";
+import ResetPassword from "./auth/ResetPassword";
+import UpdatePassword from "./auth/UpdatePassword";
 import Footer from "./footer/Footer";
 import Header from "./header/Header";
 import SearchOptionsModal from "./header/searchOptionsModal/SearchOptionsModal";
@@ -23,6 +26,9 @@ import ChannelPlaylists from "./channelProfile/ChannelPlaylists";
 export {
   Login as LoginCard,
   SignUp as SignupCard,
+  ForgotPassword as ForgotPasswordCard,
+  ResetPassword as ResetPasswordCard,
+  UpdatePassword as UpdatePasswordCard,
   Footer,
   Header,
   SearchOptionsModal,
