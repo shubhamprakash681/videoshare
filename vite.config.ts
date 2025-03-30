@@ -23,6 +23,7 @@ const getServerProxy: (env: string) => ServerOptions["proxy"] | undefined = (
 
 export default defineConfig({
   plugins: [react()],
+  base: "/",
   resolve: {
     alias: {
       "@": resolve(__dirname, "./src"),
