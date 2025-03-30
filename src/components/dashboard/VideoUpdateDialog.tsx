@@ -21,6 +21,7 @@ import { AxiosError } from "axios";
 import { AxiosAPIInstance } from "@/lib/AxiosInstance";
 import { APIResponse } from "@/types/APIResponse";
 import { IVideo } from "@/types/collections";
+import Image from "../ui/Image";
 
 type VideoUpdateInputs = z.infer<typeof updateVideoSchema>;
 interface UpdateVideoModalData {
@@ -173,7 +174,8 @@ const VideoUpdateDialog: React.FC<VideoUpdateDialogProps> = ({
 
                 {thumbnailPreview && thumbnailPreview.length > 0 ? (
                   <div className="mt-2 relative group">
-                    <img
+                    <Image
+                      loaderSize="medium"
                       src={URL.createObjectURL(thumbnailPreview[0])}
                       className="w-full rounded-lg object-cover"
                       alt="thumbnail"

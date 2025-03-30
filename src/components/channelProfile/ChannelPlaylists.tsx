@@ -32,6 +32,7 @@ import useSanitizedHTML from "@/hooks/useSanitizedHTML";
 import { useNavigate } from "react-router-dom";
 import { IPlaylist } from "@/types/collections";
 import ErrorStateComp from "../ui/ErrorStateComp";
+import Image from "../ui/Image";
 
 // Extend Day.js with the relativeTime plugin
 dayjs.extend(relativeTime);
@@ -164,7 +165,7 @@ const PlaylistResult: React.FC<PlaylistResultProps> = ({
           >
             <CardHeader className="relative p-0">
               <div className="group relative">
-                <img
+                <Image
                   src={playlist.videos[0]?.thumbnail.url || "/placeholder.svg"}
                   alt={playlist.title}
                   className="w-full h-48 object-cover"

@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import Image from "@/components/ui/Image";
 import PageContainer from "@/components/ui/PageContainer";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -323,7 +324,8 @@ const ChannelProfile: React.FC = () => {
           onMouseLeave={() => isOwner && setIsHoveringCover(false)}
         >
           {channelProfile?.coverImage?.url ? (
-            <img
+            <Image
+              loaderSize="medium"
               src={channelProfile?.coverImage?.url}
               alt="Channel cover"
               className="w-full h-full object-cover"

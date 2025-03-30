@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatVideoDuration } from "@/lib/video";
 import React from "react";
 import { Card } from "../ui/card";
+import Image from "../ui/Image";
 
 type VideoCardProps = {
   title: string;
@@ -33,7 +34,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
       className="w-full min-w-full overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 dark:shadow-gray-700/30 cursor-pointer"
     >
       <div className="relative">
-        <img
+        <Image
           src={thumbnail}
           alt="Video thumbnail"
           className="w-full h-48 object-cover aspect-video"

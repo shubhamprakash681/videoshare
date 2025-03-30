@@ -10,6 +10,7 @@ import useInfiniteFetch from "@/hooks/useInfiniteFetch";
 import Loader from "../ui/Loader";
 import ErrorStateComp from "../ui/ErrorStateComp";
 import { useNavigate } from "react-router-dom";
+import Image from "../ui/Image";
 
 // Extend Day.js with the relativeTime plugin
 dayjs.extend(relativeTime);
@@ -44,7 +45,7 @@ const SuggestionSection: React.FC<ISuggestionSection> = memo(
             className="flex items-start gap-1 sm:gap-2 px-0 py-2 sm:p-2 rounded-lg hover:bg-accent cursor-pointer group"
           >
             <div className="flex items-center">
-              <img
+              <Image
                 src={video.thumbnail.url || "/placeholder.svg"}
                 alt={video.title}
                 className="w-40 h-24 object-cover rounded-lg"
@@ -175,7 +176,7 @@ const PlaylistRightPanel: React.FC<IPlaylistRightPanelProps> = memo(
                       <div className="cursor-move opacity-0 group-hover:opacity-100 transition-opacity">
                         <GripVertical className="h-5 w-5 text-muted-foreground" />
                       </div>
-                      <img
+                      <Image
                         src={video.thumbnail.url || "/placeholder.svg"}
                         alt={video.title}
                         className="w-40 h-24 object-cover rounded-lg"

@@ -20,6 +20,7 @@ import { APIResponse } from "@/types/APIResponse";
 import { IVideo } from "@/types/collections";
 import { useToast } from "@/hooks/use-toast";
 import { AxiosError } from "axios";
+import Image from "../ui/Image";
 
 type VideoUploadDialogProps = {
   isOpen: boolean;
@@ -193,7 +194,8 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
 
                 {thumbnailPreview && thumbnailPreview.length > 0 ? (
                   <div className="mt-2 relative group">
-                    <img
+                    <Image
+                      loaderSize="medium"
                       src={URL.createObjectURL(thumbnailPreview[0])}
                       className="w-full rounded-lg object-cover"
                       alt="thumbnail"

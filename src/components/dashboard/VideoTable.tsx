@@ -20,6 +20,7 @@ import { updateVideoSchema } from "@/schema";
 import { IVideo } from "@/types/collections";
 import ErrorStateComp from "../ui/ErrorStateComp";
 import Loader from "../ui/Loader";
+import Image from "../ui/Image";
 
 type VideoTableProps = {
   channelVideosState: ChannelVideosResponse;
@@ -139,7 +140,7 @@ const VideoTable: React.FC<VideoTableProps> = ({
                   <TableRow key={video._id}>
                     <TableCell className="font-medium min-w-[300px] w-auto">
                       <div className="flex items-center space-x-3">
-                        <img
+                        <Image
                           src={video.thumbnail.url}
                           alt={video.title}
                           className="w-20 h-12 object-cover rounded"

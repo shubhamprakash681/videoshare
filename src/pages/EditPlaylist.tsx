@@ -51,6 +51,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import ErrorStateComp from "@/components/ui/ErrorStateComp";
+import Image from "@/components/ui/Image";
 
 // Extend Day.js with the relativeTime plugin
 dayjs.extend(relativeTime);
@@ -555,7 +556,7 @@ const EditPlaylist: React.FC<EditPlaylistProps> = ({}) => {
                           <div className="cursor-move opacity-0 group-hover:opacity-100 transition-opacity">
                             <GripVertical className="h-5 w-5 text-muted-foreground" />
                           </div>
-                          <img
+                          <Image
                             src={video.thumbnail.url || "/placeholder.svg"}
                             alt={video.title}
                             className="w-40 h-24 object-cover rounded-lg"
