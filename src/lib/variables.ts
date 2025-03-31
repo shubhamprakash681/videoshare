@@ -28,4 +28,9 @@ export const PathConstants = {
   PRIVACY: "/privacy",
 };
 
-export const authPaths = [PathConstants.LOGIN, PathConstants.SIGNUP];
+export const authPaths = [
+  PathConstants.LOGIN,
+  PathConstants.SIGNUP,
+  PathConstants.FORGOTPASSWORD,
+  PathConstants.RESETPASSWORD,
+];

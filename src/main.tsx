@@ -1,4 +1,4 @@
-import { StrictMode } from "react";
+// import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.tsx";
@@ -44,7 +44,7 @@ const appRouter = createBrowserRouter(
       <Route
         path={PathConstants.VIDEO}
         element={
-          <ProtectedAuthLayout authentication={false}>
+          <ProtectedAuthLayout authentication>
             <VideoPlaybackPage />
           </ProtectedAuthLayout>
         }
@@ -52,7 +52,7 @@ const appRouter = createBrowserRouter(
       <Route
         path={PathConstants.PLAYLIST}
         element={
-          <ProtectedAuthLayout authentication={false}>
+          <ProtectedAuthLayout authentication>
             <VideoPlaybackPage />
           </ProtectedAuthLayout>
         }
@@ -160,7 +160,7 @@ const appRouter = createBrowserRouter(
             <AboutPage />
           </ProtectedAuthLayout>
         }
-      />{" "}
+      />
       <Route
         path={PathConstants.PRIVACY}
         element={
@@ -174,11 +174,11 @@ const appRouter = createBrowserRouter(
 );
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <Provider store={reduxStore}>
-      <RouterProvider router={appRouter} />
+  // <StrictMode>
+  <Provider store={reduxStore}>
+    <RouterProvider router={appRouter} />
 
-      <Toaster />
-    </Provider>
-  </StrictMode>
+    <Toaster />
+  </Provider>
+  // </StrictMode>
 );

@@ -57,9 +57,7 @@ const AxiosInterceptor: React.FC<AxiosInterceptorProps> = ({ children }) => {
           } catch (refreshError) {
             // If refresh fails, redirect to login or handle logout
             console.error("Refresh session failed", refreshError);
-            console.log("navigating from axios");
 
-            navigate("/login");
             setIsRefreshing(false); // Reset refreshing state
             return Promise.reject(refreshError);
           }
