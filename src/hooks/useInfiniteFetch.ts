@@ -66,6 +66,10 @@ const useInfiniteFetch = <T>(
   >(queryUrl, fetchData, options);
 
   useEffect(() => {
+    refreshData();
+  }, [url]);
+
+  useEffect(() => {
     if (data) {
       setReult((prevState) => {
         return {
