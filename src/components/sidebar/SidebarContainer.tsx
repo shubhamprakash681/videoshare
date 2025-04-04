@@ -154,6 +154,7 @@ const SidebarContainer: React.FC<SidebarProps> = ({
                       variant={"ghost"}
                       key={`sm-subitem-${item.name}-${index}`}
                       onClick={() => navigate(item.url)}
+                      title={item.name}
                       className="my-1 scale-[110%] flex items-center justify-start space-x-2 transition duration-150 ease-linear hover:scale-[120%]"
                     >
                       {item.icon}
