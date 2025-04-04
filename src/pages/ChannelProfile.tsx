@@ -1,4 +1,8 @@
-import { ChannelPlaylists, ChannelVideos } from "@/components";
+import {
+  ChannelPlaylists,
+  ChannelSubscriptions,
+  ChannelVideos,
+} from "@/components";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,7 +28,7 @@ import {
   APIResponse,
   ChannelProfile as ChannelProfileType,
 } from "@/types/APIResponse";
-import { IPlaylist, IUser, IVideo } from "@/types/collections";
+import { IPlaylist, IUser, IVideo, Subscription } from "@/types/collections";
 import { AxiosError } from "axios";
 import {
   Camera,
@@ -37,7 +41,7 @@ import {
   Users,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 type isLoadingStates = {
   toggleSubscribe: boolean;
@@ -50,6 +54,7 @@ type TabValues = "tweets" | "subscribed" | "playlists" | "videos";
 const ChannelProfile: React.FC = () => {
   const location = useLocation();
   const params = useParams();
+  const navigate = useNavigate();
 
   const { userData } = useAppSelector((state) => state.authReducer);
   const { toast } = useToast();
@@ -97,6 +102,16 @@ const ChannelProfile: React.FC = () => {
     `/api/v1/playlist?userId=${channelProfile?._id}&visibility=${
       isOwner ? selectedPlaylistVisibility : "public"
     }`
+  );
+
+  const {
+    data: channelSubscriptionRes,
+    error: channelSubscriptionErr,
+    isLoading: channelSubscriptionLoading,
+    loaderRef: channelSubscriptionLoaderRef,
+    refreshData: refreshChannelSubscription,
+  } = useInfiniteFetch<Subscription>(
+    `/api/v1/subscription/user/${channelProfile?._id}`
   );
 
   const fetchChannelProfile = async (channelname: string) => {
@@ -281,7 +296,7 @@ const ChannelProfile: React.FC = () => {
     const searchParams = new URLSearchParams(location.search);
     searchParams.set("tab", value);
     const newUrl = `${location.pathname}?${searchParams.toString()}`;
-    window.history.replaceState(null, "", newUrl);
+    navigate(newUrl);
 
     setSelectedTab(value as TabValues);
   };
@@ -493,6 +508,15 @@ const ChannelProfile: React.FC = () => {
               setSelectedPlaylistVisibility={setSelectedPlaylistVisibility}
               isOwner={isOwner}
               refreshChannelPlaylist={refreshChannelPlaylist}
+            />
+          </TabsContent>
+          <TabsContent value="subscribed">
+            <ChannelSubscriptions
+              channelSubscriptionRes={channelSubscriptionRes}
+              channelSubscriptionErr={channelSubscriptionErr}
+              channelSubscriptionLoading={channelSubscriptionLoading}
+              channelSubscriptionLoaderRef={channelSubscriptionLoaderRef}
+              refreshChannelSubscription={refreshChannelSubscription}
             />
           </TabsContent>
         </Tabs>

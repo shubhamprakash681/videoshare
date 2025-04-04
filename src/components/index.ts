@@ -22,6 +22,7 @@ import CommentInput from "./comments/CommentInput";
 
 import ChannelVideos from "./channelProfile/ChannelVideos";
 import ChannelPlaylists from "./channelProfile/ChannelPlaylists";
+import ChannelSubscriptions from "./channelProfile/ChannelSubscriptions";
 
 export {
   Login as LoginCard,
@@ -45,4 +46,5 @@ export {
   CommentInput,
   ChannelVideos,
   ChannelPlaylists,
+  ChannelSubscriptions,
 };
