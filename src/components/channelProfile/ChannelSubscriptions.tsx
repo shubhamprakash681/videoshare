@@ -21,6 +21,7 @@ interface ChannelSubscriptionsProps {
   channelSubscriptionLoading: boolean;
   channelSubscriptionLoaderRef: React.RefObject<HTMLDivElement>;
   refreshChannelSubscription: () => Promise<void>;
+  isOwner: boolean;
 }
 
 const ChannelSubscriptions: React.FC<ChannelSubscriptionsProps> = ({
@@ -29,6 +30,7 @@ const ChannelSubscriptions: React.FC<ChannelSubscriptionsProps> = ({
   channelSubscriptionLoading,
   channelSubscriptionRes,
   refreshChannelSubscription,
+  isOwner,
 }) => {
   if (channelSubscriptionErr)
     return <ErrorStateComp handleRefresh={refreshChannelSubscription} />;
@@ -127,7 +129,7 @@ const ChannelSubscriptions: React.FC<ChannelSubscriptionsProps> = ({
           </div>
         ) : (
           <div className="w-full h-56 flex flex-col items-center justify-center gap-2 text-muted-foreground">
-            <p>This channel has no subscription yet.</p>
+            <p>{isOwner ? "Your" : "This"} channel has no subscription yet.</p>
             <p>
               You can subscribe to it by clicking the "Subscribe" button on the
               channel's profile page.

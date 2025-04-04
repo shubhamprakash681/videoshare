@@ -495,6 +495,7 @@ const ChannelProfile: React.FC = () => {
               channelVideosError={channelVideosError}
               channelVideosLoaderRef={channelVideosLoaderRef}
               channelVideosRefresh={channelVideosRefresh}
+              isOwner={isOwner}
             />
           </TabsContent>
 
@@ -517,6 +518,7 @@ const ChannelProfile: React.FC = () => {
               channelSubscriptionLoading={channelSubscriptionLoading}
               channelSubscriptionLoaderRef={channelSubscriptionLoaderRef}
               refreshChannelSubscription={refreshChannelSubscription}
+              isOwner={isOwner}
             />
           </TabsContent>
         </Tabs>

@@ -17,6 +17,7 @@ type ChannelVideoProps = {
   channelVideosLoading: boolean;
   channelVideosLoaderRef: React.RefObject<HTMLDivElement>;
   channelVideosRefresh: () => Promise<void>;
+  isOwner: boolean;
 };
 
 const ChannelVideos: React.FC<ChannelVideoProps> = ({
@@ -25,6 +26,7 @@ const ChannelVideos: React.FC<ChannelVideoProps> = ({
   channelVideosLoaderRef,
   channelVideosLoading,
   channelVideosRefresh,
+  isOwner,
 }) => {
   const navigate = useNavigate();
   const now = dayjs();
@@ -69,7 +71,7 @@ const ChannelVideos: React.FC<ChannelVideoProps> = ({
           </div>
         ) : (
           <div className="text-center my-5 text-muted-foreground">
-            This channel has no videos yet.
+            {isOwner ? "Your" : "This"} channel has no videos yet.
           </div>
         ))}
     </div>
