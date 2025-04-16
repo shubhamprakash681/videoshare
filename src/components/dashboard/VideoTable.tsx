@@ -27,8 +27,11 @@ type VideoTableProps = {
   channelVideosResError: Error | undefined;
   isChannelVideosResLoading: boolean;
   channelVideosResLoaderRef: React.RefObject<HTMLDivElement>;
+  uploadTCAccepted: boolean;
   refetchChannelVideos: () => Promise<void>;
 
+  setOpenUploadTCDialog: React.Dispatch<React.SetStateAction<boolean>>;
+  setUploadBtnClicked: React.Dispatch<React.SetStateAction<boolean>>;
   setDeleteVideoId: React.Dispatch<React.SetStateAction<string | null>>;
   setUpdateVideoModalData: React.Dispatch<
     React.SetStateAction<{
@@ -43,6 +46,9 @@ const VideoTable: React.FC<VideoTableProps> = ({
   channelVideosResError,
   isChannelVideosResLoading,
   channelVideosResLoaderRef,
+  uploadTCAccepted,
+  setOpenUploadTCDialog,
+  setUploadBtnClicked,
   refetchChannelVideos,
   setDeleteVideoId,
   setUpdateVideoModalData,
@@ -92,6 +98,8 @@ const VideoTable: React.FC<VideoTableProps> = ({
         thumbnail: thumbnailFile ?? undefined,
       },
     });
+    setOpenUploadTCDialog(!uploadTCAccepted);
+    setUploadBtnClicked(false);
   };
 
   if (channelVideosResError)

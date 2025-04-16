@@ -26,6 +26,7 @@ type VideoUploadDialogProps = {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setVideoUploadModalDirty: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpenUploadTCDialog: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 type VideoUploadInputs = z.infer<typeof uploadVideoSchema>;
@@ -33,6 +34,7 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
   isOpen,
   setIsOpen,
   setVideoUploadModalDirty,
+  setOpenUploadTCDialog,
 }) => {
   const { toast } = useToast();
 
@@ -114,7 +116,6 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
         <form
           id="video-upload-dialog-form"
           onSubmit={handleSubmit(videoUploadHandler)}
-          className="space-y-4 flex flex-col"
         >
           <div className="flex flex-col md:flex-row space-y-3 md:space-y-0">
             <div className="w-full space-y-3 md:pr-2">
@@ -222,6 +223,15 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
               </div>
             </div>
           </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full mt-4 mb-2"
+            onClick={() => setOpenUploadTCDialog(true)}
+          >
+            Review Terms & Conditions
+          </Button>
 
           <Button disabled={isSubmitting} type="submit" className="w-full">
             {isSubmitting ? "Uploading..." : "Upload"}

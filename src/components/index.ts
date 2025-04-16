@@ -15,6 +15,7 @@ import AddPlaylistModal from "./videoplayer/AddPlaylistModal";
 import StatCard from "./dashboard/StatCard";
 import VideoUploadDialog from "./dashboard/VideoUploadDialog";
 import VideoUpdateDialog from "./dashboard/VideoUpdateDialog";
+import UploadTCDialog from "./dashboard/UploadTCDialog";
 import VideoTable from "./dashboard/VideoTable";
 
 import CommentCard from "./comments/CommentCard";
@@ -41,6 +42,7 @@ export {
   StatCard,
   VideoUploadDialog,
   VideoUpdateDialog,
+  UploadTCDialog,
   VideoTable,
   CommentCard,
   CommentInput,

@@ -30,16 +30,22 @@ interface UpdateVideoModalData {
 }
 
 type VideoUpdateDialogProps = {
+  uploadTCAccepted: boolean;
+  uploadBtnClicked: boolean;
   updateVideoModalData: UpdateVideoModalData;
   setUpdateVideoModalData: React.Dispatch<
     React.SetStateAction<UpdateVideoModalData>
   >;
   setVideoUploadModalDirty: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpenUploadTCDialog: React.Dispatch<React.SetStateAction<boolean>>;
 };
 const VideoUpdateDialog: React.FC<VideoUpdateDialogProps> = ({
+  uploadTCAccepted,
+  uploadBtnClicked,
   updateVideoModalData,
   setUpdateVideoModalData,
   setVideoUploadModalDirty,
+  setOpenUploadTCDialog,
 }) => {
   const { toast } = useToast();
 
@@ -119,7 +125,11 @@ const VideoUpdateDialog: React.FC<VideoUpdateDialogProps> = ({
 
   return (
     <Dialog
-      open={updateVideoModalData.videoId !== null}
+      open={
+        updateVideoModalData.videoId !== null &&
+        uploadTCAccepted &&
+        !uploadBtnClicked
+      }
       onOpenChange={onOpenChange}
     >
       <DialogContent className="md:max-w-screen-sm lg:max-w-screen-md xl:max-w-screen-lg 2xl:max-w-screen-xl max-h-dvh overflow-y-auto">
@@ -133,7 +143,6 @@ const VideoUpdateDialog: React.FC<VideoUpdateDialogProps> = ({
         <form
           id="video-update-form"
           onSubmit={handleSubmit(videoUpdateHandler)}
-          className="space-y-4 flex flex-col"
         >
           <div className="flex flex-col md:flex-row space-y-3 md:space-y-0">
             <div className="w-full space-y-3 md:pr-2">
@@ -202,6 +211,15 @@ const VideoUpdateDialog: React.FC<VideoUpdateDialogProps> = ({
               </div>
             </div>
           </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full mt-4 mb-2"
+            onClick={() => setOpenUploadTCDialog(true)}
+          >
+            Review Terms & Conditions
+          </Button>
 
           <Button disabled={isSubmitting} type="submit" className="w-full">
             {isSubmitting ? "Updating..." : "Update"}

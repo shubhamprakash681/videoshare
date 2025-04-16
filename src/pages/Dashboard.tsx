@@ -1,5 +1,6 @@
 import {
   StatCard,
+  UploadTCDialog,
   VideoTable,
   VideoUpdateDialog,
   VideoUploadDialog,
@@ -30,6 +31,7 @@ import { AxiosError } from "axios";
 import { Eye, ThumbsUp, Upload, Users, Video } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import useInfiniteFetch from "@/hooks/useInfiniteFetch";
+import { useAppSelector } from "@/hooks/useStore";
 
 interface UpdateVideoModalData {
   videoId: string | null;
@@ -37,11 +39,14 @@ interface UpdateVideoModalData {
 }
 
 const Dashboard: React.FC = () => {
+  const [openUploadTCDialog, setOpenUploadTCDialog] = useState<boolean>(false);
   const [openVideoUploadModal, setOpenVideoUploadModal] =
     useState<boolean>(false);
+  const [uploadBtnClicked, setUploadBtnClicked] = useState<boolean>(false);
   const [videoUploadModalDirty, setVideoUploadModalDirty] =
     useState<boolean>(false);
 
+  const { userData } = useAppSelector((state) => state.authReducer);
   const { toast } = useToast();
 
   const [channelStats, setChannelStats] = useState<ChannelStatsResponse>({
@@ -122,6 +127,15 @@ const Dashboard: React.FC = () => {
     await channelVideosRefetch();
   };
 
+  const onUploadBtnClick = () => {
+    if (!userData?.uploadTCAccepted) {
+      setOpenUploadTCDialog(true);
+    } else {
+      setOpenVideoUploadModal(true);
+    }
+    setUploadBtnClicked(true);
+  };
+
   useEffect(() => {
     fetchChannelStats();
   }, []);
@@ -145,7 +159,7 @@ const Dashboard: React.FC = () => {
       <div className="flex items-center justify-between pr-2">
         <h1 className="text-2xl font-semibold">Channel Dashboard</h1>
         <Button
-          onClick={() => setOpenVideoUploadModal(true)}
+          onClick={onUploadBtnClick}
           className="hover:scale-105 transform transition duration-300 ease-in-out"
         >
           <Upload className="mr-2 h-4 w-4" /> Upload Video
@@ -193,6 +207,9 @@ const Dashboard: React.FC = () => {
             isChannelVideosResLoading={isChannelVideosResLoading}
             channelVideosResLoaderRef={channelVideosResLoaderRef}
             refetchChannelVideos={refetchChannelVideos}
+            uploadTCAccepted={userData?.uploadTCAccepted || false}
+            setOpenUploadTCDialog={setOpenUploadTCDialog}
+            setUploadBtnClicked={setUploadBtnClicked}
             setDeleteVideoId={setDeleteVideoId}
             setUpdateVideoModalData={setUpdateVideoModalData}
           />
@@ -229,16 +246,29 @@ const Dashboard: React.FC = () => {
         </AlertDialogContent>
       </AlertDialog>
 
+      <UploadTCDialog
+        isOpen={openUploadTCDialog}
+        uploadTCAccepted={userData?.uploadTCAccepted || false}
+        uploadBtnClicked={uploadBtnClicked}
+        setIsOpen={setOpenUploadTCDialog}
+        setUploadBtnClicked={setUploadBtnClicked}
+        setOpenVideoUploadModal={setOpenVideoUploadModal}
+      />
+
       <VideoUploadDialog
         isOpen={openVideoUploadModal}
         setIsOpen={setOpenVideoUploadModal}
         setVideoUploadModalDirty={setVideoUploadModalDirty}
+        setOpenUploadTCDialog={setOpenUploadTCDialog}
       />
 
       <VideoUpdateDialog
+        uploadBtnClicked={uploadBtnClicked}
+        uploadTCAccepted={userData?.uploadTCAccepted || false}
         updateVideoModalData={updateVideoModalData}
         setUpdateVideoModalData={setUpdateVideoModalData}
         setVideoUploadModalDirty={setVideoUploadModalDirty}
+        setOpenUploadTCDialog={setOpenUploadTCDialog}
       />
     </PageContainer>
   );

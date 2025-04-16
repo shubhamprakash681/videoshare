@@ -14,6 +14,7 @@ export interface IUser {
   watchHistory?: any[];
   password?: string;
   refreshToken?: string;
+  uploadTCAccepted: boolean;
 }
 
 export interface IVideo {
