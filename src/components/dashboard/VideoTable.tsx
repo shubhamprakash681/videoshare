@@ -86,9 +86,13 @@ const VideoTable: React.FC<VideoTableProps> = ({
   };
 
   const onUpdateClick = async (video: IVideo) => {
+    console.log("here, video: ", video);
+
     const thumbnailFile = createFileList([
       await urlToFile(video.thumbnail.url, "thumbnail.png"),
     ]);
+
+    console.log("here, thumbnailFile: ", thumbnailFile);
 
     setUpdateVideoModalData({
       videoId: video._id,

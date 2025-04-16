@@ -68,6 +68,11 @@ const VideoUpdateDialog: React.FC<VideoUpdateDialogProps> = ({
   };
 
   const thumbnailPreview = watch("thumbnail");
+  console.log("here, in VideoUplDialog, thumbPreview: ", thumbnailPreview);
+  console.log(
+    "here, in VideoUplDialog, updateVideoModalData.initialValues",
+    updateVideoModalData.initialValues
+  );
 
   const videoUpdateHandler: SubmitHandler<VideoUpdateInputs> = async (
     data: VideoUpdateInputs
