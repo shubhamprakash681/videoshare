@@ -56,9 +56,9 @@ const UploadTCDialog: React.FC<UploadTCDialogProps> = ({
   const handleUploadTcToggle = async () => {
     setIsLoading(true);
     try {
-      const { data } = await AxiosAPIInstance.patch<
-        APIResponse<{ user: IUser }>
-      >("/api/v1/user/terms");
+      const { data } = await AxiosAPIInstance.put<APIResponse<{ user: IUser }>>(
+        "/api/v1/user/terms"
+      );
 
       if (data.success && data.data?.user) {
         dispatch(updateUser(data.data.user));
