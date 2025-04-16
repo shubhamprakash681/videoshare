@@ -12,6 +12,7 @@ import {
   ArrowRight,
   PanelLeftOpen,
   PanelLeftClose,
+  History,
 } from "lucide-react";
 import {
   Collapsible,
@@ -30,6 +31,7 @@ import { AxiosError } from "axios";
 import Loader from "../ui/Loader";
 import { Separator } from "../ui/separator";
 import { setSidebarOpen } from "@/features/uiSlice";
+import { PathConstants } from "@/lib/variables";
 
 type MenuItem = {
   title: string;
@@ -280,7 +282,7 @@ const defaultMenuItem: MenuItem[] = [
     items: [
       {
         name: "Home",
-        url: "/",
+        url: PathConstants.HOME,
         icon: <Home className="h-4 w-4" />,
       },
     ],
@@ -296,7 +298,7 @@ const defaultMenuItem: MenuItem[] = [
       },
       {
         name: "Dashboard",
-        url: "/dashboard",
+        url: PathConstants.DASHBOARD,
         icon: <LayoutDashboard className="h-4 w-4" />,
       },
     ],
@@ -307,7 +309,7 @@ const defaultMenuItem: MenuItem[] = [
     items: [
       {
         name: "Liked Videos",
-        url: "/liked-videos",
+        url: PathConstants.LIKEDVIDEOS,
         icon: <ThumbsUp className="h-4 w-4" />,
       },
       {
@@ -329,6 +331,11 @@ const defaultMenuItem: MenuItem[] = [
         name: "Tweets",
         url: "/me?tab=tweets",
         icon: <MessageCircle className="h-4 w-4" />,
+      },
+      {
+        name: "Watch History",
+        url: PathConstants.WATCHHISTORY,
+        icon: <History className="h-4 w-4" />,
       },
     ],
   },

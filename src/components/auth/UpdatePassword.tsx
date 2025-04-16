@@ -91,7 +91,7 @@ const UpdatePassword: React.FC = () => {
     }
 
     try {
-      const res = await AxiosAPIInstance.patch<APIResponse<null>>(
+      const res = await AxiosAPIInstance.put<APIResponse<null>>(
         "/api/v1/user/password/update",
         {
           oldPassword: data.currentPassword,

@@ -91,7 +91,7 @@ const CommentInput: React.FC<CommentInputProps> = ({
     try {
       setIsCommenting(true);
 
-      const { data } = await AxiosAPIInstance.patch<APIResponse<null>>(
+      const { data } = await AxiosAPIInstance.put<APIResponse<null>>(
         `/api/v1/comment/${updateCommentId}`,
         {
           content: commentText,

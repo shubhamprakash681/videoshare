@@ -42,7 +42,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoData }) => {
 
   const incrementVideoViewCount = async () => {
     try {
-      await AxiosAPIInstance.patch(`/api/v1/video/view/${videoData._id}`);
+      await AxiosAPIInstance.put(`/api/v1/video/view/${videoData._id}`);
     } catch (error) {
       console.error("Failed to increment video view count: ", error);
     }

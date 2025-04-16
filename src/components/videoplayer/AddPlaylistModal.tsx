@@ -95,7 +95,7 @@ const AddPlaylistModal: React.FC<AddPlaylistModalProps> = ({
     try {
       setIsLoading({ ...isLoading, savePlaylist: true });
 
-      const { data } = await AxiosAPIInstance.patch<APIResponse<null>>(
+      const { data } = await AxiosAPIInstance.put<APIResponse<null>>(
         `/api/v1/video/playlist/${videoId}`,
         {
           addToPlaylistIds: playlistsIdsToSave,

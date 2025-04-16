@@ -25,6 +25,7 @@ import {
   VideoPlaybackPage,
   ResetPasswordPage,
   UpdatePasswordPage,
+  WatchHistoryPage,
 } from "./pages/index.ts";
 import { Toaster } from "./components/ui/toaster.tsx";
 import ProtectedAuthLayout from "./components/auth/ProtectedAuthLayout.tsx";
@@ -66,6 +67,14 @@ const appRouter = createBrowserRouter(
         }
       />
       <Route
+        path={PathConstants.WATCHPLAYLIST}
+        element={
+          <ProtectedAuthLayout authentication>
+            <VideoPlaybackPage />
+          </ProtectedAuthLayout>
+        }
+      />
+      <Route
         path={PathConstants.DASHBOARD}
         element={
           <ProtectedAuthLayout authentication>
@@ -94,6 +103,14 @@ const appRouter = createBrowserRouter(
         element={
           <ProtectedAuthLayout authentication>
             <LikedVideosPage />
+          </ProtectedAuthLayout>
+        }
+      />
+      <Route
+        path={PathConstants.WATCHHISTORY}
+        element={
+          <ProtectedAuthLayout authentication>
+            <WatchHistoryPage />
           </ProtectedAuthLayout>
         }
       />

@@ -73,7 +73,7 @@ const VideoUpdateDialog: React.FC<VideoUpdateDialogProps> = ({
     data: VideoUpdateInputs
   ) => {
     try {
-      const { data: videoUpdateResponse } = await AxiosAPIInstance.patch<
+      const { data: videoUpdateResponse } = await AxiosAPIInstance.put<
         APIResponse<{ video: IVideo }>
       >(
         `/api/v1/video/update/${updateVideoModalData.videoId}`,

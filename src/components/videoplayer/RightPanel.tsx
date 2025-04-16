@@ -218,7 +218,7 @@ const PlaylistRightPanel: React.FC<IPlaylistRightPanelProps> = memo(
 );
 
 interface RightPanelProps {
-  pageName: "video" | "playlist" | "like-playlist";
+  pageName: "video" | "playlist" | "like-playlist" | "watch-playlist";
   playlistData?: IPlaylist;
   currentVideoId: string;
   setVideoData?: React.Dispatch<React.SetStateAction<IVideo | undefined>>;
@@ -233,7 +233,11 @@ const RightPanel: React.FC<RightPanelProps> = ({
 }) => {
   const now = dayjs();
 
-  if (pageName === "playlist" || pageName === "like-playlist")
+  if (
+    pageName === "playlist" ||
+    pageName === "like-playlist" ||
+    pageName === "watch-playlist"
+  )
     return (
       <PlaylistRightPanel
         playlistData={playlistData}

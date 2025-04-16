@@ -11,7 +11,7 @@ export interface IUser {
     public_id: string;
     url: string;
   };
-  watchHistory?: any[];
+  watchHistory?: { videoId: string; watchedAt: Date }[];
   password?: string;
   refreshToken?: string;
   uploadTCAccepted: boolean;
@@ -36,7 +36,7 @@ export interface IVideo {
   createdAt: Date;
 }
 
-interface PlaylistVideo {
+export interface PlaylistVideo {
   _id: string;
   videoFile: {
     public_id: string;

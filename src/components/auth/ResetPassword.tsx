@@ -82,7 +82,7 @@ const ResetPassword: React.FC = () => {
     }
 
     try {
-      const res = await AxiosAPIInstance.patch<APIResponse<null>>(
+      const res = await AxiosAPIInstance.put<APIResponse<null>>(
         `/api/v1/user/password/reset/${token}`,
         {
           password: data.password,

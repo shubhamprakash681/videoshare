@@ -8,6 +8,7 @@ import VideoPlayback from "./VideoPlayback";
 import Dashboard from "./Dashboard";
 import ChannelProfile from "./ChannelProfile";
 import LikedVideos from "./LikedVideos";
+import WatchHistory from "./WatchHistory";
 import EditPlaylist from "./EditPlaylist";
 import TermsCondition from "./static/TermsCondition";
 import About from "./static/About";
@@ -24,6 +25,7 @@ export {
   Dashboard as DashboardPage,
   ChannelProfile as ChannelProfilePage,
   LikedVideos as LikedVideosPage,
+  WatchHistory as WatchHistoryPage,
   EditPlaylist as EditPlaylistPage,
   TermsCondition as TermsConditionPage,
   About as AboutPage,

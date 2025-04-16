@@ -62,7 +62,7 @@ const VideoTable: React.FC<VideoTableProps> = ({
     try {
       setToggleVideoInProgress(true);
 
-      const { data } = await AxiosAPIInstance.patch<APIResponse<null>>(
+      const { data } = await AxiosAPIInstance.put<APIResponse<null>>(
         `/api/v1/dashboard/video/${videoId}`
       );
 

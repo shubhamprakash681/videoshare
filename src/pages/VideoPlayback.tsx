@@ -258,6 +258,7 @@ const VideoPlayback: React.FC = () => {
     | "video"
     | "playlist"
     | "like-playlist"
+    | "watch-playlist"
     | null = () => {
     const splittedPathname = location.pathname.split("/");
 
@@ -267,6 +268,8 @@ const VideoPlayback: React.FC = () => {
       return "like-playlist";
     } else if (splittedPathname.includes("playlist")) {
       return "playlist";
+    } else if (splittedPathname.includes("watch-playlist")) {
+      return "watch-playlist";
     }
 
     return null;
@@ -304,6 +307,8 @@ const VideoPlayback: React.FC = () => {
     } else if (pageName === "like-playlist" && !videoData) {
       // navigate to liked videos
       navigate(PathConstants.LIKEDVIDEOS);
+    } else if (pageName === "watch-playlist" && !videoData) {
+      navigate(PathConstants.WATCHHISTORY);
     } else if (
       pageName === "playlist" &&
       (!playlistData || playlistData._id !== locationStates?.playlist?._id)
@@ -490,9 +495,9 @@ const VideoPlayback: React.FC = () => {
                       {dayjs(new Date(videoData?.createdAt)).from(now)}
                     </span>
                   </p>
-                  <p className="text-sm">
+                  <div className="text-sm">
                     {parse(sanitizeHTMLContent(videoData?.description))}
-                  </p>
+                  </div>
                 </div>
               </>
             )}
@@ -553,7 +558,7 @@ const VideoPlayback: React.FC = () => {
         {getPageName() && (
           <div className={`${isSmallerScreen ? "py-4" : "pl-2 2xl:pl-4"}`}>
             <RightPanel
-              pageName={getPageName() as "video" | "playlist" | "like-playlist"}
+              pageName={getPageName() || "video"}
               playlistData={playlistData}
               currentVideoId={videoData._id}
               setVideoData={setVideoData}

@@ -145,7 +145,7 @@ const ChannelProfile: React.FC = () => {
         setIsLoading({ ...isLoading, coverImageChange: true });
         const newCoverImageFile = e.target.files[0];
 
-        const { data } = await AxiosAPIInstance.patch<
+        const { data } = await AxiosAPIInstance.put<
           APIResponse<{ user: IUser }>
         >(
           "/api/v1/user/cover-image",
@@ -214,7 +214,7 @@ const ChannelProfile: React.FC = () => {
         setIsLoading({ ...isLoading, avatarImageChange: true });
         const newAvatarFile = e.target.files[0];
 
-        const { data } = await AxiosAPIInstance.patch<
+        const { data } = await AxiosAPIInstance.put<
           APIResponse<{ user: IUser }>
         >(
           "/api/v1/user/avatar",
