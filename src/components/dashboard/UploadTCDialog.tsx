@@ -77,7 +77,7 @@ const UploadTCDialog: React.FC<UploadTCDialogProps> = ({
         toast({
           title:
             error.response?.data.message ||
-            "Failed to accept terms and conditions!",
+            "Failed to update terms and conditions acceptance!",
           variant: "destructive",
         });
       }
