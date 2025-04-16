@@ -15,11 +15,10 @@ interface UseInfiniteScrollResult<T> {
 
 const useInfiniteFetch = <T>(
   url: string,
-  page: number = 1,
   limit: number = 10,
   options: SWRConfiguration = {}
 ): UseInfiniteScrollResult<T> => {
-  const [curentPage, setCurrentPage] = useState<number>(page);
+  const [curentPage, setCurrentPage] = useState<number>(1);
   const loaderRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -70,6 +69,8 @@ const useInfiniteFetch = <T>(
   }, [url]);
 
   useEffect(() => {
+    // console.log("data changed, data: ", data);
+
     if (data) {
       setReult((prevState) => {
         return {
@@ -77,10 +78,12 @@ const useInfiniteFetch = <T>(
           docs: data.page == 1 ? data.docs : [...prevState.docs, ...data.docs],
         };
       });
-    } else {
-      setReult(initialResult);
-      setCurrentPage(1);
     }
+    // else {
+    //   setReult(initialResult);
+    //   console.log("setpage from 83, val: ", 1);
+    //   setCurrentPage(1);
+    // }
   }, [data]);
 
   // Handle intersection observer for infinite scroll
@@ -95,14 +98,17 @@ const useInfiniteFetch = <T>(
 
           // Set a new timeout to delay the API call
           const timeout = setTimeout(() => {
-            setCurrentPage(curentPage + 1); // Load the next page
-          }, 300); // Adjust the delay as needed (e.g., 300ms)
+            if (result.hasNextPage) {
+              // console.log("setpage from 102, val: ", curentPage + 1);
+              setCurrentPage(curentPage + 1); // Load the next page
+            }
+          }, 50); // Adjust the delay as needed (e.g., 50ms)
 
           // Save the timeout ID to state
           setDebounceTimeout(timeout);
         }
       },
-      { threshold: 1.0 } // Trigger when the loader is fully visible
+      { threshold: 0.5 }
     );
 
     if (loaderRef.current) {
@@ -122,6 +128,8 @@ const useInfiniteFetch = <T>(
   }, [curentPage, isValidating, debounceTimeout]);
 
   const refreshData = async () => {
+    // console.log("refresh called, curentPage: ", curentPage);
+    // console.log("setpage from refresh, val: ", 1);
     setCurrentPage(1);
     curentPage === 1 && (await mutate());
   };
