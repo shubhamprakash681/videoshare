@@ -5,7 +5,7 @@ export const uploadVideoSchema = z.object({
     .string()
     .trim()
     .min(5, { message: "Video title must be of at least 5 characters" })
-    .max(20, { message: "Video title must not be more than 20 characters" }),
+    .max(50, { message: "Video title must not be more than 50 characters" }),
 
   description: z
     .string()

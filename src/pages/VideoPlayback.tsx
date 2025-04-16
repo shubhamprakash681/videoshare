@@ -382,7 +382,7 @@ const VideoPlayback: React.FC = () => {
         className={`grid ${!isSmallerScreen && "gap-3 2xl:gap-6"}`}
         style={{ gridTemplateColumns: isSmallerScreen ? "1fr" : "1fr 480px" }}
       >
-        <div className="mx-auto max-w-7xl">
+        <div className="mx-auto max-w-full">
           <VideoPlayer videoData={videoData} />
 
           <div className="mt-4">
