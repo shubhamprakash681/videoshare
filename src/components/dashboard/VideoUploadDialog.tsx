@@ -21,6 +21,7 @@ import { IVideo } from "@/types/collections";
 import { useToast } from "@/hooks/use-toast";
 import { AxiosError } from "axios";
 import Image from "../ui/Image";
+import { useEffect, useMemo } from "react";
 
 type VideoUploadDialogProps = {
   isOpen: boolean;
@@ -45,6 +46,7 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
     formState: { isSubmitting, errors },
     getValues,
     setValue,
+    clearErrors,
     control,
   } = useForm<VideoUploadInputs>({
     defaultValues: {
@@ -84,6 +86,12 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
         setValue("thumbnail", undefined);
         setValue("videoFile", undefined);
 
+        clearErrors("title");
+        clearErrors("description");
+        clearErrors("thumbnail");
+        clearErrors("videoFile");
+        clearErrors("root");
+
         toast({
           title: videoUploadResponse.message,
         });
@@ -102,10 +110,42 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
 
   const thumbnailPreview = watch("thumbnail");
   const videoPreview = watch("videoFile");
+  const descriptionDefaultValue = useMemo(() => getValues("description"), []);
+
+  const videoPreviewUrl = useMemo(() => {
+    return videoPreview && videoPreview.length > 0
+      ? URL.createObjectURL(videoPreview[0])
+      : null;
+  }, [videoPreview]);
+
+  useEffect(() => {
+    return () => {
+      if (videoPreviewUrl) {
+        URL.revokeObjectURL(videoPreviewUrl);
+      }
+    };
+  }, [videoPreviewUrl]);
+
+  const thumbnailPreviewUrl = useMemo(() => {
+    return thumbnailPreview && thumbnailPreview.length > 0
+      ? URL.createObjectURL(thumbnailPreview[0])
+      : null;
+  }, [thumbnailPreview]);
+
+  useEffect(() => {
+    return () => {
+      if (thumbnailPreviewUrl) {
+        URL.revokeObjectURL(thumbnailPreviewUrl);
+      }
+    };
+  }, [thumbnailPreviewUrl]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="md:max-w-screen-sm lg:max-w-screen-md xl:max-w-screen-lg 2xl:max-w-screen-xl max-h-dvh overflow-y-auto">
+      <DialogContent
+        className="md:max-w-screen-sm lg:max-w-screen-md xl:max-w-screen-lg 2xl:max-w-screen-xl overflow-y-auto"
+        style={{ maxHeight: "85dvh" }}
+      >
         <DialogHeader>
           <DialogTitle>Upload Video</DialogTitle>
           <DialogDescription>
@@ -139,7 +179,7 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
                 <RTE
                   label="Description:"
                   name="description"
-                  defaultValue={getValues("description")}
+                  defaultValue={descriptionDefaultValue}
                   control={control}
                 />
                 {errors.description && (
@@ -177,15 +217,13 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
                     errorMessage={errors.videoFile.message as string}
                   />
                 )}
-                {videoPreview && videoPreview.length > 0 && (
+                {videoPreviewUrl && (
                   <div className="mt-2">
                     <video
-                      src={URL.createObjectURL(videoPreview[0])}
+                      src={videoPreviewUrl}
                       controls
                       className="w-full rounded-lg"
-                    >
-                      Your browser does not support the video tag.
-                    </video>
+                    />
                   </div>
                 )}
               </div>
@@ -193,11 +231,11 @@ const VideoUploadDialog: React.FC<VideoUploadDialogProps> = ({
               <div className="grid w-full items-center gap-1">
                 <Label htmlFor="thumbnail">Thumbnail:</Label>
 
-                {thumbnailPreview && thumbnailPreview.length > 0 ? (
+                {thumbnailPreviewUrl ? (
                   <div className="mt-2 relative group">
                     <Image
                       loaderSize="medium"
-                      src={URL.createObjectURL(thumbnailPreview[0])}
+                      src={thumbnailPreviewUrl}
                       className="w-full rounded-lg object-cover"
                       alt="thumbnail"
                     />

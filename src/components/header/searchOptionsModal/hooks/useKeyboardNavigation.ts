@@ -13,6 +13,7 @@ export const useKeyboardNavigation = (
       setSelectedIndex((curr) => (curr - 1 + totalItems) % totalItems);
     } else if (e.key === "Enter") {
       e.preventDefault();
+
       onEnter(selectedIndex);
     }
   };
@@ -22,7 +23,7 @@ export const useKeyboardNavigation = (
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [totalItems, selectedIndex]);
+  }, [totalItems, selectedIndex, handleKeyDown]);
 
   return { selectedIndex };
 };

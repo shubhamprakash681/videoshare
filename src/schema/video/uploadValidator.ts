@@ -45,9 +45,9 @@ export const uploadVideoSchema = z.object({
       message: "Choose a single file only",
     })
     .refine(
-      (files) => files && files.length && files[0].size <= 50 * 1024 * 1024,
+      (files) => files && files.length && files[0].size <= 100 * 1024 * 1024,
       {
-        message: "Video file size should be less than 50MB",
+        message: "Video file size should be less than 100MB",
       }
     )
     .refine(

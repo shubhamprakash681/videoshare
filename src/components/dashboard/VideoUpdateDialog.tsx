@@ -1,7 +1,7 @@
 import { useToast } from "@/hooks/use-toast";
 import { updateVideoSchema } from "@/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { SubmitHandler, useForm, UseFormRegister } from "react-hook-form";
 import { z } from "zod";
 import {
@@ -68,11 +68,21 @@ const VideoUpdateDialog: React.FC<VideoUpdateDialogProps> = ({
   };
 
   const thumbnailPreview = watch("thumbnail");
-  console.log("here, in VideoUplDialog, thumbPreview: ", thumbnailPreview);
-  console.log(
-    "here, in VideoUplDialog, updateVideoModalData.initialValues",
-    updateVideoModalData.initialValues
-  );
+  const descriptionDefaultValue = useMemo(() => getValues("description"), []);
+
+  const thumbnailPreviewUrl = useMemo(() => {
+    return thumbnailPreview && thumbnailPreview.length > 0
+      ? URL.createObjectURL(thumbnailPreview[0])
+      : null;
+  }, [thumbnailPreview]);
+
+  useEffect(() => {
+    return () => {
+      if (thumbnailPreviewUrl) {
+        URL.revokeObjectURL(thumbnailPreviewUrl);
+      }
+    };
+  }, [thumbnailPreviewUrl]);
 
   const videoUpdateHandler: SubmitHandler<VideoUpdateInputs> = async (
     data: VideoUpdateInputs
@@ -137,7 +147,10 @@ const VideoUpdateDialog: React.FC<VideoUpdateDialogProps> = ({
       }
       onOpenChange={onOpenChange}
     >
-      <DialogContent className="md:max-w-screen-sm lg:max-w-screen-md xl:max-w-screen-lg 2xl:max-w-screen-xl max-h-dvh overflow-y-auto">
+      <DialogContent
+        className="md:max-w-screen-sm lg:max-w-screen-md xl:max-w-screen-lg 2xl:max-w-screen-xl overflow-y-auto"
+        style={{ maxHeight: "85dvh" }}
+      >
         <DialogHeader>
           <DialogTitle>Update Video</DialogTitle>
           <DialogDescription>
@@ -171,7 +184,7 @@ const VideoUpdateDialog: React.FC<VideoUpdateDialogProps> = ({
                 <RTE
                   label="Description:"
                   name="description"
-                  defaultValue={getValues("description")}
+                  defaultValue={descriptionDefaultValue}
                   control={control}
                 />
                 {errors.description && (
@@ -186,11 +199,11 @@ const VideoUpdateDialog: React.FC<VideoUpdateDialogProps> = ({
               <div className="grid w-full items-center gap-1">
                 <Label htmlFor="thumbnail">Thumbnail:</Label>
 
-                {thumbnailPreview && thumbnailPreview.length > 0 ? (
+                {thumbnailPreviewUrl ? (
                   <div className="mt-2 relative group">
                     <Image
                       loaderSize="medium"
-                      src={URL.createObjectURL(thumbnailPreview[0])}
+                      src={thumbnailPreviewUrl}
                       className="w-full rounded-lg object-cover"
                       alt="thumbnail"
                     />

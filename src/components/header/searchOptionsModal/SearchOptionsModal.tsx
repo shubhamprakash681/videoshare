@@ -1,4 +1,4 @@
-import React, { forwardRef, useState } from "react";
+import React, { forwardRef, useCallback, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/hooks/useStore";
 import { useKeyboardNavigation } from "./hooks/useKeyboardNavigation";
 import { Card, CardContent } from "@/components/ui/card";
@@ -31,28 +31,36 @@ export const SearchOptionsModal = forwardRef<
 
   const totalItems = suggestionLength + topSearchLength + recentSearchLength;
 
-  const handleEnter = (selectedIndex: number) => {
-    if (selectedIndex < 0) return;
+  const handleEnter = useCallback(
+    (selectedIndex: number) => {
+      if (selectedIndex < 0) {
+        // search with keyword present in search box
+        dispatch(setVideoStates({ query: searchKey.toLowerCase() }));
+        dispatch(setSearchboxOpen(false));
+        return;
+      }
 
-    let selectedOption: string | undefined;
+      let selectedOption: string | undefined;
 
-    if (selectedIndex < suggestionLength) {
-      const suggestion = suggestions[selectedIndex];
-      selectedOption = suggestion.title;
-    } else if (selectedIndex < suggestionLength + topSearchLength) {
-      const topSearch = topSearches[selectedIndex - suggestionLength];
-      selectedOption = topSearch.searchText;
-    } else {
-      const recentSearch =
-        recentSearches[selectedIndex - suggestionLength - topSearchLength];
-      selectedOption = recentSearch;
-    }
+      if (selectedIndex < suggestionLength) {
+        const suggestion = suggestions[selectedIndex];
+        selectedOption = suggestion.title;
+      } else if (selectedIndex < suggestionLength + topSearchLength) {
+        const topSearch = topSearches[selectedIndex - suggestionLength];
+        selectedOption = topSearch.searchText;
+      } else {
+        const recentSearch =
+          recentSearches[selectedIndex - suggestionLength - topSearchLength];
+        selectedOption = recentSearch;
+      }
 
-    if (selectedOption) {
-      dispatch(setVideoStates({ query: selectedOption.toLowerCase() }));
-      dispatch(setSearchboxOpen(false));
-    }
-  };
+      if (selectedOption) {
+        dispatch(setVideoStates({ query: selectedOption.toLowerCase() }));
+        dispatch(setSearchboxOpen(false));
+      }
+    },
+    [searchKey, suggestions, topSearches, recentSearches]
+  );
 
   const handleOptionClick = (selectedOption: string) => {
     if (selectedOption) {

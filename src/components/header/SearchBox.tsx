@@ -1,93 +1,62 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useAppDispatch, useAppSelector } from "@/hooks/useStore";
 import { setSearchboxOpen } from "@/features/uiSlice";
 import { setVideoStates } from "@/features/videoSlice";
 import { SearchIcon } from "lucide-react";
+import { formatSearchText } from "@/lib/video";
 
 interface SearchBoxProps {
   searchOptionsModalRef: React.RefObject<HTMLDivElement>;
 }
 const SearchBox: React.FC<SearchBoxProps> = ({ searchOptionsModalRef }) => {
-  const [searchText, setSearchText] = useState<string>("");
-
-  const dispatch = useAppDispatch();
-
   const { isSearchboxOpen } = useAppSelector((state) => state.uiReducer);
   const { searchKey, query } = useAppSelector((state) => state.videoReducer);
 
-  const inputBoxRef1 = useRef<HTMLInputElement>(null);
-  const inputBoxRef2 = useRef<HTMLInputElement>(null);
+  const [searchText, setSearchText] = useState<string>(searchKey);
 
-  const [isSmallerScreen, setIsSmallerScreen] = useState<boolean>(true);
+  const searchFormRef = useRef<HTMLFormElement>(null);
+
+  const dispatch = useAppDispatch();
 
   const onSearchQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(e.target.value);
   };
 
-  const onSearchClick = () => {
-    dispatch(setVideoStates({ query: searchKey.toLowerCase() }));
-    setSearchText("");
-  };
-
-  const resizeHandler = () => {
-    if (window.innerWidth < 640) {
-      setIsSmallerScreen(true);
-    } else {
-      setIsSmallerScreen(false);
-    }
-  };
-
-  const handleInputBoxClick = (e: MouseEvent) => {
-    if (inputBoxRef2.current && isSmallerScreen) {
-      if (inputBoxRef2.current.contains(e.target as Node)) {
-        dispatch(setSearchboxOpen(true));
-      } else {
-        if (
-          !searchOptionsModalRef.current ||
-          (searchOptionsModalRef.current &&
-            !searchOptionsModalRef.current.contains(e.target as Node))
-        ) {
-          dispatch(setSearchboxOpen(false));
-        }
-      }
-
+  const onSearchSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+    if (searchText.trim() === "") {
       return;
     }
-
-    if (inputBoxRef1.current) {
-      if (inputBoxRef1.current.contains(e.target as Node)) {
-        dispatch(setSearchboxOpen(true));
-      } else {
-        if (
-          !searchOptionsModalRef.current ||
-          (searchOptionsModalRef.current &&
-            !searchOptionsModalRef.current.contains(e.target as Node))
-        ) {
-          dispatch(setSearchboxOpen(false));
-        }
-      }
-    }
+    dispatch(setVideoStates({ query: searchText.toLowerCase() }));
+    dispatch(setSearchboxOpen(false));
   };
 
+  const handleMousedown = useCallback(
+    (e: MouseEvent) => {
+      if (searchFormRef.current && searchOptionsModalRef.current) {
+        if (
+          !searchFormRef.current.contains(e.target as Node) &&
+          !searchOptionsModalRef.current.contains(e.target as Node)
+        ) {
+          if (isSearchboxOpen) {
+            setSearchText(formatSearchText(query));
+            dispatch(setSearchboxOpen(false));
+          }
+        }
+      }
+    },
+    [searchFormRef, searchOptionsModalRef, isSearchboxOpen, query]
+  );
+
   useEffect(() => {
-    document.addEventListener("mousedown", handleInputBoxClick);
+    document.addEventListener("mousedown", handleMousedown);
 
     return () => {
-      document.removeEventListener("mousedown", handleInputBoxClick);
+      document.removeEventListener("mousedown", handleMousedown);
     };
-  }, [isSmallerScreen]);
-
-  useEffect(() => {
-    resizeHandler();
-
-    window.addEventListener("resize", resizeHandler);
-
-    return () => {
-      window.removeEventListener("resize", resizeHandler);
-    };
-  }, []);
+  }, [searchFormRef, searchOptionsModalRef, isSearchboxOpen, query]);
 
   // debouncing searchText
   useEffect(() => {
@@ -101,8 +70,8 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchOptionsModalRef }) => {
   }, [searchText]);
 
   useEffect(() => {
-    if (searchText !== query) {
-      setSearchText(query);
+    if (searchText.toLowerCase() !== query.toLowerCase()) {
+      setSearchText(formatSearchText(query));
     }
   }, [query]);
 
@@ -111,7 +80,11 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchOptionsModalRef }) => {
       id="search-box-container"
       className="flex items-center justify-self-end sm:w-3/5 sm:justify-self-center"
     >
-      <div className="hidden sm:flex w-full relative">
+      <form
+        className="hidden sm:flex w-full relative"
+        onSubmit={onSearchSubmit}
+        ref={searchFormRef}
+      >
         {isSearchboxOpen && (
           <div className="flex items-center absolute left-2 h-full">
             <SearchIcon height={18} width={18} />
@@ -120,8 +93,8 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchOptionsModalRef }) => {
         <Input
           title="Search Box"
           placeholder="Search"
-          ref={inputBoxRef1}
           value={searchText}
+          onClick={() => !isSearchboxOpen && dispatch(setSearchboxOpen(true))}
           onChange={onSearchQueryChange}
           className={`w-full rounded-r-none rounded-l-full outline-none ${
             isSearchboxOpen && "pl-8"
@@ -130,41 +103,47 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchOptionsModalRef }) => {
 
         <Button
           title="Search"
-          variant={"secondary"}
+          variant="secondary"
           type="submit"
           className="rounded-l-none rounded-r-full"
-          onClick={onSearchClick}
+          onClick={() => dispatch(setSearchboxOpen(false))}
         >
           <SearchIcon height={20} width={20} />
         </Button>
-      </div>
+      </form>
 
       <div className="sm:hidden">
         {isSearchboxOpen ? (
-          <div className="flex w-full relative">
+          <form
+            className="flex w-full relative"
+            onSubmit={onSearchSubmit}
+            ref={searchFormRef}
+          >
             <Input
               title="Search Box"
               placeholder="Search"
-              ref={inputBoxRef2}
               value={searchText}
               onChange={onSearchQueryChange}
               className="w-full rounded-r-none rounded-l-full outline-none"
             />
 
             <Button
-              title="Search small"
-              variant={"secondary"}
+              title="Search"
+              variant="secondary"
               type="submit"
               className="rounded-l-none rounded-r-full"
-              onClick={onSearchClick}
+              onClick={() =>
+                !isSearchboxOpen && dispatch(setSearchboxOpen(true))
+              }
             >
               <SearchIcon height={20} width={20} />
             </Button>
-          </div>
+          </form>
         ) : (
           <Button
             title="Search Video"
-            variant={"ghost"}
+            variant="ghost"
+            type="button"
             className="rounded-full p-[9px] flex items-center justify-center"
             onClick={() => !isSearchboxOpen && dispatch(setSearchboxOpen(true))}
           >
