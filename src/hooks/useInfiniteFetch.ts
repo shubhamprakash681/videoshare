@@ -102,7 +102,7 @@ const useInfiniteFetch = <T>(
               // console.log("setpage from 102, val: ", curentPage + 1);
               setCurrentPage(curentPage + 1); // Load the next page
             }
-          }, 50); // Adjust the delay as needed (e.g., 50ms)
+          }, 10); // Adjust the delay as needed (e.g., 50ms)
 
           // Save the timeout ID to state
           setDebounceTimeout(timeout);
