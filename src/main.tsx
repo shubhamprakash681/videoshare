@@ -30,6 +30,7 @@ import {
 import { Toaster } from "./components/ui/toaster.tsx";
 import ProtectedAuthLayout from "./components/auth/ProtectedAuthLayout.tsx";
 import { PathConstants } from "./lib/variables.ts";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 const appRouter = createBrowserRouter(
   createRoutesFromElements(
@@ -195,6 +196,7 @@ createRoot(document.getElementById("root")!).render(
   <Provider store={reduxStore}>
     <RouterProvider router={appRouter} />
 
+    <SpeedInsights />
     <Toaster />
   </Provider>
   // </StrictMode>

@@ -31,6 +31,7 @@
     "@tanstack/react-table": "^8.20.5",
     "@tinymce/tinymce-react": "^5.1.1",
     "@types/node": "^22.8.6",
+    "@vercel/speed-insights": "^1.2.0",
     "axios": "^1.7.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
