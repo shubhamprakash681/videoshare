@@ -1,5 +1,6 @@
 import {
   StatCard,
+  TweetsTable,
   UploadTCDialog,
   VideoTable,
   VideoUpdateDialog,
@@ -214,7 +215,9 @@ const Dashboard: React.FC = () => {
             setUpdateVideoModalData={setUpdateVideoModalData}
           />
         </TabsContent>
-        <TabsContent value="tweets">Change your password here.</TabsContent>
+        <TabsContent value="tweets">
+          <TweetsTable />
+        </TabsContent>
       </Tabs>
 
       <AlertDialog open={deleteVideoId !== null}>

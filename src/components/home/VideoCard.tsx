@@ -43,8 +43,8 @@ const VideoCard: React.FC<VideoCardProps> = ({
           {formatVideoDuration(duration)}
         </div>
       </div>
-      <div className="p-4">
-        <h3 className="font-semibold text-lg mb-2 line-clamp-2 text-gray-800 dark:text-gray-200">
+      <div className="p-3">
+        <h3 className="font-semibold text-lg mb-2 min-h-14 line-clamp-2 text-gray-800 dark:text-gray-200">
           {title}
         </h3>
         <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">

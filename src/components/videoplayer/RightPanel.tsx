@@ -53,7 +53,9 @@ const SuggestionSection: React.FC<ISuggestionSection> = memo(
             </div>
 
             <div className="flex-1 min-w-0">
-              <h3 className="font-medium line-clamp-2">{video.title}</h3>
+              <h3 className="font-medium min-h-12 line-clamp-2">
+                {video.title}
+              </h3>
               <div className="flex flex-col sm:flex-row mt-1 gap-1 text-sm text-muted-foreground">
                 <div className="flex gap-1">
                   <span>{video.duration}</span>
@@ -183,7 +185,7 @@ const PlaylistRightPanel: React.FC<IPlaylistRightPanelProps> = memo(
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-medium line-clamp-2">
+                      <h3 className="font-medium min-h-12 line-clamp-2">
                         {video.title}
                       </h3>
                       <div className="flex flex-col sm:flex-row mt-1 gap-1 text-sm text-muted-foreground">

@@ -13,7 +13,11 @@ interface UseInfiniteScrollResult<T> {
   refreshData: () => Promise<void>;
 }
 
-const useInfiniteFetch = <T>(
+interface Identifiable {
+  _id: string;
+}
+
+const useInfiniteFetch = <T extends Identifiable>(
   url: string,
   limit: number = 10,
   options: SWRConfiguration = {}
@@ -75,7 +79,16 @@ const useInfiniteFetch = <T>(
       setReult((prevState) => {
         return {
           ...data,
-          docs: data.page == 1 ? data.docs : [...prevState.docs, ...data.docs],
+          docs:
+            data.page == 1
+              ? data.docs
+              : [
+                  ...prevState.docs,
+                  // append only if no duplicate exists
+                  ...data.docs.filter(
+                    (doc) => !prevState.docs.some((d) => d._id === doc._id)
+                  ),
+                ],
         };
       });
     }

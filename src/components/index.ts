@@ -17,6 +17,7 @@ import VideoUploadDialog from "./dashboard/VideoUploadDialog";
 import VideoUpdateDialog from "./dashboard/VideoUpdateDialog";
 import UploadTCDialog from "./dashboard/UploadTCDialog";
 import VideoTable from "./dashboard/VideoTable";
+import TweetsTable from "./dashboard/TweetsTable";
 
 import CommentCard from "./comments/CommentCard";
 import CommentInput from "./comments/CommentInput";
@@ -24,6 +25,7 @@ import CommentInput from "./comments/CommentInput";
 import ChannelVideos from "./channelProfile/ChannelVideos";
 import ChannelPlaylists from "./channelProfile/ChannelPlaylists";
 import ChannelSubscriptions from "./channelProfile/ChannelSubscriptions";
+import ChannelTweets from "./channelProfile/ChannelTweets";
 
 export {
   Login as LoginCard,
@@ -44,9 +46,11 @@ export {
   VideoUpdateDialog,
   UploadTCDialog,
   VideoTable,
+  TweetsTable,
   CommentCard,
   CommentInput,
   ChannelVideos,
   ChannelPlaylists,
   ChannelSubscriptions,
+  ChannelTweets,
 };

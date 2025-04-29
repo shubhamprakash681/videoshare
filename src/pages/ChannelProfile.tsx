@@ -1,6 +1,7 @@
 import {
   ChannelPlaylists,
   ChannelSubscriptions,
+  ChannelTweets,
   ChannelVideos,
 } from "@/components";
 import {
@@ -520,6 +521,10 @@ const ChannelProfile: React.FC = () => {
               refreshChannelSubscription={refreshChannelSubscription}
               isOwner={isOwner}
             />
+          </TabsContent>
+
+          <TabsContent value="tweets">
+            <ChannelTweets />
           </TabsContent>
         </Tabs>
       </div>

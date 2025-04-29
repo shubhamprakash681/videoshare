@@ -49,7 +49,8 @@ const ForgotPassword: React.FC = () => {
       if (res.data.success) {
         toast({
           title: res.data.message,
-          description: "Check your email for the password reset link.",
+          description:
+            "Please check your inbox (and spam folder if you don’t see it).",
         });
 
         setValue("identifier", "");

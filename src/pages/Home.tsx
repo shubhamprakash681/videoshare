@@ -2,7 +2,7 @@ import { VideoCard } from "@/components";
 import PageContainer from "@/components/ui/PageContainer";
 import { useAppDispatch, useAppSelector } from "@/hooks/useStore";
 import { IVideo } from "@/types/collections";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useNavigate } from "react-router-dom";
@@ -45,6 +45,13 @@ const Home: React.FC = () => {
     `/api/v1/video?query=${query}&sortBy=${sortBy}&sortType=${sortType}`
   );
 
+  const [isLoadingDueToSortChange, setIsLoadingDueToSortChange] =
+    useState<boolean>(false);
+
+  useEffect(() => {
+    setIsLoadingDueToSortChange(false);
+  }, [videos]);
+
   if (error)
     return (
       <PageContainer className="flex items-center justify-evenly">
@@ -58,9 +65,11 @@ const Home: React.FC = () => {
         <div className="flex items-center pl-2">
           <Select
             value={sortBy}
-            onValueChange={(value) =>
-              dispatch(setVideoStates({ sortBy: value as keyof IVideo }))
-            }
+            onValueChange={(value) => {
+              setIsLoadingDueToSortChange(true);
+
+              dispatch(setVideoStates({ sortBy: value as keyof IVideo }));
+            }}
           >
             <SelectTrigger className="rounded-l-full rounded-r-none py-2 px-3 hover:bg-secondary focus:border-none min-w-fit gap-2">
               <SelectValue placeholder="Sort By" />
@@ -98,7 +107,11 @@ const Home: React.FC = () => {
             <Button
               variant="outline"
               className="rounded-l-none rounded-r-full min-w-fit py-2 px-3"
-              onClick={() => dispatch(setVideoStates({ sortType: "des" }))}
+              onClick={() => {
+                setIsLoadingDueToSortChange(true);
+
+                dispatch(setVideoStates({ sortType: "des" }));
+              }}
             >
               <ArrowUpNarrowWide className="h-4 w-4" />
               Ascending
@@ -108,7 +121,11 @@ const Home: React.FC = () => {
             <Button
               variant="outline"
               className="rounded-l-none rounded-r-full min-w-fit py-2 px-3"
-              onClick={() => dispatch(setVideoStates({ sortType: "asc" }))}
+              onClick={() => {
+                setIsLoadingDueToSortChange(true);
+
+                dispatch(setVideoStates({ sortType: "asc" }));
+              }}
             >
               <ArrowDownNarrowWide className="h-4 w-4" />
               Descending
@@ -117,29 +134,38 @@ const Home: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 items-center justify-items-center gap-4">
-        {videos.docs.map((video: IVideo) => (
-          <VideoCard
-            key={video._id}
-            title={video.title}
-            createdAt={dayjs(new Date(video.createdAt)).from(now)}
-            duration={video.duration}
-            thumbnail={video.thumbnail.url}
-            views={video.views}
-            channelDetails={{
-              channelAvatar: video.owner.avatar as unknown as string,
-              channelName: video.owner.fullname,
-            }}
-            onClick={() =>
-              navigate(`/video/${video._id}`, {
-                state: {
-                  video,
-                },
-              })
-            }
-          />
-        ))}
-      </div>
+      {isLoadingDueToSortChange ? (
+        <div
+          style={{ minHeight: "calc(100dvh - 142px)" }}
+          className="flex items-center justify-around"
+        >
+          <Loader size="extraLarge" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 items-center justify-items-center gap-4">
+          {videos.docs.map((video: IVideo) => (
+            <VideoCard
+              key={video._id}
+              title={video.title}
+              createdAt={dayjs(new Date(video.createdAt)).from(now)}
+              duration={video.duration}
+              thumbnail={video.thumbnail.url}
+              views={video.views}
+              channelDetails={{
+                channelAvatar: video.owner.avatar as unknown as string,
+                channelName: video.owner.fullname,
+              }}
+              onClick={() =>
+                navigate(`/video/${video._id}`, {
+                  state: {
+                    video,
+                  },
+                })
+              }
+            />
+          ))}
+        </div>
+      )}
 
       <div ref={loaderRef} className="text-center my-5">
         {isLoading && <Loader />}
