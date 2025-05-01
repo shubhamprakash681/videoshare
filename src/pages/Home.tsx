@@ -17,8 +17,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { ArrowDownNarrowWide, ArrowUpNarrowWide } from "lucide-react";
+import {
+  ArrowDownNarrowWide,
+  ArrowUpNarrowWide,
+  CircleAlert,
+} from "lucide-react";
 import { setVideoStates } from "@/features/videoSlice";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { setRenderLoadingOnSearchOrSort } from "@/features/uiSlice";
 
 // Extend Day.js with the relativeTime plugin
 dayjs.extend(relativeTime);
@@ -35,6 +46,9 @@ const Home: React.FC = () => {
   const { query, sortBy, sortType } = useAppSelector(
     (state) => state.videoReducer
   );
+  const { renderLoadingOnSearchOrSort } = useAppSelector(
+    (state) => state.uiReducer
+  );
 
   const {
     data: videos,
@@ -45,11 +59,8 @@ const Home: React.FC = () => {
     `/api/v1/video?query=${query}&sortBy=${sortBy}&sortType=${sortType}`
   );
 
-  const [isLoadingDueToSortChange, setIsLoadingDueToSortChange] =
-    useState<boolean>(false);
-
   useEffect(() => {
-    setIsLoadingDueToSortChange(false);
+    dispatch(setRenderLoadingOnSearchOrSort(false));
   }, [videos]);
 
   if (error)
@@ -63,10 +74,35 @@ const Home: React.FC = () => {
     <PageContainer className="p-2 sm:p-3 md:p-4 lg:p-8">
       <div className="flex items-center justify-end mb-6">
         <div className="flex items-center pl-2">
+          {query.length > 0 && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="ml-1 px-4 rounded-full text-secondary-foreground/85 hover:bg-secondary hover:text-secondary-foreground"
+                  >
+                    <CircleAlert className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent
+                  side="bottom"
+                  className="bg-secondary text-secondary-foreground"
+                >
+                  Sorting functionality is disabled on search results
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+
           <Select
+            disabled={
+              renderLoadingOnSearchOrSort || isLoading || query.length > 0
+            }
             value={sortBy}
             onValueChange={(value) => {
-              setIsLoadingDueToSortChange(true);
+              dispatch(setRenderLoadingOnSearchOrSort(true));
 
               dispatch(setVideoStates({ sortBy: value as keyof IVideo }));
             }}
@@ -105,10 +141,13 @@ const Home: React.FC = () => {
 
           {sortType === "asc" && (
             <Button
+              disabled={
+                renderLoadingOnSearchOrSort || isLoading || query.length > 0
+              }
               variant="outline"
-              className="rounded-l-none rounded-r-full min-w-fit py-2 px-3"
+              className="rounded-l-none rounded-r-full min-w-fit py-2 px-3 disabled:cursor-not-allowed"
               onClick={() => {
-                setIsLoadingDueToSortChange(true);
+                dispatch(setRenderLoadingOnSearchOrSort(true));
 
                 dispatch(setVideoStates({ sortType: "des" }));
               }}
@@ -119,10 +158,13 @@ const Home: React.FC = () => {
           )}
           {sortType === "des" && (
             <Button
+              disabled={
+                renderLoadingOnSearchOrSort || isLoading || query.length > 0
+              }
               variant="outline"
-              className="rounded-l-none rounded-r-full min-w-fit py-2 px-3"
+              className="rounded-l-none rounded-r-full min-w-fit py-2 px-3 disabled:cursor-not-allowed"
               onClick={() => {
-                setIsLoadingDueToSortChange(true);
+                dispatch(setRenderLoadingOnSearchOrSort(true));
 
                 dispatch(setVideoStates({ sortType: "asc" }));
               }}
@@ -134,7 +176,7 @@ const Home: React.FC = () => {
         </div>
       </div>
 
-      {isLoadingDueToSortChange ? (
+      {renderLoadingOnSearchOrSort ? (
         <div
           style={{ minHeight: "calc(100dvh - 142px)" }}
           className="flex items-center justify-around"

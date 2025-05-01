@@ -154,7 +154,7 @@ const App: React.FC = () => {
         <div className="app-container bg-background text-foreground selection:bg-primary/80 dark:selection:bg-primary selection:text-primary-foreground">
           <div className="outer-top">
             <Header
-              searchOptionsModalRef={searchOptionsModalRef}
+              ref={searchOptionsModalRef}
               isSmallerScreen={isSmallerScreen}
             />
           </div>
@@ -191,7 +191,7 @@ const App: React.FC = () => {
       <div className="app-container bg-background text-foreground selection:bg-primary/80 dark:selection:bg-primary selection:text-primary-foreground">
         <div className="outer-top">
           <Header
-            searchOptionsModalRef={searchOptionsModalRef}
+            ref={searchOptionsModalRef}
             isSmallerScreen={isSmallerScreen}
           />
         </div>

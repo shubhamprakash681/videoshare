@@ -494,7 +494,7 @@ const ChannelProfile: React.FC = () => {
               channelVideosRes={channelVideosRes}
               channelVideosLoading={channelVideosLoading}
               channelVideosError={channelVideosError}
-              channelVideosLoaderRef={channelVideosLoaderRef}
+              ref={channelVideosLoaderRef}
               channelVideosRefresh={channelVideosRefresh}
               isOwner={isOwner}
             />
@@ -504,7 +504,7 @@ const ChannelProfile: React.FC = () => {
             <ChannelPlaylists
               channelPlaylistRes={channelPlaylistRes}
               channelPlaylistErr={channelPlaylistErr}
-              channelPlaylistLoaderRef={channelPlaylistLoaderRef}
+              ref={channelPlaylistLoaderRef}
               channelPlaylistLoading={channelPlaylistLoading}
               selectedPlaylistVisibility={selectedPlaylistVisibility}
               setSelectedPlaylistVisibility={setSelectedPlaylistVisibility}

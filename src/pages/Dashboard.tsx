@@ -206,7 +206,7 @@ const Dashboard: React.FC = () => {
             channelVideosState={channelVideosState}
             channelVideosResError={channelVideosResError}
             isChannelVideosResLoading={isChannelVideosResLoading}
-            channelVideosResLoaderRef={channelVideosResLoaderRef}
+            ref={channelVideosResLoaderRef}
             refetchChannelVideos={refetchChannelVideos}
             uploadTCAccepted={userData?.uploadTCAccepted || false}
             setOpenUploadTCDialog={setOpenUploadTCDialog}

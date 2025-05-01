@@ -149,7 +149,7 @@ const SidebarContainer: React.FC<SidebarProps> = ({
                   key={`sm-${menuItem.title}-${menuItemIndex}`}
                   className="flex flex-col items-center"
                 >
-                  {menuItem.title}
+                  <span className="font-semibold">{menuItem.title}</span>
 
                   {menuItem.items.map((item, index) => (
                     <Button

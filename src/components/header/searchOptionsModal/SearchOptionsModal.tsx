@@ -7,7 +7,10 @@ import TopSearches from "./TopSearches";
 import RecentSearches from "./RecentSearches";
 import { useSuggestions } from "./hooks/useSuggestions";
 import { setVideoStates } from "@/features/videoSlice";
-import { setSearchboxOpen } from "@/features/uiSlice";
+import {
+  setRenderLoadingOnSearchOrSort,
+  setSearchboxOpen,
+} from "@/features/uiSlice";
 
 interface SearchOptionsModalProps
   extends React.AllHTMLAttributes<HTMLDivElement> {}
@@ -35,6 +38,7 @@ export const SearchOptionsModal = forwardRef<
     (selectedIndex: number) => {
       if (selectedIndex < 0) {
         // search with keyword present in search box
+        dispatch(setRenderLoadingOnSearchOrSort(true));
         dispatch(setVideoStates({ query: searchKey.toLowerCase() }));
         dispatch(setSearchboxOpen(false));
         return;
@@ -55,6 +59,7 @@ export const SearchOptionsModal = forwardRef<
       }
 
       if (selectedOption) {
+        dispatch(setRenderLoadingOnSearchOrSort(true));
         dispatch(setVideoStates({ query: selectedOption.toLowerCase() }));
         dispatch(setSearchboxOpen(false));
       }
@@ -64,6 +69,7 @@ export const SearchOptionsModal = forwardRef<
 
   const handleOptionClick = (selectedOption: string) => {
     if (selectedOption) {
+      dispatch(setRenderLoadingOnSearchOrSort(true));
       dispatch(setVideoStates({ query: selectedOption.toLowerCase() }));
       dispatch(setSearchboxOpen(false));
     }

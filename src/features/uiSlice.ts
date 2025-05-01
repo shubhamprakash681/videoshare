@@ -4,12 +4,14 @@ interface IUiSliceState {
   isSidebarOpen: boolean;
   isSearchboxOpen: boolean;
   preventCustomKeyPress: boolean;
+  renderLoadingOnSearchOrSort: boolean;
 }
 
 const initialState: IUiSliceState = {
   isSidebarOpen: false,
   isSearchboxOpen: false,
   preventCustomKeyPress: false,
+  renderLoadingOnSearchOrSort: false,
 };
 
 const uiSlice = createSlice({
@@ -28,6 +30,9 @@ const uiSlice = createSlice({
     setPreventCustomKeyPress: (state, actions: { payload: boolean }) => {
       state.preventCustomKeyPress = actions.payload;
     },
+    setRenderLoadingOnSearchOrSort: (state, actions: { payload: boolean }) => {
+      state.renderLoadingOnSearchOrSort = actions.payload;
+    },
   },
 });
 
@@ -36,6 +41,7 @@ export const {
   toggleSidebarOpen,
   setSearchboxOpen,
   setPreventCustomKeyPress,
+  setRenderLoadingOnSearchOrSort,
 } = uiSlice.actions;
 const uiReducer = uiSlice.reducer;
 export default uiReducer;

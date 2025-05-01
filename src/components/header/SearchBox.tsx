@@ -1,22 +1,20 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/hooks/useStore";
+import { SearchIcon, X } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { useAppDispatch, useAppSelector } from "@/hooks/useStore";
-import { setSearchboxOpen } from "@/features/uiSlice";
 import { setVideoStates } from "@/features/videoSlice";
-import { SearchIcon } from "lucide-react";
+import {
+  setRenderLoadingOnSearchOrSort,
+  setSearchboxOpen,
+} from "@/features/uiSlice";
 import { formatSearchText } from "@/lib/video";
 
-interface SearchBoxProps {
-  searchOptionsModalRef: React.RefObject<HTMLDivElement>;
-}
-const SearchBox: React.FC<SearchBoxProps> = ({ searchOptionsModalRef }) => {
+const SearchBox: React.FC = () => {
   const { isSearchboxOpen } = useAppSelector((state) => state.uiReducer);
   const { searchKey, query } = useAppSelector((state) => state.videoReducer);
 
   const [searchText, setSearchText] = useState<string>(searchKey);
-
-  const searchFormRef = useRef<HTMLFormElement>(null);
 
   const dispatch = useAppDispatch();
 
@@ -29,34 +27,30 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchOptionsModalRef }) => {
     if (searchText.trim() === "") {
       return;
     }
+    dispatch(setRenderLoadingOnSearchOrSort(true));
     dispatch(setVideoStates({ query: searchText.toLowerCase() }));
     dispatch(setSearchboxOpen(false));
   };
 
-  const handleMousedown = useCallback(
-    (e: MouseEvent) => {
-      if (searchFormRef.current && searchOptionsModalRef.current) {
-        if (
-          !searchFormRef.current.contains(e.target as Node) &&
-          !searchOptionsModalRef.current.contains(e.target as Node)
-        ) {
-          if (isSearchboxOpen) {
-            setSearchText(formatSearchText(query));
-            dispatch(setSearchboxOpen(false));
-          }
-        }
-      }
-    },
-    [searchFormRef, searchOptionsModalRef, isSearchboxOpen, query]
-  );
+  const onSearchReset = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ): void => {
+    event.preventDefault();
 
-  useEffect(() => {
-    document.addEventListener("mousedown", handleMousedown);
+    dispatch(setRenderLoadingOnSearchOrSort(true));
+    setSearchText("");
+    dispatch(setVideoStates({ searchKey: "", query: "" }));
+  };
+
+  const onSearchFocusOut = () => {
+    const timer = setTimeout(() => {
+      dispatch(setSearchboxOpen(false));
+    }, 200);
 
     return () => {
-      document.removeEventListener("mousedown", handleMousedown);
+      clearTimeout(timer);
     };
-  }, [searchFormRef, searchOptionsModalRef, isSearchboxOpen, query]);
+  };
 
   // debouncing searchText
   useEffect(() => {
@@ -83,7 +77,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchOptionsModalRef }) => {
       <form
         className="hidden sm:flex w-full relative"
         onSubmit={onSearchSubmit}
-        ref={searchFormRef}
+        onBlur={onSearchFocusOut}
       >
         {isSearchboxOpen && (
           <div className="flex items-center absolute left-2 h-full">
@@ -96,17 +90,28 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchOptionsModalRef }) => {
           value={searchText}
           onClick={() => !isSearchboxOpen && dispatch(setSearchboxOpen(true))}
           onChange={onSearchQueryChange}
-          className={`w-full rounded-r-none rounded-l-full outline-none ${
+          className={`w-full rounded-r-none rounded-l-full outline-none pr-11 ${
             isSearchboxOpen && "pl-8"
           }`}
         />
+
+        {isSearchboxOpen && (
+          <Button
+            title="Clear Search"
+            variant="ghost"
+            type="button"
+            onClick={onSearchReset}
+            className="-ml-10 px-3 rounded-full"
+          >
+            <X height={10} width={10} />
+          </Button>
+        )}
 
         <Button
           title="Search"
           variant="secondary"
           type="submit"
           className="rounded-l-none rounded-r-full"
-          onClick={() => dispatch(setSearchboxOpen(false))}
         >
           <SearchIcon height={20} width={20} />
         </Button>
@@ -117,7 +122,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchOptionsModalRef }) => {
           <form
             className="flex w-full relative"
             onSubmit={onSearchSubmit}
-            ref={searchFormRef}
+            onBlur={onSearchFocusOut}
           >
             <Input
               title="Search Box"
@@ -127,14 +132,23 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchOptionsModalRef }) => {
               className="w-full rounded-r-none rounded-l-full outline-none"
             />
 
+            {isSearchboxOpen && (
+              <Button
+                title="Clear Search"
+                variant="ghost"
+                type="button"
+                onClick={onSearchReset}
+                className="-ml-10 px-3 rounded-full"
+              >
+                <X height={10} width={10} />
+              </Button>
+            )}
+
             <Button
               title="Search"
               variant="secondary"
               type="submit"
               className="rounded-l-none rounded-r-full"
-              onClick={() =>
-                !isSearchboxOpen && dispatch(setSearchboxOpen(true))
-              }
             >
               <SearchIcon height={20} width={20} />
             </Button>

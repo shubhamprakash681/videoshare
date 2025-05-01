@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 import { toggleTheme } from "@/features/themeSlice";
@@ -64,64 +64,65 @@ const SidebarToggleButton: React.FC<SidebarToggleButtonProps> = ({
 };
 
 interface HeaderProps {
-  searchOptionsModalRef: React.RefObject<HTMLDivElement>;
   isSmallerScreen: boolean;
 }
-const Header: React.FC<HeaderProps> = ({
-  searchOptionsModalRef,
-  isSmallerScreen,
-}) => {
-  const { theme } = useAppSelector((state) => state.themeReducer);
-  const { isAuthenticated, userData } = useAppSelector(
-    (state) => state.authReducer
-  );
+const Header = forwardRef<HTMLDivElement, HeaderProps>(
+  ({ isSmallerScreen }, searchOptionsModalRef) => {
+    const { theme } = useAppSelector((state) => state.themeReducer);
+    const { isAuthenticated, userData } = useAppSelector(
+      (state) => state.authReducer
+    );
 
-  const dispatch = useAppDispatch();
+    const dispatch = useAppDispatch();
 
-  return (
-    <header
-      className="p-3 grid items-center border-b"
-      style={{ gridTemplateColumns: "auto 1fr" }}
-    >
-      <div className="sm:space-x-2 flex items-center">
-        {isAuthenticated && (
-          <SidebarToggleButton dispatch={dispatch} key={"sidebar-toggle-btn"} />
-        )}
-
-        <Link to={"/"} className="flex items-center gap-1">
-          <Video className="h-6 w-6 text-primary" />
-          {!isSmallerScreen && (
-            <span className="text-xl font-bold w-fit prevent-select">
-              VideoShare
-            </span>
-          )}
-        </Link>
-      </div>
-
-      <div
-        className="w-full grid items-center space-x-1 sm:space-x-3"
-        style={{ gridTemplateColumns: "1fr auto" }}
+    return (
+      <header
+        className="py-3 px-1 sm:px-3 grid items-center border-b"
+        style={{ gridTemplateColumns: "auto 1fr" }}
       >
-        <SearchBox searchOptionsModalRef={searchOptionsModalRef} />
-
-        <div className="justify-self-end flex items-center space-x-1 sm:space-x-2">
-          <ThemeToggleButton
-            key={"theme-toggle-md"}
-            theme={theme}
-            dispatch={dispatch}
-            className="p-3 w-10 h-10 rounded-full"
-          />
-          {isAuthenticated ? (
-            <ProfileDropdown avatarUrl={userData?.avatar.url || ""} />
-          ) : (
-            <Link to="/login">
-              <Button>Login</Button>
-            </Link>
+        <div className="space-x-1 sm:space-x-2 md:space-x-3 flex items-center">
+          {isAuthenticated && (
+            <SidebarToggleButton
+              dispatch={dispatch}
+              key={"sidebar-toggle-btn"}
+            />
           )}
+
+          <Link to={"/"} className="flex items-center gap-1 sm:gap-2 md:gap-3">
+            <Video className="h-6 w-6 text-primary" />
+            {!isSmallerScreen && (
+              <span className="text-xl font-bold w-fit prevent-select">
+                VideoShare
+              </span>
+            )}
+          </Link>
         </div>
-      </div>
-    </header>
-  );
-};
+
+        <div
+          className="w-full grid items-center space-x-1 sm:space-x-3"
+          style={{ gridTemplateColumns: "1fr auto" }}
+        >
+          <SearchBox />
+
+          <div className="justify-self-end flex items-center space-x-1 sm:space-x-2">
+            <ThemeToggleButton
+              key={"theme-toggle-md"}
+              theme={theme}
+              dispatch={dispatch}
+              className="p-3 w-10 h-10 rounded-full"
+            />
+            {isAuthenticated ? (
+              <ProfileDropdown avatarUrl={userData?.avatar.url || ""} />
+            ) : (
+              <Link to="/login">
+                <Button>Login</Button>
+              </Link>
+            )}
+          </div>
+        </div>
+      </header>
+    );
+  }
+);
 
 export default Header;
