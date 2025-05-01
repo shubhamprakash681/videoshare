@@ -2,7 +2,7 @@ import { VideoCard } from "@/components";
 import PageContainer from "@/components/ui/PageContainer";
 import { useAppDispatch, useAppSelector } from "@/hooks/useStore";
 import { IVideo } from "@/types/collections";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useNavigate } from "react-router-dom";

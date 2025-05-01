@@ -1,5 +1,5 @@
 import { AggregatedResponse } from "@/types/APIResponse";
-import React, { forwardRef } from "react";
+import { forwardRef } from "react";
 import VideoCard from "../home/VideoCard";
 import { IVideo } from "@/types/collections";
 import { useNavigate } from "react-router-dom";

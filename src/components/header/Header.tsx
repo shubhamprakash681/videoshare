@@ -67,7 +67,7 @@ interface HeaderProps {
   isSmallerScreen: boolean;
 }
 const Header = forwardRef<HTMLDivElement, HeaderProps>(
-  ({ isSmallerScreen }, searchOptionsModalRef) => {
+  ({ isSmallerScreen }) => {
     const { theme } = useAppSelector((state) => state.themeReducer);
     const { isAuthenticated, userData } = useAppSelector(
       (state) => state.authReducer
