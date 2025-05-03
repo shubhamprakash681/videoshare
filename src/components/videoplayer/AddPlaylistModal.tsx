@@ -166,7 +166,7 @@ const AddPlaylistModal: React.FC<AddPlaylistModalProps> = ({
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <div className="space-y-2 max-h-40 overflow-y-auto">
+        <div className="space-y-2 max-h-[40vh] overflow-y-auto">
           {isLoading.playlistOptions ? (
             <Loader color="secondary" size="small" />
           ) : (
