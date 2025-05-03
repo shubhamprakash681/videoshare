@@ -43,7 +43,7 @@ const About: React.FC = () => {
             <section className="mb-12">
               <h2 className="text-2xl font-semibold mb-4">Our Story</h2>
               <p>
-                {platformName} is a personal portfolio project created in 2023
+                {platformName} is a personal portfolio project created in 2025
                 to showcase the development of a modern video-sharing platform.
                 It leverages the power of{" "}
                 <Link
