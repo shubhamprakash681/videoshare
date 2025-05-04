@@ -232,7 +232,7 @@ const SidebarContainer: React.FC<SidebarProps> = ({
                     >
                       {menuItem.title === "Subscriptions" ? (
                         <Avatar>
-                          <AvatarImage src={item.url} alt="CN" />
+                          <AvatarImage src={item.icon as string} alt="CN" />
                           <AvatarFallback>CN</AvatarFallback>
                         </Avatar>
                       ) : (
