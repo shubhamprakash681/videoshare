@@ -111,7 +111,7 @@ const ForgotPassword: React.FC = () => {
           Remembered your password?
           <Link to={PathConstants.LOGIN} className="ml-1">
             <Button type="button" className="p-0" variant="link">
-              Login
+              Continue to login
             </Button>
           </Link>
         </CardDescription>

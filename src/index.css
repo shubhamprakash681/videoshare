@@ -129,6 +129,11 @@
   /* height: 2900px; */
 }
 
+.auth-page-container {
+  height: min(calc(100dvh - var(--navbar-height)), max-content);
+  padding: 45px 0;
+}
+
 .custom-sidebar {
   height: calc(100dvh - var(--navbar-height)) !important;
   /* border: 1px solid red; */

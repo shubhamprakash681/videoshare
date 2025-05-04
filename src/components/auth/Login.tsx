@@ -183,7 +183,7 @@ const Login: React.FC = () => {
           )}
 
           <Button disabled={isSubmitting} type="submit" className="w-full">
-            {isSubmitting ? "Logging In..." : "Login"}
+            {isSubmitting ? "Submitting..." : "Continue"}
           </Button>
         </form>
       </CardContent>

@@ -4,7 +4,7 @@ import React from "react";
 
 const UpdatePassword: React.FC = () => {
   return (
-    <PageContainer className="flex items-center h-[800px]">
+    <PageContainer className="flex items-center auth-page-container">
       <UpdatePasswordCard />
     </PageContainer>
   );

@@ -31,7 +31,7 @@ const confirmPasswordValidation = z
 
 const fullnameValidation = z
   .string()
-  .min(3, { message: "Fullname must be of atleast 3 characters" });
+  .min(3, { message: "Full Name must be of atleast 3 characters" });
 
 const avatarValidations = z
   .instanceof(FileList)
