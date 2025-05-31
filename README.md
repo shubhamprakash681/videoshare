@@ -1,50 +1,198 @@
-# React + TypeScript + Vite
+# VideoShare
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+VideoShare is a full-featured video sharing platform where creators and viewers connect through engaging video content. Built with the MERN stack, it offers a seamless experience for uploading, discovering, and interacting with videos.
 
-Currently, two official plugins are available:
+🔗 App Link: [https://videoshare.shubhamprakash681.in/](https://videoshare.shubhamprakash681.in/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- 🎬 **Create Your Channel** - Build your personal video hub
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- 👍 **Engagement Tools** - Like, dislike, and comment on videos
 
-- Configure the top-level `parserOptions` property like this:
+- 🔔 **Subscription System** - Follow favorite creators
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- 📁 **Playlists** - Organize videos into collections
+
+- 🔍 **Smart Search** - Fuzzy search powered by MongoDB Atlas
+
+- ☁ **Smooth Streaming** - Cloudinary-powered video storage
+
+## How to Use VideoShare 🚀
+
+### 👤 For Viewers
+
+1.**Browse Videos**
+
+- Explore trending/public videos on homepage
+- 🔍 Use search bar to find specific content
+
+2.**Watch Videos**
+
+- Click any video thumbnail to play
+- 👍/👎 Rate videos with like/dislike buttons
+- 💬 Add comments below the player
+
+3.**Manage Content**
+
+- ➕ Create playlists to organize favorite videos
+
+### 🎥 For Creators
+
+1.**Setup Your Channel**
+
+- Sign up → Go to _My Channel_ → Add profile picture and banner to personalize your Channel
+
+2.**Upload Videos**
+
+- Go to _Dashboard_ → _Upload Video_ to upload Videos to your Channel
+- Add title, description, thumbnail (required)
+- By Default, Videos are _Public_ to everyone
+
+3.**Manage Content**
+
+- Get Channel Stats on _Dashboard_
+- Edit/delete videos from _Dashboard_
+
+4.**Engage Audience**
+
+- Reply to viewer comments
+- Like/Dislike Viewers comments
+
+## Tech Stack 🛠️
+
+| Frontend          | Backend | Database | Services     |
+| ----------------- | ------- | -------- | ------------ |
+| React.js          | Node.js | MongoDB  | Cloudinary   |
+| Redux             | Express | Mongoose | JWT Auth     |
+| Shadcn + Tailwind | Axios   | Atlas    | Fuzzy Search |
+
+## Installation & Setup
+
+### VideoShare API
+
+Clone the repository:
+
+```bash
+    git clone https://github.com/shubhamprakash681/videoshare-server.git
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+Navigate to the API directory:
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```bash
+    cd videoshare-server
 ```
+
+Install dependencies:
+
+```bash
+  npm install
+```
+
+Add Environment Variables
+
+- Copy all variables from .env.sample to a new .env file
+- Fill in your API credentials:
+
+```bash
+    NODE_ENV='development'
+    # NODE_ENV='production'
+
+    PORT=5000
+
+    # MongoDB Atlas
+    MONGODB_URI=""
+
+    ORIGIN='your frontend link'
+    CLIENT_BASE_URI='your frontend link'
+
+    # JWT
+    ACCESS_TOKEN_SECRET=""
+    ACCESS_TOKEN_EXPIRY=
+    REFRESH_TOKEN_SECRET=""
+    REFRESH_TOKEN_EXPIRY=
+    ACCESS_COOKIE_EXPIRE=  # COOKIE_EXPIRE<Number> in terms of days
+    REFRESH_COOKIE_EXPIRE=  # COOKIE_EXPIRE<Number> in terms of days
+
+    # Cloudinary
+    CLOUDINARY_CLOUD_NAME=''
+    CLOUDINARY_API_KEY=''
+    CLOUDINARY_API_SECRET=''
+    CLOUDINARY_API_ENVIRONMENT=''
+
+    # nodemailer
+    SMTP_HOST=''
+    SMTP_PORT=
+    SMTP_SECURE=''
+    SMTP_SERVICE_NAME=''
+    SMTP_MAIL_ID=''
+    SMTP_PSWD=''
+```
+
+Run development API Server:
+
+```bash
+  npm run dev
+```
+
+API will be available on:
+
+```bash
+  http://localhost:5000/api/v1
+```
+
+### VideoShare UI
+
+Clone the repository:
+
+```bash
+    git clone https://github.com/shubhamprakash681/videoshare.git
+```
+
+Navigate to the API directory:
+
+```bash
+    cd videoshare
+```
+
+Install dependencies:
+
+```bash
+  npm install
+```
+
+Add Environment Variables
+
+- Copy all variables from .env.sample to a new .env file
+- Fill in your UI credentials:
+
+```bash
+    NODE_ENV='development'
+
+    VITE_APP_API_BASE_URL='http://localhost:5000' # on localhost
+```
+
+Run development UI Server:
+
+```bash
+  npm run dev
+```
+
+UI will be available on:
+
+```bash
+  http://localhost:5173/
+```
+
+## Contributing
+
+Contributions are always welcome!
+
+## Deployment
+
+- API is deployed on Linux VM on Azure.
+- UI is deployed on Vercel.
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
